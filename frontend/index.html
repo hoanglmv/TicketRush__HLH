@@ -8,6 +8,11 @@
     <title>TicketRush — Đặt vé Online</title>
   </head>
   <body>
+    <script>
+      if (typeof global === 'undefined') {
+        window.global = window;
+      }
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

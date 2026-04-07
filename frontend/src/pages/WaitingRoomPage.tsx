@@ -8,7 +8,7 @@ export default function WaitingRoomPage() {
   const [status, setStatus] = useState<QueueStatusResponse | null>(null);
   const [joined, setJoined] = useState(false);
   const [error, setError] = useState('');
-  const pollRef = useRef<ReturnType<typeof setInterval>>();
+  const pollRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const navigate = useNavigate();
 
   const eid = Number(eventId);
@@ -39,7 +39,7 @@ export default function WaitingRoomPage() {
       } catch { /* ignore */ }
     }, 3000);
 
-    return () => clearInterval(pollRef.current);
+    return () => { if (pollRef.current !== undefined) clearInterval(pollRef.current); };
   }, [joined, eid, navigate]);
 
   return (
