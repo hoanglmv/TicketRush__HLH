@@ -50,6 +50,13 @@ public class Ticket {
 
     private LocalDateTime expiredAt;
 
+    @Builder.Default
+    @Column(nullable = false)
+    private boolean isResale = false;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal resalePrice;
+
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();

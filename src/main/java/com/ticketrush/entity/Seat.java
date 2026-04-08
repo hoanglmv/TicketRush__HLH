@@ -24,7 +24,7 @@ public class Seat {
     @JoinColumn(name = "zone_id", nullable = false)
     private Zone zone;
 
-    @Column(nullable = false)
+    @Column(name = "`row_number`", nullable = false)
     private int rowNumber;
 
     @Column(nullable = false)

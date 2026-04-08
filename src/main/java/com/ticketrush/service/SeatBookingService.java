@@ -164,6 +164,53 @@ public class SeatBookingService {
         return toTicketResponse(ticket);
     }
 
+    @Transactional
+    public TicketResponse transferTicket(Long currentUserId, Long ticketId, String targetEmail) {
+        Ticket ticket = ticketRepository.findByIdAndUserId(ticketId, currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found in your account"));
+                
+        if (ticket.getStatus() != TicketStatus.PAID) {
+            throw new InvalidOperationException("Only PAID tickets can be transferred.");
+        }
+
+        User targetUser = userRepository.findByEmail(targetEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User with email " + targetEmail + " not found"));
+                
+        if (targetUser.getId().equals(currentUserId)) {
+            throw new InvalidOperationException("Cannot transfer ticket to yourself");
+        }
+
+        ticket.setUser(targetUser);
+        ticket.setResale(false);
+        ticket.setResalePrice(null);
+        ticket = ticketRepository.save(ticket);
+        
+        // Transferring ownership means we must update the seat lock metadata
+        Seat seat = ticket.getSeat();
+        seat.setLockedByUserId(targetUser.getId());
+        seatRepository.save(seat);
+
+        log.info("Ticket {} transferred from user {} to user {} ({})", ticketId, currentUserId, targetUser.getId(), targetEmail);
+        return toTicketResponse(ticket);
+    }
+
+    @Transactional
+    public TicketResponse sellTicket(Long currentUserId, Long ticketId, java.math.BigDecimal price) {
+        Ticket ticket = ticketRepository.findByIdAndUserId(ticketId, currentUserId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found in your account"));
+                
+        if (ticket.getStatus() != TicketStatus.PAID) {
+            throw new InvalidOperationException("Only PAID tickets can be sold.");
+        }
+
+        ticket.setResale(true);
+        ticket.setResalePrice(price);
+        ticket = ticketRepository.save(ticket);
+
+        log.info("Ticket {} marked for resale by user {} for price {}", ticketId, currentUserId, price);
+        return toTicketResponse(ticket);
+    }
+
     // ========== WebSocket Broadcasting ==========
 
     private void broadcastSeatUpdate(Long eventId, Seat seat) {

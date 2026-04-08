@@ -15,6 +15,8 @@ public class EventResponse {
     private String venue;
     private String address;
     private String bannerUrl;
+    private String category;
+    private String city;
     private LocalDateTime eventDate;
     private LocalDateTime saleStartTime;
     private LocalDateTime saleEndTime;

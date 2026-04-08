@@ -43,6 +43,7 @@ public class SecurityConfig {
                 // Public endpoints
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/events/**").permitAll()
+                .requestMatchers("/api/chatbot/**").permitAll()
                 .requestMatchers("/ws/**").permitAll()
                 // Admin endpoints
                 .requestMatchers("/api/admin/**").hasAuthority("ROLE_ADMIN")

@@ -14,6 +14,8 @@ public class EventCreateRequest {
     private String venue;
     private String address;
     private String bannerUrl;
+    private String category;
+    private String city;
 
     @NotNull(message = "Event date is required")
     private LocalDateTime eventDate;

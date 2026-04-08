@@ -61,4 +61,24 @@ public class BookingController {
         User user = authService.getCurrentUser(userDetails.getUsername());
         return ResponseEntity.ok(ApiResponse.success(bookingService.getTicketById(user.getId(), ticketId)));
     }
+
+    @PostMapping("/tickets/{ticketId}/transfer")
+    public ResponseEntity<ApiResponse<TicketResponse>> transferTicket(
+            @PathVariable Long ticketId,
+            @RequestBody TicketTransferRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = authService.getCurrentUser(userDetails.getUsername());
+        TicketResponse ticket = bookingService.transferTicket(user.getId(), ticketId, request.getTargetEmail());
+        return ResponseEntity.ok(ApiResponse.success("Ticket transferred successfully", ticket));
+    }
+
+    @PostMapping("/tickets/{ticketId}/sell")
+    public ResponseEntity<ApiResponse<TicketResponse>> sellTicket(
+            @PathVariable Long ticketId,
+            @RequestBody TicketSellRequest request,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = authService.getCurrentUser(userDetails.getUsername());
+        TicketResponse ticket = bookingService.sellTicket(user.getId(), ticketId, request.getPrice());
+        return ResponseEntity.ok(ApiResponse.success("Ticket listed for resale successfully", ticket));
+    }
 }

@@ -37,6 +37,8 @@ public class EventService {
                 .venue(request.getVenue())
                 .address(request.getAddress())
                 .bannerUrl(request.getBannerUrl())
+                .category(request.getCategory())
+                .city(request.getCity())
                 .eventDate(request.getEventDate())
                 .saleStartTime(request.getSaleStartTime())
                 .saleEndTime(request.getSaleEndTime())
@@ -59,6 +61,8 @@ public class EventService {
         event.setVenue(request.getVenue());
         event.setAddress(request.getAddress());
         event.setBannerUrl(request.getBannerUrl());
+        event.setCategory(request.getCategory());
+        event.setCity(request.getCity());
         event.setEventDate(request.getEventDate());
         event.setSaleStartTime(request.getSaleStartTime());
         event.setSaleEndTime(request.getSaleEndTime());
@@ -101,9 +105,9 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
-    public List<EventResponse> searchEvents(String keyword) {
+    public List<EventResponse> searchEvents(String keyword, String category, String city, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate) {
         List<EventStatus> publicStatuses = List.of(EventStatus.PUBLISHED, EventStatus.ON_SALE);
-        return eventRepository.searchByKeyword(keyword, publicStatuses).stream()
+        return eventRepository.searchWithFilters(keyword, category, city, publicStatuses, startDate, endDate).stream()
                 .map(this::toEventResponse)
                 .collect(Collectors.toList());
     }
@@ -201,6 +205,8 @@ public class EventService {
                 .venue(event.getVenue())
                 .address(event.getAddress())
                 .bannerUrl(event.getBannerUrl())
+                .category(event.getCategory())
+                .city(event.getCity())
                 .eventDate(event.getEventDate())
                 .saleStartTime(event.getSaleStartTime())
                 .saleEndTime(event.getSaleEndTime())

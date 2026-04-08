@@ -32,6 +32,12 @@ public class Event {
 
     private String bannerUrl;
 
+    @Column(length = 100)
+    private String category;
+
+    @Column(length = 100)
+    private String city;
+
     @Column(nullable = false)
     private LocalDateTime eventDate;
 

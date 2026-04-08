@@ -10,6 +10,7 @@ export default function SeatSelectionPage() {
   const [seats, setSeats] = useState<SeatResponse[]>([]);
   const [zones, setZones] = useState<ZoneResponse[]>([]);
   const [selectedSeat, setSelectedSeat] = useState<SeatResponse | null>(null);
+  const [hoverSeat, setHoverSeat] = useState<{seat: SeatResponse, x: number, y: number} | null>(null);
   const [loading, setLoading] = useState(true);
   const [booking, setBooking] = useState(false);
   const [error, setError] = useState('');
@@ -17,9 +18,15 @@ export default function SeatSelectionPage() {
   const clientRef = useRef<Client | null>(null);
   const navigate = useNavigate();
 
+  // ISM states
+  const [scale, setScale] = useState(1);
+  const [position, setPosition] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
+  const mapRef = useRef<HTMLDivElement>(null);
+
   const eventId = Number(id);
 
-  // Load seats and zones
   useEffect(() => {
     Promise.all([
       eventApi.seats(eventId),
@@ -27,11 +34,15 @@ export default function SeatSelectionPage() {
     ]).then(([seatsRes, zonesRes]) => {
       setSeats(seatsRes.data.data || []);
       setZones(zonesRes.data.data || []);
+      
+      // Compute initial centering based on window width
+      if (typeof window !== 'undefined') {
+        setPosition({ x: (window.innerWidth - 800) / 2, y: 50 });
+      }
     }).catch(() => setError('Failed to load seats'))
       .finally(() => setLoading(false));
   }, [eventId]);
 
-  // WebSocket connection for real-time updates
   useEffect(() => {
     const client = new Client({
       webSocketFactory: () => new SockJS('/ws'),
@@ -42,29 +53,25 @@ export default function SeatSelectionPage() {
           setSeats(prev => prev.map(s =>
             s.id === update.seatId ? { ...s, status: update.status } : s
           ));
-          // Deselect if someone else locked our selected seat
           setSelectedSeat(prev =>
             prev && prev.id === update.seatId && update.status !== 'AVAILABLE' ? null : prev
           );
         });
       },
     });
-
     client.activate();
     clientRef.current = client;
-
     return () => { client.deactivate(); };
   }, [eventId]);
 
-  // Handle seat click
-  const handleSeatClick = useCallback((seat: SeatResponse) => {
+  const handleSeatClick = useCallback((seat: SeatResponse, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
     if (seat.status !== 'AVAILABLE') return;
     setSelectedSeat(prev => prev?.id === seat.id ? null : seat);
     setError('');
     setSuccess('');
   }, []);
 
-  // Handle booking
   const handleLockSeat = async () => {
     if (!selectedSeat) return;
     setBooking(true);
@@ -82,7 +89,29 @@ export default function SeatSelectionPage() {
     }
   };
 
-  // Group seats by zone and row
+  // Drag and Zoom handlers
+  const handleZoomIn = () => setScale(s => Math.min(s + 0.2, 3));
+  const handleZoomOut = () => setScale(s => Math.max(s - 0.2, 0.4));
+  const handleResetZoom = () => { setScale(1); setPosition({ x: (window.innerWidth - 800)/2, y: 50 }); };
+  
+  const handleWheel = (e: React.WheelEvent) => {
+    e.preventDefault();
+    if (e.deltaY < 0) handleZoomIn();
+    else handleZoomOut();
+  };
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setDragStart({ x: e.clientX - position.x, y: e.clientY - position.y });
+  };
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    setPosition({
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y
+    });
+  };
+  const handleMouseUp = () => setIsDragging(false);
+
   const seatsByZone = zones.map(zone => ({
     zone,
     rows: Array.from(
@@ -95,27 +124,29 @@ export default function SeatSelectionPage() {
     }))
   }));
 
-  if (loading) return <div className="page"><div className="container"><div className="loading-container"><div className="spinner" /><p>Loading seat map...</p></div></div></div>;
+  if (loading) return <div className="page"><div className="container"><div className="loading-container"><div className="spinner" /></div></div></div>;
 
   return (
-    <div className="page">
-      <div className="container animate-fadeIn">
-        <div className="page-header flex-between">
+    <div className="page" style={{ paddingTop: '10px' }}>
+      <div className="container" style={{ maxWidth: '1400px' }}>
+        
+        {/* Top Header */}
+        <div className="flex-between" style={{ marginBottom: '16px', background: 'white', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
           <div>
-            <h1>Chọn ghế</h1>
-            <p>Click vào ghế xanh để chọn. Ghế cập nhật tự động.</p>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>Mô hình Chỗ ngồi & Giá</h1>
+            <p style={{ color: '#666', fontSize: '0.9rem' }}>Bạn có thể dùng chuột hoặc phím cuộn để phóng to, thu nhỏ.</p>
           </div>
           {selectedSeat && (
-            <div className="flex gap-md" style={{ alignItems: 'center' }}>
+            <div className="flex align-center gap-md" style={{ background: '#f8f9fa', padding: '10px 20px', borderRadius: '8px', border: '1px solid #ccc' }}>
               <div>
-                <span style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>Đã chọn: </span>
-                <strong>{selectedSeat.zoneName} — {selectedSeat.label}</strong>
-                <span style={{ marginLeft: 8, color: 'var(--accent-primary)', fontWeight: 700 }}>
-                  {selectedSeat.price.toLocaleString('vi-VN')}₫
-                </span>
+                <div style={{ fontSize: '0.8rem', color: '#666' }}>Đã chọn</div>
+                <div style={{ fontWeight: 800, color: '#111' }}>{selectedSeat.zoneName} - Sec {selectedSeat.label}</div>
               </div>
-              <button className="btn btn-primary" onClick={handleLockSeat} disabled={booking}>
-                {booking ? 'Đang giữ chỗ...' : '🎫 Giữ chỗ & Thanh toán'}
+              <div style={{ fontWeight: 800, fontSize: '1.4rem', color: '#026cdf', minWidth: '100px', textAlign: 'right' }}>
+                {selectedSeat.price.toLocaleString('vi-VN')}₫
+              </div>
+              <button onClick={handleLockSeat} disabled={booking} className="btn" style={{ background: '#026cdf', color: 'white', padding: '12px 24px', fontSize: '1rem', fontWeight: 700 }}>
+                {booking ? 'Đang giữ...' : 'Mua Ngay'}
               </button>
             </div>
           )}
@@ -124,60 +155,122 @@ export default function SeatSelectionPage() {
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
 
-        <div className="glass-card seat-map-container">
-          <div className="stage">🎤 SÂN KHẤU</div>
+        {/* ISM (Interactive Seat Map) Container */}
+        <div className="grid-2" style={{ gridTemplateColumns: 'minmax(0, 1fr) 300px', gap: '20px' }}>
+          
+          <div 
+            className="ism-container"
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            ref={mapRef}
+          >
+            <div 
+              className="ism-map"
+              style={{ 
+                transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`
+              }}
+            >
+              <div className="ism-stage">SÂN KHẤU CHÍNH</div>
 
-          {seatsByZone.map(({ zone, rows }) => (
-            <div key={zone.id} className="zone-section">
-              <div className="zone-header">
-                <div className="zone-color-dot" style={{ background: zone.color }} />
-                <span className="zone-name">{zone.name}</span>
-                <span className="zone-price">{zone.price.toLocaleString('vi-VN')}₫</span>
-              </div>
-              {rows.map(({ rowNum, rowLabel, seats: rowSeats }) => (
-                <div className="seat-row" key={rowNum}>
-                  <span className="seat-row-label">{rowLabel}</span>
-                  {rowSeats.map(seat => (
-                    <button
-                      key={seat.id}
-                      className={`seat ${
-                        selectedSeat?.id === seat.id ? 'seat-selected' :
-                        seat.status === 'AVAILABLE' ? 'seat-available' :
-                        seat.status === 'LOCKED' ? 'seat-locked' : 'seat-sold'
-                      }`}
-                      onClick={() => handleSeatClick(seat)}
-                      disabled={seat.status !== 'AVAILABLE'}
-                      title={`${seat.label} — ${seat.status}`}
-                    >
-                      {seat.colNumber}
-                    </button>
+              {seatsByZone.map(({ zone, rows }) => (
+                <div key={zone.id} className="zone-section" style={{ position: 'relative' }}>
+                  {/* Floating Zone Name */}
+                  <div style={{ position: 'absolute', top: '-15px', right: '-40px', fontSize: '0.9rem', fontWeight: 800, color: zone.color, opacity: 0.8, textTransform: 'uppercase' }}>
+                    {zone.name}
+                  </div>
+                  
+                  {rows.map(({ rowNum, rowLabel, seats: rowSeats }) => (
+                    <div className="seat-row" key={rowNum}>
+                      <span className="seat-row-label">{rowLabel}</span>
+                      {rowSeats.map(seat => (
+                        <button
+                          key={seat.id}
+                          className={`seat ${
+                            selectedSeat?.id === seat.id ? 'seat-selected' :
+                            seat.status === 'AVAILABLE' ? 'seat-available' :
+                            seat.status === 'LOCKED' ? 'seat-locked' : 'seat-sold'
+                          }`}
+                          style={{
+                            background: seat.status === 'AVAILABLE' ? zone.color : undefined
+                          }}
+                          onClick={(e) => handleSeatClick(seat, e)}
+                          onMouseEnter={(e) => {
+                            if (seat.status === 'AVAILABLE') {
+                              setHoverSeat({ seat, x: e.clientX, y: e.clientY });
+                            }
+                          }}
+                          onMouseLeave={() => setHoverSeat(null)}
+                          disabled={seat.status !== 'AVAILABLE'}
+                        >
+                          {seat.colNumber}
+                        </button>
+                      ))}
+                      <span className="seat-row-label">{rowLabel}</span>
+                    </div>
                   ))}
-                  <span className="seat-row-label">{rowLabel}</span>
                 </div>
               ))}
             </div>
-          ))}
 
-          <div className="seat-legend">
-            <div className="seat-legend-item">
-              <div className="seat-legend-dot" style={{ background: 'var(--seat-available)' }} />
-              <span>Trống</span>
-            </div>
-            <div className="seat-legend-item">
-              <div className="seat-legend-dot" style={{ background: 'var(--seat-selected)' }} />
-              <span>Đang chọn</span>
-            </div>
-            <div className="seat-legend-item">
-              <div className="seat-legend-dot" style={{ background: 'var(--seat-locked)' }} />
-              <span>Đang giữ</span>
-            </div>
-            <div className="seat-legend-item">
-              <div className="seat-legend-dot" style={{ background: 'var(--seat-sold)' }} />
-              <span>Đã bán</span>
+            <div className="ism-controls">
+              <button className="ism-zoom-btn" onClick={handleZoomIn}>+</button>
+              <button className="ism-zoom-btn" onClick={handleZoomOut}>−</button>
+              <button className="ism-zoom-btn" onClick={handleResetZoom} style={{ fontSize: '0.9rem' }}>↺</button>
             </div>
           </div>
+
+          {/* Sidebar Legend */}
+          <div>
+            <div style={{ background: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '16px' }}>Filter by Price</h3>
+              <div className="flex flex-col gap-sm">
+                {zones.sort((a, b) => b.price - a.price).map(z => (
+                  <div key={z.id} className="flex-between" style={{ padding: '8px', borderBottom: '1px solid #f0f0f0' }}>
+                    <div className="flex align-center gap-sm">
+                      <div style={{ width: '16px', height: '16px', borderRadius: '4px', background: z.color }}></div>
+                      <span style={{ fontSize: '0.9rem', fontWeight: 600 }}>{z.name}</span>
+                    </div>
+                    <span style={{ fontSize: '0.95rem', fontWeight: 700 }}>{z.price.toLocaleString('vi-VN')}₫</span>
+                  </div>
+                ))}
+              </div>
+
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: '24px 0 16px' }}>Status Colors</h3>
+              <div className="flex flex-col gap-sm">
+                <div className="seat-legend-item">
+                  <div className="seat-legend-dot" style={{ background: '#22c55e' }} />
+                  <span>Selected</span>
+                </div>
+                <div className="seat-legend-item">
+                  <div className="seat-legend-dot" style={{ background: '#999' }} />
+                  <span>Locked/Holding</span>
+                </div>
+                <div className="seat-legend-item">
+                  <div className="seat-legend-dot" style={{ background: '#ddd' }} />
+                  <span>Sold Out</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
+
       </div>
+
+      {/* Ticketmaster Style Hover Tooltip */}
+      {hoverSeat && (
+        <div className="ism-tooltip" style={{ left: hoverSeat.x + 15, top: hoverSeat.y - 15 }}>
+          <div className="flex-between align-center" style={{ marginBottom: '8px' }}>
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666', textTransform: 'uppercase' }}>Standard Ticket</span>
+          </div>
+          <div className="ism-tooltip-title">Sec {hoverSeat.seat.zoneName}, Row {hoverSeat.seat.label.replace(/[0-9]/g, '')}, Seat {hoverSeat.seat.colNumber}</div>
+          <div className="ism-tooltip-price">{hoverSeat.seat.price.toLocaleString('vi-VN')}₫</div>
+          <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>+ Fees & Taxes</div>
+        </div>
+      )}
     </div>
   );
 }

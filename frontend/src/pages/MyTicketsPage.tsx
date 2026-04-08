@@ -6,12 +6,52 @@ export default function MyTicketsPage() {
   const [tickets, setTickets] = useState<TicketResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  const loadTickets = () => {
+    setLoading(true);
     bookingApi.myTickets()
       .then(res => setTickets(res.data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    loadTickets();
   }, []);
+
+  const handleTransfer = (ticketId: number) => {
+    const email = window.prompt("Enter the email address of the person you want to transfer this ticket to:");
+    if (!email) return;
+
+    bookingApi.transfer(ticketId, email)
+      .then(() => {
+        alert("Ticket successfully transferred!");
+        loadTickets();
+      })
+      .catch(err => {
+        const msg = err.response?.data?.message || err.message;
+        alert("Transfer failed: " + msg);
+      });
+  };
+
+  const handleSell = (ticketId: number) => {
+    const priceStr = window.prompt("Enter the price you want to sell this ticket for:");
+    if (!priceStr) return;
+    const price = parseFloat(priceStr);
+    if (isNaN(price) || price <= 0) {
+      alert("Invalid price entered.");
+      return;
+    }
+
+    bookingApi.sell(ticketId, price)
+      .then(() => {
+        alert("Ticket is now listed for resale!");
+        loadTickets();
+      })
+      .catch(err => {
+        const msg = err.response?.data?.message || err.message;
+        alert("Resale failed: " + msg);
+      });
+  };
 
   const statusBadge = (s: string) => {
     const map: Record<string, { cls: string; label: string }> = {
@@ -26,61 +66,75 @@ export default function MyTicketsPage() {
   if (loading) return <div className="page"><div className="container"><div className="loading-container"><div className="spinner" /></div></div></div>;
 
   return (
-    <div className="page">
-      <div className="container animate-fadeIn">
-        <div className="page-header">
-          <h1>Vé của tôi</h1>
-          <p>Quản lý tất cả vé đã mua</p>
+    <div className="page" style={{ background: '#f8f9fa' }}>
+      <div className="container animate-fadeIn" style={{ maxWidth: '1000px' }}>
+        <div className="page-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>My Tickets</h1>
+          <p style={{ color: '#666' }}>Powered by SafeTix™ Technology</p>
         </div>
 
         {tickets.length === 0 ? (
-          <div className="empty-state">
+          <div className="empty-state" style={{ background: 'white', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
             <p style={{ fontSize: '3rem', marginBottom: 12 }}>🎫</p>
-            <p>Bạn chưa có vé nào. Hãy mua vé cho sự kiện yêu thích!</p>
+            <p>Looks like you don't have any upcoming events.</p>
+            <button className="btn" style={{ background: '#026cdf', color: 'white', marginTop: '16px' }} onClick={() => window.location.href = '/events'}>
+              Browse Events
+            </button>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="grid-3">
             {tickets.map(ticket => {
               const badge = statusBadge(ticket.status);
               return (
-                <div key={ticket.id} className="ticket-card animate-slideIn">
-                  <div className="ticket-card-header">
-                    <h3 style={{ fontWeight: 700 }}>{ticket.eventName}</h3>
-                    <p style={{ opacity: 0.8, fontSize: '0.85rem' }}>📍 {ticket.venue}</p>
+                <div key={ticket.id} className="safetix-container animate-slideIn">
+                  
+                  <div className="safetix-header">
+                    <h3>{ticket.eventName}</h3>
+                    <p>{new Date(ticket.eventDate).toLocaleDateString('vi-VN', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
-                  <div className="ticket-card-body">
-                    {ticket.qrCode && (
-                      <div className="ticket-qr">
-                        <img src={ticket.qrCode} alt="QR Code" />
-                      </div>
-                    )}
-                    <div className="ticket-info">
-                      <div className="ticket-info-row">
-                        <span className="ticket-info-label">Khu vực</span>
-                        <span className="ticket-info-value" style={{ color: ticket.zoneColor }}>
-                          {ticket.zoneName}
-                        </span>
-                      </div>
-                      <div className="ticket-info-row">
-                        <span className="ticket-info-label">Ghế</span>
-                        <span className="ticket-info-value">{ticket.seatLabel}</span>
-                      </div>
-                      <div className="ticket-info-row">
-                        <span className="ticket-info-label">Giá</span>
-                        <span className="ticket-info-value">{ticket.price.toLocaleString('vi-VN')}₫</span>
-                      </div>
-                      <div className="ticket-info-row">
-                        <span className="ticket-info-label">Ngày mua</span>
-                        <span className="ticket-info-value">
-                          {ticket.paidAt ? new Date(ticket.paidAt).toLocaleString('vi-VN') : '—'}
-                        </span>
-                      </div>
-                      <div className="ticket-info-row">
-                        <span className="ticket-info-label">Trạng thái</span>
+
+                  <div style={{ background: ticket.zoneColor || '#ccc', color: 'white', padding: '8px 16px', display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 700 }}>
+                    <span>Sec {ticket.zoneName}</span>
+                    <span>Row {ticket.seatLabel.replace(/[0-9]/g, '')}</span>
+                    <span>Seat {ticket.seatLabel.replace(/[^0-9]/g, '')}</span>
+                  </div>
+
+                  <div className="safetix-barcode-area">
+                    {ticket.status === 'PAID' ? (
+                      <>
+                        <div className="safetix-barcode-img">
+                          <div className="safetix-scanner-line" />
+                        </div>
+                        <div className="safetix-warning">
+                          Screenshots won't get you in
+                        </div>
+                      </>
+                    ) : (
+                      <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+                        <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{ticket.status === 'PENDING_PAYMENT' ? '💳' : '🚫'}</div>
                         <span className={`badge ${badge.cls}`}>{badge.label}</span>
                       </div>
+                    )}
+                  </div>
+
+                  <div style={{ padding: '16px', background: '#f8f9fa', fontSize: '0.85rem', color: '#666', borderTop: '1px dashed #ccc', borderBottom: '1px solid #e5e7eb' }}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+                      <span>Loại vé:</span>
+                      <strong style={{ color: '#111' }}>Standard Ticket</strong>
+                    </div>
+                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <span>Order #:</span>
+                      <strong style={{ color: '#111' }}>{ticket.id.toString().padStart(6, '0')}</strong>
                     </div>
                   </div>
+
+                  {ticket.status === 'PAID' && (
+                    <div className="safetix-footer">
+                      <button className="safetix-btn" onClick={() => handleTransfer(ticket.id)}>Transfer</button>
+                      <button className="safetix-btn" onClick={() => handleSell(ticket.id)}>Sell</button>
+                    </div>
+                  )}
+
                 </div>
               );
             })}

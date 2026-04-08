@@ -26,8 +26,13 @@ public class EventController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<ApiResponse<List<EventResponse>>> searchEvents(@RequestParam String q) {
-        return ResponseEntity.ok(ApiResponse.success(eventService.searchEvents(q)));
+    public ResponseEntity<ApiResponse<List<EventResponse>>> searchEvents(
+            @RequestParam(required = false) String q,
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String city,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime startDate,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) java.time.LocalDateTime endDate) {
+        return ResponseEntity.ok(ApiResponse.success(eventService.searchEvents(q, category, city, startDate, endDate)));
     }
 
     @GetMapping("/{eventId}/zones")

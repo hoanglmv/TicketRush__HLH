@@ -1,7 +1,10 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { SettingsProvider } from './contexts/SettingsContext';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
+import Chatbot from './components/Chatbot';
+import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import EventListPage from './pages/EventListPage';
@@ -52,8 +55,12 @@ function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
-        <Navbar />
-        <AppRoutes />
+        <SettingsProvider>
+          <Navbar />
+          <AppRoutes />
+          <Footer />
+          <Chatbot />
+        </SettingsProvider>
       </AuthProvider>
     </BrowserRouter>
   );

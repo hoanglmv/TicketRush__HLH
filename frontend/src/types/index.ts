@@ -41,6 +41,8 @@ export interface EventResponse {
   queueEnabled: boolean;
   queueBatchSize: number;
   createdAt: string;
+  category?: string;
+  city?: string;
   zones: ZoneResponse[];
   totalSeats: number;
   availableSeats: number;

@@ -28,8 +28,6 @@ spring:
       timeout: 5000
 
   jackson:
-    serialization:
-      write-dates-as-timestamps: false
     default-property-inclusion: non_null
 
 # JWT Configuration
@@ -48,3 +46,9 @@ app:
   # CORS
   cors:
     allowed-origins: http://localhost:5173
+
+  # LLM API
+  llm:
+    groq:
+      api-key: ${GROQ_API_KEY:YOUR_GROQ_API_KEY_HERE}
+      model: llama3-8b-8192

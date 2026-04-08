@@ -14,7 +14,14 @@ export const authApi = {
 export const eventApi = {
   list: () => api.get<ApiResponse<EventResponse[]>>('/events'),
   get: (id: number) => api.get<ApiResponse<EventResponse>>(`/events/${id}`),
-  search: (q: string) => api.get<ApiResponse<EventResponse[]>>('/events/search', { params: { q } }),
+  search: (q?: string, category?: string, startDate?: string, endDate?: string) => {
+    let url = '/events/search?';
+    if (q) url += `q=${encodeURIComponent(q)}&`;
+    if (category && category !== 'AllCategories') url += `category=${category}&`;
+    if (startDate) url += `startDate=${startDate}&`;
+    if (endDate) url += `endDate=${endDate}&`;
+    return api.get<ApiResponse<EventResponse[]>>(url);
+  },
   zones: (eventId: number) => api.get<ApiResponse<ZoneResponse[]>>(`/events/${eventId}/zones`),
   seats: (eventId: number) => api.get<ApiResponse<SeatResponse[]>>(`/events/${eventId}/seats`),
 };
@@ -26,6 +33,8 @@ export const bookingApi = {
   cancelTicket: (ticketId: number) => api.delete<ApiResponse<void>>(`/tickets/${ticketId}`),
   myTickets: () => api.get<ApiResponse<TicketResponse[]>>('/tickets/my'),
   getTicket: (ticketId: number) => api.get<ApiResponse<TicketResponse>>(`/tickets/${ticketId}`),
+  transfer: (ticketId: number, targetEmail: string) => api.post<ApiResponse<TicketResponse>>(`/tickets/${ticketId}/transfer`, { targetEmail }),
+  sell: (ticketId: number, price: number) => api.post<ApiResponse<TicketResponse>>(`/tickets/${ticketId}/sell`, { price })
 };
 
 // ========== QUEUE ==========
@@ -33,6 +42,12 @@ export const queueApi = {
   join: (eventId: number) => api.post<ApiResponse<QueueStatusResponse>>(`/queue/${eventId}/join`),
   status: (eventId: number) => api.get<ApiResponse<QueueStatusResponse>>(`/queue/${eventId}/status`),
   leave: (eventId: number) => api.delete<ApiResponse<void>>(`/queue/${eventId}/leave`),
+};
+
+// ========== SETTINGS ==========
+export const settingApi = {
+  getAll: () => api.get('/public/settings'),
+  saveAll: (data: Record<string, string>) => api.post('/admin/settings', data)
 };
 
 // ========== ADMIN ==========
