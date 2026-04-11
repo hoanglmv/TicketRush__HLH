@@ -5,11 +5,13 @@ import { eventApi } from '../api';
 import { EventResponse } from '../types';
 import SearchBar from '../components/SearchBar';
 import { useSettings } from '../contexts/SettingsContext';
+import { useLanguage } from '../i18n';
 
 export default function HomePage() {
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { t, locale } = useLanguage();
 
   useEffect(() => {
     eventApi.list().then(res => {
@@ -17,7 +19,7 @@ export default function HomePage() {
     }).catch(() => {}).finally(() => setLoading(false));
   }, []);
 
-  const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('vi-VN', {
+  const formatDate = (d: string) => d ? new Date(d).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', {
     day: '2-digit', month: '2-digit', year: 'numeric'
   }) : '';
 
@@ -85,7 +87,7 @@ export default function HomePage() {
             <div style={{ color: 'white', transform: currentSlide === index ? 'translateY(0)' : 'translateY(20px)', transition: 'transform 0.8s ease-out' }}>
               <h1 style={{ fontSize: '3.5rem', fontWeight: 800, marginBottom: '8px', letterSpacing: '-1px', textShadow: '0 2px 10px rgba(0,0,0,0.5)' }}>{slide.title}</h1>
               <p style={{ fontSize: '1.2rem', fontWeight: 600, marginBottom: '24px', textShadow: '0 1px 5px rgba(0,0,0,0.5)' }}>{slide.subtitle}</p>
-              <button className="tm-search-btn" style={{ padding: '12px 32px', fontSize: '1rem' }}>Find Tickets</button>
+              <button className="tm-search-btn" style={{ padding: '12px 32px', fontSize: '1rem' }}>{t('home.findTickets')}</button>
             </div>
           </div>
         ))}
@@ -115,7 +117,7 @@ export default function HomePage() {
       {/* Section 1: Trending Searches */}
       <section className="tm-section">
         <div className="tm-section-header">
-          <div className="tm-section-title">Trending Searches</div>
+          <div className="tm-section-title">{t('home.trendingSearches')}</div>
           <div className="flex gap-sm">
             <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&larr;</button>
             <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&rarr;</button>
@@ -153,14 +155,14 @@ export default function HomePage() {
       {/* Section 2: Sponsored Presales and Offers */}
       <section className="tm-section" style={{ paddingTop: 0 }}>
         <div className="tm-section-header">
-          <div className="tm-section-title">Sponsored Presales and Offers</div>
-          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#026cdf', cursor: 'pointer' }}>Near Select your location ∨</div>
+          <div className="tm-section-title">{t('home.sponsoredPresales')}</div>
+          <div style={{ fontSize: '0.85rem', fontWeight: 600, color: '#026cdf', cursor: 'pointer' }}>{t('home.nearSelectLocation')}</div>
         </div>
         <div className="grid-3" style={{ gap: '24px' }}>
           
           <div className="tm-presale-card">
             <div className="tm-presale-img" style={{ backgroundImage: 'url(https://picsum.photos/seed/presale1/600/340)' }}>
-              <span className="tm-badge-presale">Presale</span>
+              <span className="tm-badge-presale">{t('home.presale')}</span>
             </div>
             <div className="tm-presale-body">
               <div className="tm-presale-date">THU • NOV 05 • 8:00 PM</div>
@@ -171,7 +173,7 @@ export default function HomePage() {
 
           <div className="tm-presale-card">
             <div className="tm-presale-img" style={{ backgroundImage: 'url(https://picsum.photos/seed/presale2/600/340)' }}>
-              <span className="tm-badge-presale">Presale</span>
+              <span className="tm-badge-presale">{t('home.presale')}</span>
             </div>
             <div className="tm-presale-body">
               <div className="tm-presale-date">WED • SEP 02 • 7:30 PM</div>
@@ -182,7 +184,7 @@ export default function HomePage() {
 
           <div className="tm-presale-card">
             <div className="tm-presale-img" style={{ backgroundImage: 'url(https://picsum.photos/seed/presale3/600/340)' }}>
-              <span className="tm-badge-presale">Presale</span>
+              <span className="tm-badge-presale">{t('home.presale')}</span>
             </div>
             <div className="tm-presale-body">
               <div className="tm-presale-date">THU • AUG 13 • 7:00 PM</div>
@@ -197,15 +199,15 @@ export default function HomePage() {
       {/* Section 3: Popular Near You */}
       <section className="tm-section" style={{ paddingTop: 0 }}>
         <div className="tm-section-header">
-          <div className="tm-section-title" style={{ borderBottom: 'none' }}>Popular Near You</div>
+          <div className="tm-section-title" style={{ borderBottom: 'none' }}>{t('home.popularNearYou')}</div>
         </div>
 
         {/* Sub-section: Concerts */}
         <div style={{ marginBottom: '40px' }}>
           <div className="flex-between" style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>CONCERTS</h3>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>{t('home.concerts')}</h3>
             <div className="flex align-center gap-sm">
-              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>See All</button>
+              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>{t('home.seeAll')}</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&larr;</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&rarr;</button>
             </div>
@@ -226,17 +228,17 @@ export default function HomePage() {
                 </div>
               </Link>
             ))}
-            {loading && <div className="tm-trending-title">Loading events...</div>}
-            {!loading && events.filter(e => !e.category || ['CONCERTS', 'POP', 'WORLD', 'ROCK'].includes(e.category.toUpperCase())).length === 0 && <div className="tm-trending-title" style={{ padding: '20px' }}>No concerts happening soon.</div>}
+            {loading && <div className="tm-trending-title">{t('home.loadingEvents')}</div>}
+            {!loading && events.filter(e => !e.category || ['CONCERTS', 'POP', 'WORLD', 'ROCK'].includes(e.category.toUpperCase())).length === 0 && <div className="tm-trending-title" style={{ padding: '20px' }}>{t('home.noConcerts')}</div>}
           </div>
         </div>
 
         {/* Sub-section: Sports */}
         <div style={{ marginBottom: '40px' }}>
           <div className="flex-between" style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>SPORTS</h3>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>{t('home.sports')}</h3>
             <div className="flex align-center gap-sm">
-              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>See All</button>
+              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>{t('home.seeAll')}</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&larr;</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&rarr;</button>
             </div>
@@ -270,9 +272,9 @@ export default function HomePage() {
         {/* Sub-section: Arts, Theater & Comedy */}
         <div style={{ marginBottom: '40px' }}>
           <div className="flex-between" style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>ARTS, THEATER & COMEDY</h3>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>{t('home.artsTheaterComedy')}</h3>
             <div className="flex align-center gap-sm">
-              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>See All</button>
+              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>{t('home.seeAll')}</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&larr;</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&rarr;</button>
             </div>
@@ -305,9 +307,9 @@ export default function HomePage() {
         {/* Sub-section: Family */}
         <div style={{ marginBottom: '40px' }}>
           <div className="flex-between" style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>FAMILY</h3>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>{t('home.family')}</h3>
             <div className="flex align-center gap-sm">
-              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>See All</button>
+              <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', fontSize: '0.8rem', fontWeight: 600 }}>{t('home.seeAll')}</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&larr;</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&rarr;</button>
             </div>
@@ -340,7 +342,7 @@ export default function HomePage() {
         {/* Sub-section: Entertainment Guides */}
         <div style={{ marginBottom: '40px', borderTop: '2px solid #111', paddingTop: '24px' }}>
           <div className="flex-between" style={{ marginBottom: '16px' }}>
-            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>ENTERTAINMENT GUIDES</h3>
+            <h3 style={{ fontSize: '1.2rem', fontWeight: 800 }}>{t('home.entertainmentGuides')}</h3>
             <div className="flex align-center gap-sm">
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&larr;</button>
               <button style={{ background: 'white', border: '1px solid #ccc', padding: '4px 12px', cursor: 'pointer' }}>&rarr;</button>
@@ -375,56 +377,56 @@ export default function HomePage() {
       {/* Section 4: Discover More */}
       <section className="tm-section" style={{ paddingTop: 0, paddingBottom: '60px' }}>
         <div className="tm-section-header">
-          <div className="tm-section-title">DISCOVER MORE</div>
+          <div className="tm-section-title">{t('home.discoverMore')}</div>
         </div>
         <div className="grid-3" style={{ gap: '24px' }}>
           
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ width: '100%', height: '180px', background: 'url(https://picsum.photos/seed/discover1/600/300) center/cover', borderRadius: '4px', marginBottom: '12px' }}></div>
-            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>SPORTS</div>
+            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>{t('home.sports')}</div>
             <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>A Look at the 2026 MLB Schedule and...</h4>
             <p style={{ color: '#555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '16px' }}>MLB's 2026 season is bringing big schedule changes and new rules. Here...</p>
-            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>DISCOVER MORE</a>
+            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>{t('home.discoverMore')}</a>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ width: '100%', height: '180px', background: 'url(https://picsum.photos/seed/discover2/600/300) center/cover', borderRadius: '4px', marginBottom: '12px' }}></div>
-            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>TICKET TIPS</div>
+            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>{t('home.ticketTips')}</div>
             <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>You Got the Tickets! How To Safely Share...</h4>
             <p style={{ color: '#555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '16px' }}>Snagged your tickets? Here's how to share the excitement online without...</p>
-            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>DISCOVER MORE</a>
+            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>{t('home.discoverMore')}</a>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ width: '100%', height: '180px', background: 'url(https://picsum.photos/seed/discover3/600/300) center/cover', borderRadius: '4px', marginBottom: '12px' }}></div>
-            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>TICKET TIPS</div>
+            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>{t('home.ticketTips')}</div>
             <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>Find the Seats You Want</h4>
             <p style={{ color: '#555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '16px' }}>Find the right view, compare prices, and shop seats with confidence using...</p>
-            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>DISCOVER MORE</a>
+            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>{t('home.discoverMore')}</a>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ width: '100%', height: '180px', background: 'url(https://picsum.photos/seed/discover4/600/300) center/cover', borderRadius: '4px', marginBottom: '12px' }}></div>
-            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>ARTS & THEATER</div>
+            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>{t('home.artsTheater')}</div>
             <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>7 Broadway Shows to See This Spring...</h4>
             <p style={{ color: '#555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '16px' }}>Need ideas for family activities in NYC this spring? Here are the best...</p>
-            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>DISCOVER MORE</a>
+            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>{t('home.discoverMore')}</a>
           </div>
           
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <div style={{ width: '100%', height: '180px', background: 'url(https://picsum.photos/seed/discover5/600/300) center/cover', borderRadius: '4px', marginBottom: '12px' }}></div>
-            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>SPORTS</div>
+            <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px' }}>{t('home.sports')}</div>
             <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>2026 Soccer World Cup: Everything You...</h4>
             <p style={{ color: '#555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '16px' }}>Find tips on how to buy World Cup tickets and catch a piece of the on-pit...</p>
-            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>DISCOVER MORE</a>
+            <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>{t('home.discoverMore')}</a>
           </div>
 
           <div style={{ display: 'flex', flexDirection: 'column', background: '#f5f5f5',  borderRadius: '4px', padding: '24px' }}>
-             <h4 style={{ fontSize: '3rem', fontWeight: 900, color: '#026cdf', marginBottom: '8px', fontStyle: 'italic', lineHeight: 1 }}>WHAT<br/>TO SEE</h4>
-             <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px', marginTop: 'auto' }}>MUSIC</div>
-             <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>Sign Up For What To See</h4>
-             <p style={{ color: '#555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '16px' }}>Get the Ticketmaster newsletter that covers what's happening live...</p>
-             <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>DISCOVER MORE</a>
+             <h4 style={{ fontSize: '3rem', fontWeight: 900, color: '#026cdf', marginBottom: '8px', fontStyle: 'italic', lineHeight: 1 }}>{t('home.whatToSee')}<br/>{t('home.toSee')}</h4>
+             <div style={{ fontSize: '0.8rem', color: '#666', fontWeight: 700, marginBottom: '8px', marginTop: 'auto' }}>{t('home.music')}</div>
+             <h4 style={{ fontSize: '1.2rem', fontWeight: 800, marginBottom: '8px' }}>{t('home.signUpWhatToSee')}</h4>
+             <p style={{ color: '#555', fontSize: '1rem', lineHeight: 1.5, marginBottom: '16px' }}>{t('home.getNewsletter')}</p>
+             <a href="#" style={{ color: '#026cdf', fontWeight: 700, fontSize: '0.9rem', textDecoration: 'none' }}>{t('home.discoverMore')}</a>
           </div>
 
         </div>

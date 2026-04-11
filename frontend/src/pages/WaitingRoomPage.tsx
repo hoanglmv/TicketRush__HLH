@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { queueApi } from '../api';
 import { QueueStatusResponse } from '../types';
+import { useLanguage } from '../i18n';
 
 export default function WaitingRoomPage() {
   const { eventId } = useParams<{ eventId: string }>();
@@ -10,6 +11,7 @@ export default function WaitingRoomPage() {
   const [error, setError] = useState('');
   const pollRef = useRef<ReturnType<typeof setInterval> | undefined>(undefined);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   const eid = Number(eventId);
 
@@ -48,8 +50,8 @@ export default function WaitingRoomPage() {
       <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', maxWidth: '650px', width: '90%', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' }}>
         
         <div style={{ padding: '24px', textAlign: 'center', borderBottom: '1px solid #e5e7eb' }}>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>The Queue</h1>
-          <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '8px' }}>Patience is key. We're getting things ready for you.</p>
+          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('queue.title')}</h1>
+          <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '8px' }}>{t('queue.subtitle')}</p>
         </div>
 
         <div style={{ padding: '40px 30px', textAlign: 'center' }}>
@@ -57,7 +59,7 @@ export default function WaitingRoomPage() {
 
           {status && !status.hasAccess && (
             <>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '24px' }}>You are now in the queue</h2>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '24px' }}>{t('queue.inQueue')}</h2>
               
               <div style={{ position: 'relative', height: '40px', marginBottom: '8px' }}>
                 <div style={{ 
@@ -80,10 +82,10 @@ export default function WaitingRoomPage() {
               </div>
 
               <div style={{ fontSize: '1.1rem', fontWeight: 700, margin: '30px 0 10px' }}>
-                People ahead of you: <span style={{ color: '#026cdf', fontSize: '1.4rem' }}>{status.position}</span>
+                {t('queue.peopleAhead')} <span style={{ color: '#026cdf', fontSize: '1.4rem' }}>{status.position}</span>
               </div>
               <p style={{ color: '#666', fontSize: '0.9rem', lineHeight: 1.5, background: '#f0f9ff', padding: '16px', borderRadius: '4px', border: '1px solid #bae6fd' }}>
-                Please do not refresh this page or clear your browser cache. You will automatically be directed to seat selection when it is your turn.
+                {t('queue.doNotRefresh')}
               </p>
             </>
           )}
@@ -91,15 +93,15 @@ export default function WaitingRoomPage() {
           {status?.hasAccess && (
             <div style={{ padding: '20px' }}>
               <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🎉</div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e', marginBottom: '10px' }}>It's Your Turn!</h2>
-              <p style={{ color: '#666' }}>Redirecting to interactive seat map...</p>
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e', marginBottom: '10px' }}>{t('queue.yourTurn')}</h2>
+              <p style={{ color: '#666' }}>{t('queue.redirecting')}</p>
             </div>
           )}
 
         </div>
         
         <div style={{ background: '#f8f9fa', padding: '16px', textAlign: 'center', borderTop: '1px solid #e5e7eb', fontSize: '0.8rem', color: '#999' }}>
-          TicketRush Smart Queue Technology
+          {t('queue.smartQueue')}
         </div>
       </div>
 

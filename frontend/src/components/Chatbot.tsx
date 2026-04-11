@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { MessageCircle, X, Send } from 'lucide-react';
+import { useLanguage } from '../i18n';
 
 type Message = {
   id: number;
@@ -8,10 +9,11 @@ type Message = {
 };
 
 export default function Chatbot() {
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([
-    { id: 1, text: "Chào bạn! Tôi là AI Assistant của TicketRush. Bạn muốn tìm vé xem Concert hay Thể thao hôm nay?", sender: 'bot' }
+    { id: 1, text: t('chatbot.greeting'), sender: 'bot' }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -23,18 +25,25 @@ export default function Chatbot() {
     scrollToBottom();
   }, [messages, isOpen]);
 
+  // Update greeting when language changes
+  useEffect(() => {
+    setMessages(prev => prev.map((msg, idx) => 
+      idx === 0 ? { ...msg, text: t('chatbot.greeting') } : msg
+    ));
+  }, [t]);
+
   const generateMockAIResponse = (text: string) => {
     const lower = text.toLowerCase();
     if (lower.includes('concert') || lower.includes('nhạc') || lower.includes('âm nhạc')) {
-      return "Chúng tôi đang có rất nhiều Concert hot! Bạn hãy gõ tên ca sĩ hoặc chọn mục Concerts trên thanh menu nhé.";
+      return t('chatbot.concertReply');
     } else if (lower.includes('sport') || lower.includes('thể thao') || lower.includes('bóng đá')) {
-      return "Vé thể thao đang mở bán với rất nhiều giải đấu lớn. Bạn muốn xem môn thể thao nào?";
+      return t('chatbot.sportReply');
     } else if (lower.includes('vé') || lower.includes('ticket')) {
-      return "Để mua vé, bạn hãy vào trang Sự kiện, chọn vị trí ngồi và hoàn tất thanh toán siêu tốc với TicketRush!";
+      return t('chatbot.ticketReply');
     } else if (lower.includes('hello') || lower.includes('chào') || lower.includes('hi')) {
-      return "Xin chào! Rất vui được hỗ trợ bạn. Bạn cần tìm vé sự kiện gì?";
+      return t('chatbot.helloReply');
     } else {
-      return "Cảm ơn bạn đã quan tâm! Để biết thêm chi tiết, bạn có thể thử tìm kiếm bằng thanh Search hoặc xem các mục nổi bật nha.";
+      return t('chatbot.defaultReply');
     }
   };
 
@@ -65,7 +74,7 @@ export default function Chatbot() {
       ));
     } catch (error) {
        setMessages(prev => prev.map(msg => 
-        msg.id === loadingId ? { ...msg, text: "Xin lỗi, hiện tại không thể kết nối tới server AI." } : msg
+        msg.id === loadingId ? { ...msg, text: t('chatbot.serverError') } : msg
       ));
     }
   };
@@ -105,7 +114,7 @@ export default function Chatbot() {
           color: 'white', fontWeight: 600
         }}>
           <div className="flex align-center gap-sm">
-            <MessageCircle size={20} /> AI Assistant Demo
+            <MessageCircle size={20} /> {t('chatbot.title')}
           </div>
           <button onClick={() => setIsOpen(false)} style={{ background: 'transparent', border: 'none', color: 'white', cursor: 'pointer' }}>
             <X size={20} />
@@ -135,7 +144,7 @@ export default function Chatbot() {
             type="text" 
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Bạn muốn tìm sự kiện nào..."
+            placeholder={t('chatbot.placeholder')}
             style={{
               flex: 1, background: 'var(--bg-input)', border: '1px solid var(--border-color)',
               color: 'white', borderRadius: '20px', padding: '10px 16px', outline: 'none'

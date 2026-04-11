@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { adminApi } from '../../api';
 import { EventResponse } from '../../types';
+import { useLanguage } from '../../i18n';
 
 export default function AdminEventListPage() {
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     adminApi.events()
@@ -36,14 +38,14 @@ export default function AdminEventListPage() {
       <div className="container animate-fadeIn">
         <div className="page-header flex-between">
           <div>
-            <h1>Quản lý sự kiện</h1>
-            <p>Tạo và quản lý tất cả sự kiện</p>
+            <h1>{t('admin.eventManagement')}</h1>
+            <p>{t('admin.createAndManage')}</p>
           </div>
-          <Link to="/admin/events/create" className="btn btn-primary">➕ Tạo sự kiện mới</Link>
+          <Link to="/admin/events/create" className="btn btn-primary">{t('admin.createEvent')}</Link>
         </div>
 
         {events.length === 0 ? (
-          <div className="empty-state"><p>Chưa có sự kiện nào.</p></div>
+          <div className="empty-state"><p>{t('admin.noEvents')}</p></div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {events.map(event => (
@@ -58,26 +60,26 @@ export default function AdminEventListPage() {
                     </div>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
                       📍 {event.venue || 'TBA'} &nbsp;|&nbsp; 📅 {event.eventDate ? new Date(event.eventDate).toLocaleDateString('vi-VN') : '—'}
-                      &nbsp;|&nbsp; 💺 {event.soldSeats}/{event.totalSeats} sold
+                      &nbsp;|&nbsp; 💺 {event.soldSeats}/{event.totalSeats} {t('admin.sold')}
                     </div>
                   </div>
                   <div className="flex gap-sm">
                     <Link to={`/admin/events/${event.id}`} className="btn btn-secondary btn-sm">
-                      📊 Chi tiết
+                      {t('admin.details')}
                     </Link>
                     {event.status === 'DRAFT' && (
                       <button className="btn btn-primary btn-sm" onClick={() => handleStatusChange(event.id, 'PUBLISHED')}>
-                        Publish
+                        {t('admin.publish')}
                       </button>
                     )}
                     {event.status === 'PUBLISHED' && (
                       <button className="btn btn-success btn-sm" onClick={() => handleStatusChange(event.id, 'ON_SALE')}>
-                        Open Sale
+                        {t('admin.openSale')}
                       </button>
                     )}
                     {event.status === 'ON_SALE' && (
                       <button className="btn btn-secondary btn-sm" onClick={() => handleStatusChange(event.id, 'COMPLETED')}>
-                        Complete
+                        {t('admin.complete')}
                       </button>
                     )}
                   </div>

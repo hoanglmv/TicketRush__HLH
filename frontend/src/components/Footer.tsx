@@ -1,4 +1,5 @@
 import { Apple, Play } from 'lucide-react';
+import { useLanguage } from '../i18n';
 
 const FbIcon = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg>);
 const XIcon = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"></path></svg>);
@@ -6,6 +7,8 @@ const YtIcon = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="curr
 const IgIcon = () => (<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>);
 
 export default function Footer() {
+  const { t } = useLanguage();
+
   return (
     <footer className="tm-footer">
       <div className="tm-footer-container">
@@ -17,7 +20,7 @@ export default function Footer() {
             <span style={{ fontSize: '0.8rem', verticalAlign: 'super', marginLeft: '2px', fontStyle: 'normal' }}>®</span>
           </div>
           
-          <div className="tm-footer-title">Let's connect</div>
+          <div className="tm-footer-title">{t('footer.letsConnect')}</div>
           <div className="tm-footer-socials" style={{ display: 'flex', gap: '20px', marginBottom: '32px', alignItems: 'center' }}>
             <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><FbIcon /></a>
             <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><XIcon /></a>
@@ -26,57 +29,57 @@ export default function Footer() {
             <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><IgIcon /></a>
           </div>
           
-          <div className="tm-footer-title">Download Our Apps</div>
+          <div className="tm-footer-title">{t('footer.downloadApps')}</div>
           <div className="tm-footer-apps" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
             <button className="btn" style={{ background: 'transparent', border: '1px solid #ccc', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 16px', borderRadius: '4px', width: 'fit-content', cursor: 'pointer' }}>
               <Apple size={28} />
               <div style={{ textAlign: 'left', lineHeight: 1.1 }}>
-                <div style={{ fontSize: '0.65rem' }}>Download on the</div>
+                <div style={{ fontSize: '0.65rem' }}>{t('footer.downloadOn')}</div>
                 <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>App Store</div>
               </div>
             </button>
             <button className="btn" style={{ background: 'transparent', border: '1px solid #ccc', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 16px', borderRadius: '4px', width: 'fit-content', cursor: 'pointer' }}>
               <Play size={24} />
               <div style={{ textAlign: 'left', lineHeight: 1.1 }}>
-                <div style={{ fontSize: '0.65rem' }}>GET IT ON</div>
+                <div style={{ fontSize: '0.65rem' }}>{t('footer.getItOn')}</div>
                 <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Google Play</div>
               </div>
             </button>
           </div>
 
           <div style={{ fontSize: '0.9rem', color: '#ccc', lineHeight: '1.4' }}>
-            By continuing past this page, you<br/>
-            agree to our <a href="#" style={{ color: 'white', textDecoration: 'underline' }}>terms of use</a>
+            {t('footer.termsAgree')}<br/>
+            {' '}<a href="#" style={{ color: 'white', textDecoration: 'underline' }}>{t('footer.termsOfUse')}</a>
           </div>
         </div>
 
         {/* Column 2 */}
         <div className="tm-footer-col" style={{ flex: 1 }}>
-          <div className="tm-footer-title">Helpful Links</div>
+          <div className="tm-footer-title">{t('footer.helpfulLinks')}</div>
           <ul className="tm-footer-list">
-            <li><a href="#">Help/FAQ</a></li>
-            <li><a href="#">Sell</a></li>
-            <li><a href="#">My Account</a></li>
-            <li><a href="#">Contact Us</a></li>
-            <li><a href="#">Gift Cards</a></li>
-            <li><a href="#">Do Not Sell or Share My Personal Information</a></li>
-            <li><a href="#">Get Started on Ticketrush</a></li>
+            <li><a href="#">{t('footer.helpFaq')}</a></li>
+            <li><a href="#">{t('footer.sell')}</a></li>
+            <li><a href="#">{t('footer.myAccount')}</a></li>
+            <li><a href="#">{t('footer.contactUs')}</a></li>
+            <li><a href="#">{t('footer.giftCards')}</a></li>
+            <li><a href="#">{t('footer.doNotSell')}</a></li>
+            <li><a href="#">{t('footer.getStarted')}</a></li>
           </ul>
 
-          <div className="tm-footer-title" style={{ marginTop: '40px' }}>About Us</div>
+          <div className="tm-footer-title" style={{ marginTop: '40px' }}>{t('footer.aboutUs')}</div>
           <ul className="tm-footer-list">
-            <li><a href="#">Ticketrush Blog</a></li>
-            <li><a href="#">Ticketing Truths</a></li>
-            <li><a href="#">Ad Choices</a></li>
-            <li><a href="#">Careers</a></li>
-            <li><a href="#">Ticket Your Event</a></li>
-            <li><a href="#">Innovation</a></li>
+            <li><a href="#">{t('footer.blog')}</a></li>
+            <li><a href="#">{t('footer.ticketingTruths')}</a></li>
+            <li><a href="#">{t('footer.adChoices')}</a></li>
+            <li><a href="#">{t('footer.careers')}</a></li>
+            <li><a href="#">{t('footer.ticketYourEvent')}</a></li>
+            <li><a href="#">{t('footer.innovation')}</a></li>
           </ul>
         </div>
 
         {/* Column 3 */}
         <div className="tm-footer-col" style={{ flex: 1 }}>
-          <div className="tm-footer-title">Our Network</div>
+          <div className="tm-footer-title">{t('footer.ourNetwork')}</div>
           <ul className="tm-footer-list">
             <li><a href="#">Live Nation</a></li>
             <li><a href="#">House of Blues</a></li>
@@ -88,7 +91,7 @@ export default function Footer() {
             <li><a href="#">NHL</a></li>
           </ul>
 
-          <div className="tm-footer-title" style={{ marginTop: '40px' }}>Friends & Partners</div>
+          <div className="tm-footer-title" style={{ marginTop: '40px' }}>{t('footer.friendsPartners')}</div>
           <ul className="tm-footer-list">
             <li><a href="#">PayPal</a></li>
             <li><a href="#">Allianz</a></li>
@@ -100,10 +103,10 @@ export default function Footer() {
 
       <div className="tm-footer-bottom">
         <div className="tm-footer-bottom-links">
-          <a href="#">Our Policies</a> | <a href="#">Privacy Policy</a> | <a href="#">Cookie Policy</a> | <a href="#">Manage my cookies and ad choices</a>
+          <a href="#">{t('footer.ourPolicies')}</a> | <a href="#">{t('footer.privacyPolicy')}</a> | <a href="#">{t('footer.cookiePolicy')}</a> | <a href="#">{t('footer.manageCookies')}</a>
         </div>
         <div className="tm-footer-copyright">
-          © 1999-2026 Ticketrush. All rights reserved.
+          {t('footer.copyright')}
         </div>
       </div>
     </footer>

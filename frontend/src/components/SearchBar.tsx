@@ -3,9 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { MapPin, Calendar, Search } from 'lucide-react';
 import { eventApi } from '../api';
 import { EventResponse } from '../types';
+import { useLanguage } from '../i18n';
 
 export default function SearchBar() {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [location, setLocation] = useState('');
   const [dates, setDates] = useState('');
   const [query, setQuery] = useState('');
@@ -55,13 +57,13 @@ export default function SearchBar() {
     <form onSubmit={handleSearch} className="tm-search-container" style={{ position: 'relative', zIndex: 10 }}>
       
       <div className="tm-search-field" style={{ flex: '0.8' }}>
-        <div className="tm-search-label">Location</div>
+        <div className="tm-search-label">{t('search.location')}</div>
         <div className="flex align-center gap-sm">
           <MapPin size={16} color="#026cdf" />
           <input 
             type="text" 
             className="tm-search-input" 
-            placeholder="City or Zip Code" 
+            placeholder={t('search.locationPlaceholder')} 
             value={location}
             onChange={(e) => setLocation(e.target.value)}
           />
@@ -69,13 +71,13 @@ export default function SearchBar() {
       </div>
 
       <div className="tm-search-field" style={{ flex: '0.8' }}>
-        <div className="tm-search-label">Dates</div>
+        <div className="tm-search-label">{t('search.dates')}</div>
         <div className="flex align-center gap-sm">
           <Calendar size={16} color="#026cdf" />
           <input 
             type="text" 
             className="tm-search-input" 
-            placeholder="All Dates" 
+            placeholder={t('search.allDates')} 
             value={dates}
             onChange={(e) => setDates(e.target.value)}
           />
@@ -83,13 +85,13 @@ export default function SearchBar() {
       </div>
 
       <div className="tm-search-field" style={{ flex: '1.2' }} ref={searchRef}>
-        <div className="tm-search-label">Search</div>
+        <div className="tm-search-label">{t('search.search')}</div>
         <div className="flex align-center gap-sm">
           <Search size={16} color="#026cdf" />
           <input 
             type="text" 
             className="tm-search-input" 
-            placeholder="Artist, Event or Venue" 
+            placeholder={t('search.searchPlaceholder')} 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
@@ -112,7 +114,7 @@ export default function SearchBar() {
             maxHeight: '350px',
             overflowY: 'auto'
           }}>
-            <div style={{ padding: '8px 16px', fontSize: '0.8rem', fontWeight: 700, color: '#666', borderBottom: '1px solid #eee' }}>SỰ KIỆN ĐỀ XUẤT ({suggestions.length})</div>
+            <div style={{ padding: '8px 16px', fontSize: '0.8rem', fontWeight: 700, color: '#666', borderBottom: '1px solid #eee' }}>{t('search.suggestedEvents')} ({suggestions.length})</div>
             {suggestions.map(event => (
               <div 
                 key={event.id}
@@ -140,7 +142,7 @@ export default function SearchBar() {
       </div>
 
       <button type="submit" className="tm-search-btn">
-        Search
+        {t('search.search')}
       </button>
 
     </form>

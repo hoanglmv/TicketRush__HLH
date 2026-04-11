@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users, Info, ChevronRight, Share2, Heart, Armchair } 
 import { eventApi } from '../api';
 import { EventResponse } from '../types';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../i18n';
 
 export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -12,6 +13,7 @@ export default function EventDetailPage() {
   const [loading, setLoading] = useState(true);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { t, locale } = useLanguage();
 
   // Social Proof Simulation
   const liveViewers = useMemo(() => Math.floor(Math.random() * (150 - 30 + 1) + 30), []);
@@ -31,9 +33,9 @@ export default function EventDetailPage() {
     </div>
   );
   
-  if (!event) return <div className="page"><div className="container"><div className="empty-state">Event not found</div></div></div>;
+  if (!event) return <div className="page"><div className="container"><div className="empty-state">{t('eventDetail.eventNotFound')}</div></div></div>;
 
-  const formatDate = (d: string) => d ? new Date(d).toLocaleDateString('vi-VN', {
+  const formatDate = (d: string) => d ? new Date(d).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', {
     weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
   }) : '';
 
@@ -59,7 +61,7 @@ export default function EventDetailPage() {
       <div className="container">
         {/* Breadcrumb like header */}
         <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          <span style={{ cursor: 'pointer' }} onClick={() => navigate('/events')}>Sự kiện</span>
+          <span style={{ cursor: 'pointer' }} onClick={() => navigate('/events')}>{t('eventDetail.events')}</span>
           <ChevronRight size={14} />
           <span style={{ color: 'var(--text-primary)' }}>{event.name}</span>
         </div>
@@ -80,7 +82,7 @@ export default function EventDetailPage() {
             }}>
               {/* Category Tag Overlay */}
               <div style={{ position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '6px 16px', borderRadius: '20px', fontWeight: 600, fontSize: '0.85rem' }}>
-                🎉 Sự kiện nổi bật
+                {t('eventDetail.featured')}
               </div>
             </div>
 
@@ -99,14 +101,14 @@ export default function EventDetailPage() {
                 style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '12px 16px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px', color: '#fca5a5' }}
               >
                 <Users size={20} className="animate-pulse" />
-                <span style={{ fontWeight: 500 }}>Đang có <b style={{ color: 'white' }}>{liveViewers}</b> người cùng xem sự kiện này. Mua ngay trước khi hết vé!</span>
+                <span style={{ fontWeight: 500 }}>{t('eventDetail.currentlyViewing')} <b style={{ color: 'white' }}>{liveViewers}</b> {t('eventDetail.viewingNow')}</span>
               </motion.div>
             )}
 
             <div style={{ padding: '32px', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}><Info size={24} color="var(--accent-primary)" /> Giới thiệu sự kiện</h3>
+              <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}><Info size={24} color="var(--accent-primary)" /> {t('eventDetail.aboutEvent')}</h3>
               <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '1.05rem', whiteSpace: 'pre-wrap' }}>
-                {event.description || 'Không có mô tả cho sự kiện này.'}
+                {event.description || t('eventDetail.noDescription')}
               </p>
             </div>
           </motion.div>
@@ -118,7 +120,7 @@ export default function EventDetailPage() {
             transition={{ duration: 0.5, delay: 0.2 }}
           >
             <div className="glass-panel" style={{ position: 'sticky', top: 100, padding: '32px' }}>
-              <h3 style={{ fontWeight: 800, fontSize: '1.5rem', marginBottom: 24 }}>Thông tin đặt vé</h3>
+              <h3 style={{ fontWeight: 800, fontSize: '1.5rem', marginBottom: 24 }}>{t('eventDetail.bookingInfo')}</h3>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 32 }}>
                 <div style={{ display: 'flex', gap: '16px' }}>
@@ -126,7 +128,7 @@ export default function EventDetailPage() {
                     <Calendar size={22} />
                   </div>
                   <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Thời gian</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>{t('eventDetail.dateTime')}</div>
                     <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{formatDate(event.eventDate)}</div>
                   </div>
                 </div>
@@ -136,8 +138,8 @@ export default function EventDetailPage() {
                     <MapPin size={22} />
                   </div>
                   <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>Địa điểm</div>
-                    <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{event.venue || 'Đang cập nhật địa điểm'}</div>
+                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>{t('eventDetail.venue')}</div>
+                    <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{event.venue || t('eventDetail.venueUpdating')}</div>
                   </div>
                 </div>
                 
@@ -147,8 +149,8 @@ export default function EventDetailPage() {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
-                      <span>Ghế trống</span>
-                      {isNearingSoldOut && <span style={{ color: 'var(--danger)', fontWeight: 600 }}>Sắp cháy vé!</span>}
+                      <span>{t('eventDetail.availableSeats')}</span>
+                      {isNearingSoldOut && <span style={{ color: 'var(--danger)', fontWeight: 600 }}>{t('eventDetail.nearingSoldOut')}</span>}
                     </div>
                     <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{event.availableSeats} / {event.totalSeats}</div>
                   </div>
@@ -159,7 +161,7 @@ export default function EventDetailPage() {
 
               {event.zones && event.zones.length > 0 && (
                 <div style={{ marginBottom: 32 }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '1px' }}>Khu vực & Mức giá</div>
+                  <div style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('eventDetail.zonePricing')}</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                     {event.zones.map(z => (
                       <div key={z.id} className="flex-between" style={{
@@ -184,16 +186,16 @@ export default function EventDetailPage() {
                   style={{ width: '100%', padding: '18px', fontSize: '1.15rem', borderRadius: '12px' }} 
                   onClick={handleBuyTicket}
                 >
-                  Mua vé ngay
+                  {t('eventDetail.buyNow')}
                 </motion.button>
               ) : (
                 <button className="btn btn-secondary btn-lg" style={{ width: '100%', opacity: 0.7 }} disabled>
-                  {event.status === 'PUBLISHED' ? 'Chưa mở bán' : event.status}
+                  {event.status === 'PUBLISHED' ? t('eventDetail.notOnSale') : event.status}
                 </button>
               )}
               
               <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '16px' }}>
-                * Thanh toán bảo mật qua VNPAY hoặc ZaloPay
+                {t('eventDetail.securePayment')}
               </p>
             </div>
           </motion.div>

@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { SettingsProvider } from './contexts/SettingsContext';
+import { LanguageProvider } from './i18n';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
 import Chatbot from './components/Chatbot';
@@ -54,14 +55,16 @@ function AppRoutes() {
 function App() {
   return (
     <BrowserRouter>
-      <AuthProvider>
-        <SettingsProvider>
-          <Navbar />
-          <AppRoutes />
-          <Footer />
-          <Chatbot />
-        </SettingsProvider>
-      </AuthProvider>
+      <LanguageProvider>
+        <AuthProvider>
+          <SettingsProvider>
+            <Navbar />
+            <AppRoutes />
+            <Footer />
+            <Chatbot />
+          </SettingsProvider>
+        </AuthProvider>
+      </LanguageProvider>
     </BrowserRouter>
   );
 }

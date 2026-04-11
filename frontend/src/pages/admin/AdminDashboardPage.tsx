@@ -3,10 +3,12 @@ import { Link } from 'react-router-dom';
 import { adminApi } from '../../api';
 import { DashboardStats } from '../../types';
 import { useSettings } from '../../contexts/SettingsContext';
+import { useLanguage } from '../../i18n';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
   
   const { settings, updateSettingsPayload, loading: settingsLoading } = useSettings();
   const [formData, setFormData] = useState<Record<string, string>>({});
@@ -47,36 +49,36 @@ export default function AdminDashboardPage() {
     <div className="page">
       <div className="container animate-fadeIn">
         <div className="page-header">
-          <h1>Admin Dashboard</h1>
-          <p>Tổng quan hệ thống TicketRush</p>
+          <h1>{t('admin.dashboard')}</h1>
+          <p>{t('admin.overview')}</p>
         </div>
 
         <div className="grid-3" style={{ marginBottom: 30 }}>
           <div className="stat-card">
             <div className="stat-value">{stats?.totalEvents || 0}</div>
-            <div className="stat-label">Sự kiện</div>
+            <div className="stat-label">{t('admin.events')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">
               {(stats?.totalRevenue || 0).toLocaleString('vi-VN')}₫
             </div>
-            <div className="stat-label">Tổng doanh thu</div>
+            <div className="stat-label">{t('admin.totalRevenue')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">{stats?.totalUsers || 0}</div>
-            <div className="stat-label">Người dùng</div>
+            <div className="stat-label">{t('admin.users')}</div>
           </div>
         </div>
 
         <div className="flex gap-md" style={{ marginBottom: 40 }}>
-          <Link to="/admin/events" className="btn btn-primary">📋 Quản lý sự kiện</Link>
-          <Link to="/admin/events/create" className="btn btn-secondary">➕ Tạo sự kiện mới</Link>
+          <Link to="/admin/events" className="btn btn-primary">{t('admin.manageEvents')}</Link>
+          <Link to="/admin/events/create" className="btn btn-secondary">{t('admin.createEvent')}</Link>
         </div>
 
         <div className="card" style={{ padding: '24px', background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-          <h2 style={{ marginBottom: '20px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>🖼️ Visual Settings Management</h2>
+          <h2 style={{ marginBottom: '20px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>{t('admin.visualSettings')}</h2>
           <p style={{ color: '#666', marginBottom: '20px', fontSize: '0.9rem' }}>
-            Update the image URLs for various sections across the platform. You can paste Unsplash URLs, AWS S3 Links, or any high-quality image paths here.
+            {t('admin.visualSettingsDesc')}
           </p>
           
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -100,7 +102,7 @@ export default function AdminDashboardPage() {
               onClick={handleSaveSettings}
               disabled={saving}
             >
-              {saving ? 'Saving...' : '💾 Save Settings'}
+              {saving ? t('admin.saving') : t('admin.saveSettings')}
             </button>
           </div>
         </div>

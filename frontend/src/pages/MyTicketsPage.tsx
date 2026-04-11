@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
 import { bookingApi } from '../api';
 import { TicketResponse } from '../types';
+import { useLanguage } from '../i18n';
 
 export default function MyTicketsPage() {
   const [tickets, setTickets] = useState<TicketResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   const loadTickets = () => {
     setLoading(true);
@@ -19,46 +21,46 @@ export default function MyTicketsPage() {
   }, []);
 
   const handleTransfer = (ticketId: number) => {
-    const email = window.prompt("Enter the email address of the person you want to transfer this ticket to:");
+    const email = window.prompt(t('myTickets.transferPrompt'));
     if (!email) return;
 
     bookingApi.transfer(ticketId, email)
       .then(() => {
-        alert("Ticket successfully transferred!");
+        alert(t('myTickets.transferSuccess'));
         loadTickets();
       })
       .catch(err => {
         const msg = err.response?.data?.message || err.message;
-        alert("Transfer failed: " + msg);
+        alert(t('myTickets.transferFailed') + msg);
       });
   };
 
   const handleSell = (ticketId: number) => {
-    const priceStr = window.prompt("Enter the price you want to sell this ticket for:");
+    const priceStr = window.prompt(t('myTickets.sellPrompt'));
     if (!priceStr) return;
     const price = parseFloat(priceStr);
     if (isNaN(price) || price <= 0) {
-      alert("Invalid price entered.");
+      alert(t('myTickets.invalidPrice'));
       return;
     }
 
     bookingApi.sell(ticketId, price)
       .then(() => {
-        alert("Ticket is now listed for resale!");
+        alert(t('myTickets.sellSuccess'));
         loadTickets();
       })
       .catch(err => {
         const msg = err.response?.data?.message || err.message;
-        alert("Resale failed: " + msg);
+        alert(t('myTickets.sellFailed') + msg);
       });
   };
 
   const statusBadge = (s: string) => {
     const map: Record<string, { cls: string; label: string }> = {
-      PAID: { cls: 'badge-success', label: '✅ Đã thanh toán' },
-      PENDING_PAYMENT: { cls: 'badge-warning', label: '⏳ Chờ thanh toán' },
-      EXPIRED: { cls: 'badge-danger', label: '⛔ Hết hạn' },
-      CANCELLED: { cls: 'badge-danger', label: '❌ Đã hủy' },
+      PAID: { cls: 'badge-success', label: t('myTickets.paid') },
+      PENDING_PAYMENT: { cls: 'badge-warning', label: t('myTickets.pendingPayment') },
+      EXPIRED: { cls: 'badge-danger', label: t('myTickets.expired') },
+      CANCELLED: { cls: 'badge-danger', label: t('myTickets.cancelled') },
     };
     return map[s] || { cls: 'badge-info', label: s };
   };
@@ -69,16 +71,16 @@ export default function MyTicketsPage() {
     <div className="page" style={{ background: '#f8f9fa' }}>
       <div className="container animate-fadeIn" style={{ maxWidth: '1000px' }}>
         <div className="page-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>My Tickets</h1>
-          <p style={{ color: '#666' }}>Powered by SafeTix™ Technology</p>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>{t('myTickets.title')}</h1>
+          <p style={{ color: '#666' }}>{t('myTickets.poweredBy')}</p>
         </div>
 
         {tickets.length === 0 ? (
           <div className="empty-state" style={{ background: 'white', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
             <p style={{ fontSize: '3rem', marginBottom: 12 }}>🎫</p>
-            <p>Looks like you don't have any upcoming events.</p>
+            <p>{t('myTickets.noEvents')}</p>
             <button className="btn" style={{ background: '#026cdf', color: 'white', marginTop: '16px' }} onClick={() => window.location.href = '/events'}>
-              Browse Events
+              {t('myTickets.browseEvents')}
             </button>
           </div>
         ) : (
@@ -106,7 +108,7 @@ export default function MyTicketsPage() {
                           <div className="safetix-scanner-line" />
                         </div>
                         <div className="safetix-warning">
-                          Screenshots won't get you in
+                          {t('myTickets.screenshotWarning')}
                         </div>
                       </>
                     ) : (
@@ -119,19 +121,19 @@ export default function MyTicketsPage() {
 
                   <div style={{ padding: '16px', background: '#f8f9fa', fontSize: '0.85rem', color: '#666', borderTop: '1px dashed #ccc', borderBottom: '1px solid #e5e7eb' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span>Loại vé:</span>
-                      <strong style={{ color: '#111' }}>Standard Ticket</strong>
+                      <span>{t('myTickets.ticketType')}</span>
+                      <strong style={{ color: '#111' }}>{t('myTickets.standardTicket')}</strong>
                     </div>
                     <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>Order #:</span>
+                      <span>{t('myTickets.orderNumber')}</span>
                       <strong style={{ color: '#111' }}>{ticket.id.toString().padStart(6, '0')}</strong>
                     </div>
                   </div>
 
                   {ticket.status === 'PAID' && (
                     <div className="safetix-footer">
-                      <button className="safetix-btn" onClick={() => handleTransfer(ticket.id)}>Transfer</button>
-                      <button className="safetix-btn" onClick={() => handleSell(ticket.id)}>Sell</button>
+                      <button className="safetix-btn" onClick={() => handleTransfer(ticket.id)}>{t('myTickets.transfer')}</button>
+                      <button className="safetix-btn" onClick={() => handleSell(ticket.id)}>{t('myTickets.sell')}</button>
                     </div>
                   )}
 

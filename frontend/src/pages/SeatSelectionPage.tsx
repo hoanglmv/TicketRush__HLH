@@ -4,6 +4,7 @@ import { Client } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
 import { eventApi, bookingApi } from '../api';
 import { SeatResponse, SeatStatusUpdate, ZoneResponse } from '../types';
+import { useLanguage } from '../i18n';
 
 export default function SeatSelectionPage() {
   const { id } = useParams<{ id: string }>();
@@ -17,6 +18,7 @@ export default function SeatSelectionPage() {
   const [success, setSuccess] = useState('');
   const clientRef = useRef<Client | null>(null);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   // ISM states
   const [scale, setScale] = useState(1);
@@ -78,7 +80,7 @@ export default function SeatSelectionPage() {
     setError('');
     try {
       const res = await bookingApi.lockSeat(selectedSeat.id);
-      setSuccess('Ghế đã được giữ! Bạn có 10 phút để thanh toán.');
+      setSuccess(t('seats.seatHeld'));
       const ticketId = res.data.data.id;
       setTimeout(() => navigate(`/checkout/${ticketId}`), 1500);
     } catch (err: any) {
@@ -133,20 +135,20 @@ export default function SeatSelectionPage() {
         {/* Top Header */}
         <div className="flex-between" style={{ marginBottom: '16px', background: 'white', padding: '16px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
           <div>
-            <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>Mô hình Chỗ ngồi & Giá</h1>
-            <p style={{ color: '#666', fontSize: '0.9rem' }}>Bạn có thể dùng chuột hoặc phím cuộn để phóng to, thu nhỏ.</p>
+            <h1 style={{ fontSize: '1.6rem', fontWeight: 800 }}>{t('seats.title')}</h1>
+            <p style={{ color: '#666', fontSize: '0.9rem' }}>{t('seats.subtitle')}</p>
           </div>
           {selectedSeat && (
             <div className="flex align-center gap-md" style={{ background: '#f8f9fa', padding: '10px 20px', borderRadius: '8px', border: '1px solid #ccc' }}>
               <div>
-                <div style={{ fontSize: '0.8rem', color: '#666' }}>Đã chọn</div>
+                <div style={{ fontSize: '0.8rem', color: '#666' }}>{t('seats.selected')}</div>
                 <div style={{ fontWeight: 800, color: '#111' }}>{selectedSeat.zoneName} - Sec {selectedSeat.label}</div>
               </div>
               <div style={{ fontWeight: 800, fontSize: '1.4rem', color: '#026cdf', minWidth: '100px', textAlign: 'right' }}>
                 {selectedSeat.price.toLocaleString('vi-VN')}₫
               </div>
               <button onClick={handleLockSeat} disabled={booking} className="btn" style={{ background: '#026cdf', color: 'white', padding: '12px 24px', fontSize: '1rem', fontWeight: 700 }}>
-                {booking ? 'Đang giữ...' : 'Mua Ngay'}
+                {booking ? t('seats.holding') : t('seats.buyNow')}
               </button>
             </div>
           )}
@@ -173,7 +175,7 @@ export default function SeatSelectionPage() {
                 transform: `translate(${position.x}px, ${position.y}px) scale(${scale})`
               }}
             >
-              <div className="ism-stage">SÂN KHẤU CHÍNH</div>
+              <div className="ism-stage">{t('seats.mainStage')}</div>
 
               {seatsByZone.map(({ zone, rows }) => (
                 <div key={zone.id} className="zone-section" style={{ position: 'relative' }}>
@@ -225,7 +227,7 @@ export default function SeatSelectionPage() {
           {/* Sidebar Legend */}
           <div>
             <div style={{ background: 'white', padding: '20px', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '16px' }}>Filter by Price</h3>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, marginBottom: '16px' }}>{t('seats.filterByPrice')}</h3>
               <div className="flex flex-col gap-sm">
                 {zones.sort((a, b) => b.price - a.price).map(z => (
                   <div key={z.id} className="flex-between" style={{ padding: '8px', borderBottom: '1px solid #f0f0f0' }}>
@@ -238,19 +240,19 @@ export default function SeatSelectionPage() {
                 ))}
               </div>
 
-              <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: '24px 0 16px' }}>Status Colors</h3>
+              <h3 style={{ fontSize: '1rem', fontWeight: 800, margin: '24px 0 16px' }}>{t('seats.statusColors')}</h3>
               <div className="flex flex-col gap-sm">
                 <div className="seat-legend-item">
                   <div className="seat-legend-dot" style={{ background: '#22c55e' }} />
-                  <span>Selected</span>
+                  <span>{t('seats.selectedStatus')}</span>
                 </div>
                 <div className="seat-legend-item">
                   <div className="seat-legend-dot" style={{ background: '#999' }} />
-                  <span>Locked/Holding</span>
+                  <span>{t('seats.lockedStatus')}</span>
                 </div>
                 <div className="seat-legend-item">
                   <div className="seat-legend-dot" style={{ background: '#ddd' }} />
-                  <span>Sold Out</span>
+                  <span>{t('seats.soldOut')}</span>
                 </div>
               </div>
             </div>
@@ -264,11 +266,11 @@ export default function SeatSelectionPage() {
       {hoverSeat && (
         <div className="ism-tooltip" style={{ left: hoverSeat.x + 15, top: hoverSeat.y - 15 }}>
           <div className="flex-between align-center" style={{ marginBottom: '8px' }}>
-            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666', textTransform: 'uppercase' }}>Standard Ticket</span>
+            <span style={{ fontSize: '0.7rem', fontWeight: 800, color: '#666', textTransform: 'uppercase' }}>{t('seats.standardTicket')}</span>
           </div>
           <div className="ism-tooltip-title">Sec {hoverSeat.seat.zoneName}, Row {hoverSeat.seat.label.replace(/[0-9]/g, '')}, Seat {hoverSeat.seat.colNumber}</div>
           <div className="ism-tooltip-price">{hoverSeat.seat.price.toLocaleString('vi-VN')}₫</div>
-          <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>+ Fees & Taxes</div>
+          <div style={{ fontSize: '0.75rem', color: '#666', marginTop: '4px' }}>{t('seats.feesTaxes')}</div>
         </div>
       )}
     </div>

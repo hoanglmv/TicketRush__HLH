@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { adminApi, eventApi } from '../../api';
 import { EventResponse, EventStats, Demographics } from '../../types';
 import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useLanguage } from '../../i18n';
 
 const COLORS = ['#6366f1', '#ec4899', '#22c55e', '#f59e0b', '#3b82f6'];
 
@@ -12,6 +13,7 @@ export default function AdminEventDetailPage() {
   const [stats, setStats] = useState<EventStats | null>(null);
   const [demographics, setDemographics] = useState<Demographics | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!id) return;
@@ -28,7 +30,7 @@ export default function AdminEventDetailPage() {
   }, [id]);
 
   if (loading) return <div className="page"><div className="container"><div className="loading-container"><div className="spinner" /></div></div></div>;
-  if (!event) return <div className="page"><div className="container"><div className="empty-state">Event not found</div></div></div>;
+  if (!event) return <div className="page"><div className="container"><div className="empty-state">{t('eventDetail.eventNotFound')}</div></div></div>;
 
   const genderData = demographics?.gender ? Object.entries(demographics.gender).map(([name, value]) => ({ name, value })) : [];
   const ageData = demographics?.ageGroups ? Object.entries(demographics.ageGroups).map(([name, value]) => ({ name, value })) : [];
@@ -39,37 +41,37 @@ export default function AdminEventDetailPage() {
         <div className="page-header flex-between">
           <div>
             <h1>{event.name}</h1>
-            <p>Thống kê chi tiết sự kiện</p>
+            <p>{t('admin.eventStats')}</p>
           </div>
-          <Link to="/admin/events" className="btn btn-secondary">← Quay lại</Link>
+          <Link to="/admin/events" className="btn btn-secondary">{t('admin.goBack')}</Link>
         </div>
 
         {/* Stat Cards */}
         <div className="grid-4" style={{ marginBottom: 30 }}>
           <div className="stat-card">
             <div className="stat-value">{stats?.totalSeats || 0}</div>
-            <div className="stat-label">Tổng ghế</div>
+            <div className="stat-label">{t('admin.totalSeats')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value" style={{ color: 'var(--success)' }}>{stats?.soldSeats || 0}</div>
-            <div className="stat-label">Đã bán</div>
+            <div className="stat-label">{t('admin.soldSeats')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value" style={{ color: 'var(--warning)' }}>{stats?.lockedSeats || 0}</div>
-            <div className="stat-label">Đang giữ</div>
+            <div className="stat-label">{t('admin.holding')}</div>
           </div>
           <div className="stat-card">
             <div className="stat-value">
               {((stats?.revenue || 0) as number).toLocaleString('vi-VN')}₫
             </div>
-            <div className="stat-label">Doanh thu</div>
+            <div className="stat-label">{t('admin.revenue')}</div>
           </div>
         </div>
 
         {/* Occupancy */}
         {stats && (
           <div className="glass-card" style={{ marginBottom: 24 }}>
-            <h3 style={{ fontWeight: 700, marginBottom: 12 }}>Tỉ lệ lấp đầy</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: 12 }}>{t('admin.occupancyRate')}</h3>
             <div style={{ height: 8, background: 'var(--bg-input)', borderRadius: 4, overflow: 'hidden' }}>
               <div style={{
                 height: '100%', borderRadius: 4,
@@ -79,7 +81,7 @@ export default function AdminEventDetailPage() {
               }} />
             </div>
             <p style={{ marginTop: 8, color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-              {stats.occupancyRate?.toFixed(1)}% đã bán ({stats.soldSeats}/{stats.totalSeats} ghế)
+              {stats.occupancyRate?.toFixed(1)}% {t('admin.soldOf')} ({stats.soldSeats}/{stats.totalSeats} {t('admin.seats')})
             </p>
           </div>
         )}
@@ -87,7 +89,7 @@ export default function AdminEventDetailPage() {
         {/* Zone Breakdown */}
         {event.zones && event.zones.length > 0 && (
           <div className="glass-card" style={{ marginBottom: 24 }}>
-            <h3 style={{ fontWeight: 700, marginBottom: 12 }}>Theo khu vực</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: 12 }}>{t('admin.byZone')}</h3>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
               {event.zones.map(zone => {
                 const sold = zone.totalSeats - zone.availableSeats;
@@ -112,7 +114,7 @@ export default function AdminEventDetailPage() {
         {/* Demographics */}
         <div className="grid-2" style={{ marginBottom: 24 }}>
           <div className="glass-card">
-            <h3 style={{ fontWeight: 700, marginBottom: 16 }}>Giới tính khán giả</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: 16 }}>{t('admin.genderDemographics')}</h3>
             {genderData.length > 0 ? (
               <ResponsiveContainer width="100%" height={250}>
                 <PieChart>
@@ -126,11 +128,11 @@ export default function AdminEventDetailPage() {
                   <Legend />
                 </PieChart>
               </ResponsiveContainer>
-            ) : <div className="empty-state" style={{ padding: 30 }}><p>Chưa có dữ liệu</p></div>}
+            ) : <div className="empty-state" style={{ padding: 30 }}><p>{t('admin.noData')}</p></div>}
           </div>
 
           <div className="glass-card">
-            <h3 style={{ fontWeight: 700, marginBottom: 16 }}>Độ tuổi khán giả</h3>
+            <h3 style={{ fontWeight: 700, marginBottom: 16 }}>{t('admin.ageDemographics')}</h3>
             {ageData.some(d => d.value > 0) ? (
               <ResponsiveContainer width="100%" height={250}>
                 <BarChart data={ageData}>
@@ -141,7 +143,7 @@ export default function AdminEventDetailPage() {
                   <Bar dataKey="value" fill="var(--accent-primary)" radius={[4, 4, 0, 0]} />
                 </BarChart>
               </ResponsiveContainer>
-            ) : <div className="empty-state" style={{ padding: 30 }}><p>Chưa có dữ liệu</p></div>}
+            ) : <div className="empty-state" style={{ padding: 30 }}><p>{t('admin.noData')}</p></div>}
           </div>
         </div>
       </div>

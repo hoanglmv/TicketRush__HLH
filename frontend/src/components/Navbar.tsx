@@ -1,15 +1,18 @@
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { useSettings } from '../contexts/SettingsContext';
+import { useLanguage } from '../i18n';
 
 export default function Navbar() {
   const { user, logout, isAdmin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { settings } = useSettings();
+  const { t, toggleLocale } = useLanguage();
 
   const navCategories = [
     {
-      title: 'Concerts',
+      title: t('nav.concerts'),
+      titleKey: 'Concerts',
       popular: [
         { label: 'ROCK', bg: settings['nav_rock'] || 'https://picsum.photos/seed/rock1/400/300' },
         { label: 'HIP-HOP/RAP', bg: settings['nav_hiphop'] || 'https://picsum.photos/seed/hiphop2/400/300' },
@@ -19,7 +22,8 @@ export default function Navbar() {
       links: ['Alternative', 'Dance/Electronic', 'Medieval', 'Reggae', 'Ballads', 'Folk', 'Metal', 'Religious', 'Blues', 'Pop', 'Rock', 'World']
     },
     {
-      title: 'Sports',
+      title: t('nav.sports'),
+      titleKey: 'Sports',
       popular: [
         { label: 'BASKETBALL', bg: settings['nav_basketball'] || 'https://picsum.photos/seed/nba1/400/300' },
         { label: 'SOCCER', bg: settings['nav_soccer'] || 'https://picsum.photos/seed/soccer2/400/300' },
@@ -29,7 +33,8 @@ export default function Navbar() {
       links: ['Basketball', 'Soccer', 'Football', 'Baseball', 'Tennis', 'Golf', 'Motorsports', 'Boxing', 'MMA', 'Wrestling', 'Hockey']
     },
     {
-      title: 'Arts, Theater & Comedy',
+      title: t('nav.arts'),
+      titleKey: 'Arts, Theater & Comedy',
       popular: [
         { label: 'COMEDY', bg: settings['nav_comedy'] || 'https://picsum.photos/seed/comedy1/400/300' },
         { label: 'BROADWAY', bg: settings['nav_broadway'] || 'https://picsum.photos/seed/broadway2/400/300' },
@@ -39,7 +44,8 @@ export default function Navbar() {
       links: ['Comedy', 'Broadway', 'Opera', 'Magic', 'Musicals', 'Ballet', 'Classical', 'Plays', 'Symphony', 'Family Shows']
     },
     {
-      title: 'Family',
+      title: t('nav.family'),
+      titleKey: 'Family',
       popular: [
         { label: 'DISNEY', bg: settings['nav_disney'] || 'https://picsum.photos/seed/disney1/400/300' },
         { label: 'CIRCUS', bg: settings['nav_circus'] || 'https://picsum.photos/seed/circus2/400/300' },
@@ -49,7 +55,8 @@ export default function Navbar() {
       links: ['Disney', 'Circus', 'Magic Shows', 'Ice Shows', 'Museums', 'Zoos', 'Fairs', 'Festivals', 'Puppet Shows']
     },
     {
-      title: 'Cities',
+      title: t('nav.cities'),
+      titleKey: 'Cities',
       popular: [
         { label: 'NEW YORK', bg: settings['nav_newyork'] || 'https://picsum.photos/seed/ny1/400/300' },
         { label: 'LOS ANGELES', bg: settings['nav_la'] || 'https://picsum.photos/seed/la2/400/300' },
@@ -71,11 +78,11 @@ export default function Navbar() {
           <Link to="/" className="navbar-brand">ticketrush</Link>
           <ul className="navbar-nav" style={{ height: '72px' }}>
             {navCategories.map(cat => (
-              <li key={cat.title} className="nav-item-dropdown">
-                <Link to={`/events?category=${encodeURIComponent(cat.title)}`}>{cat.title}</Link>
+              <li key={cat.titleKey} className="nav-item-dropdown">
+                <Link to={`/events?category=${encodeURIComponent(cat.titleKey)}`}>{cat.title}</Link>
                 <div className="mega-menu">
                   <div className="mega-section-title flex-between">
-                    POPULAR <span style={{ fontSize: '0.9rem', color: '#026cdf', cursor: 'pointer', fontWeight: 600 }}>See All {cat.title} &gt;</span>
+                    {t('nav.popular')} <span style={{ fontSize: '0.9rem', color: '#026cdf', cursor: 'pointer', fontWeight: 600 }}>{t('nav.seeAll')} {cat.title} &gt;</span>
                   </div>
                   <div className="mega-popular">
                     {cat.popular.map(pop => (
@@ -89,12 +96,12 @@ export default function Navbar() {
                       </div>
                     ))}
                   </div>
-                  <div className="mega-section-title" style={{ marginTop: '20px' }}>DISCOVER MORE</div>
+                  <div className="mega-section-title" style={{ marginTop: '20px' }}>{t('nav.discoverMore')}</div>
                   <div className="mega-links">
                     {cat.links.map(link => (
                       <a key={link} href="#">{link}</a>
                     ))}
-                    <a href="#" style={{ color: '#026cdf !important', fontWeight: 600 }}>All {cat.title} →</a>
+                    <a href="#" style={{ color: '#026cdf !important', fontWeight: 600 }}>{t('nav.seeAll')} {cat.title} →</a>
                   </div>
                 </div>
               </li>
@@ -104,10 +111,10 @@ export default function Navbar() {
         <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', background: 'rgba(255,255,255,0.15)', borderRadius: '4px', padding: '6px 12px', width: '250px' }}>
              <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
-               <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.8)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>Search</span>
+               <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.8)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('nav.search')}</span>
                <input 
                  type="text" 
-                 placeholder="Artist, Event or Venue" 
+                 placeholder={t('nav.searchPlaceholder')} 
                  style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '0.9rem', outline: 'none', width: '100%', padding: '2px 0' }}
                  onKeyDown={(e) => {
                    if (e.key === 'Enter') {
@@ -118,6 +125,28 @@ export default function Navbar() {
              </div>
              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" style={{ cursor: 'pointer' }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </div>
+
+          {/* Language Switcher */}
+          <button
+            onClick={toggleLocale}
+            style={{
+              background: 'rgba(255,255,255,0.15)',
+              border: '1px solid rgba(255,255,255,0.3)',
+              color: 'white',
+              padding: '6px 12px',
+              borderRadius: '4px',
+              cursor: 'pointer',
+              fontSize: '0.8rem',
+              fontWeight: 600,
+              whiteSpace: 'nowrap',
+              transition: 'all 0.2s ease',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.3)')}
+            onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}
+          >
+            {t('lang.switch')}
+          </button>
+
           <div className="navbar-user">
           {isAuthenticated ? (
              <div className="nav-item-dropdown">
@@ -130,16 +159,16 @@ export default function Navbar() {
                 </span>
               </div>
               <div className="mega-menu" style={{ width: '250px', left: 'auto', right: '0', padding: '16px' }}>
-                {!isAdmin && <Link to="/tickets" style={{ display: 'block', padding: '10px 0', borderBottom: '1px solid #333' }}>My Tickets</Link>}
-                {isAdmin && <Link to="/admin" style={{ display: 'block', padding: '10px 0', borderBottom: '1px solid #333' }}>Admin Dashboard</Link>}
-                <button className="btn btn-secondary btn-sm" onClick={logout} style={{ width: '100%', marginTop: '16px' }}>Sign Out</button>
+                {!isAdmin && <Link to="/tickets" style={{ display: 'block', padding: '10px 0', borderBottom: '1px solid #333' }}>{t('nav.myTickets')}</Link>}
+                {isAdmin && <Link to="/admin" style={{ display: 'block', padding: '10px 0', borderBottom: '1px solid #333' }}>{t('nav.adminDashboard')}</Link>}
+                <button className="btn btn-secondary btn-sm" onClick={logout} style={{ width: '100%', marginTop: '16px' }}>{t('nav.signOut')}</button>
               </div>
             </div>
           ) : (
             <>
               <Link to="/login" style={{ color: 'white', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                Sign In/Register
+                {t('nav.signInRegister')}
               </Link>
             </>
           )}

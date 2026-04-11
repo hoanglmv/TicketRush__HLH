@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { eventApi } from '../api';
 import { EventResponse } from '../types';
 import { useSettings } from '../contexts/SettingsContext';
+import { useLanguage } from '../i18n';
 
 export default function EventListPage() {
   const [searchParams] = useSearchParams();
@@ -11,6 +12,7 @@ export default function EventListPage() {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [dateFilter, setDateFilter] = useState('All Dates');
+  const { t } = useLanguage();
 
   const { settings } = useSettings();
   const heroCategory = categoryParam.toUpperCase() || 'EVENTS';
@@ -80,7 +82,7 @@ export default function EventListPage() {
       
       <div className="tm-hero-banner" style={{ backgroundImage: `url(${heroBackground})` }}>
         <div className="tm-hero-content">
-          <div className="tm-hero-breadcrumb">Home / {categoryParam || 'All'} / {heroCategory} Tickets</div>
+          <div className="tm-hero-breadcrumb">{t('eventList.home')} / {categoryParam || t('eventList.all')} / {heroCategory} {t('eventList.tickets')}</div>
           <h1 className="tm-hero-title">{heroCategory}</h1>
         </div>
       </div>
@@ -92,7 +94,7 @@ export default function EventListPage() {
           value={categoryParam || "AllCategories"}
           onChange={(e) => window.location.href = `/events?category=${e.target.value === 'AllCategories' ? '' : e.target.value}`}
         >
-          <option value="AllCategories">All Categories</option>
+          <option value="AllCategories">{t('eventList.allCategories')}</option>
           <option value="ROCK">Rock</option>
           <option value="HIP-HOP/RAP">Hip-Hop / Rap</option>
           <option value="COUNTRY">Country</option>
@@ -107,10 +109,10 @@ export default function EventListPage() {
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
         >
-          <option value="All Dates">All Dates</option>
-          <option value="This Weekend">This Weekend</option>
-          <option value="Next 7 Days">Next 7 Days</option>
-          <option value="Next 30 Days">Next 30 Days</option>
+          <option value="All Dates">{t('eventList.allCategories') === 'All Categories' ? 'All Dates' : t('search.allDates')}</option>
+          <option value="This Weekend">{t('eventList.thisWeekend')}</option>
+          <option value="Next 7 Days">{t('eventList.next7Days')}</option>
+          <option value="Next 30 Days">{t('eventList.next30Days')}</option>
         </select>
         
         <button 
@@ -124,7 +126,7 @@ export default function EventListPage() {
           }}
           onClick={() => setDateFilter('This Weekend')}
         >
-          This Weekend
+          {t('eventList.thisWeekend')}
         </button>
 
         <div style={{ flex: 1 }}></div>
@@ -133,7 +135,7 @@ export default function EventListPage() {
           <input 
             type="text" 
             className="form-input" 
-            placeholder="Search by event name..." 
+            placeholder={t('eventList.searchPlaceholder')} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ width: '100%', paddingLeft: '36px', borderRadius: '20px' }}
@@ -144,8 +146,8 @@ export default function EventListPage() {
 
       <div className="tm-event-list-container animate-slideIn">
         <h2 style={{ fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', borderBottom: '2px solid #111', display: 'inline-block', paddingBottom: '4px', marginBottom: '24px', letterSpacing: '0.5px' }}>
-          {heroCategory} EVENTS <span style={{ fontWeight: 400, color: '#666', borderLeft: '1px solid #ccc', paddingLeft: '8px', marginLeft: '8px' }}>
-            {events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).length} RESULTS
+          {heroCategory} {t('eventList.events')} <span style={{ fontWeight: 400, color: '#666', borderLeft: '1px solid #ccc', paddingLeft: '8px', marginLeft: '8px' }}>
+            {events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).length} {t('eventList.results')}
           </span>
         </h2>
 
@@ -153,7 +155,7 @@ export default function EventListPage() {
           <div className="loading-container"><div className="spinner" /></div>
         ) : events.length === 0 ? (
           <div style={{ background: 'white', padding: '40px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
-            <p style={{ fontSize: '1.2rem', color: '#666' }}>No events found for {heroCategory}. Try adjusting your filters.</p>
+            <p style={{ fontSize: '1.2rem', color: '#666' }}>{t('eventList.noEvents')} {heroCategory}. {t('eventList.tryAdjusting')}</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -169,12 +171,12 @@ export default function EventListPage() {
                   
                   <div className="tm-event-details">
                     <h3 className="tm-event-title">{event.name}</h3>
-                    <div className="tm-event-venue">{event.venue || 'TBA Venue'} • {event.status === 'ON_SALE' ? 'Tickets Available' : 'Registration'}</div>
+                    <div className="tm-event-venue">{event.venue || t('eventList.tbaVenue')} • {event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration')}</div>
                   </div>
                   
                   <div className="tm-event-action">
                     <Link to={`/events/${event.id}`} className="tm-event-btn">
-                      Find Tickets
+                      {t('eventList.findTickets')}
                     </Link>
                   </div>
                 </div>
