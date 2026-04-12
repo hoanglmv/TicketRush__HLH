@@ -18,6 +18,9 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminEventListPage from './pages/admin/AdminEventListPage';
 import AdminEventCreatePage from './pages/admin/AdminEventCreatePage';
 import AdminEventDetailPage from './pages/admin/AdminEventDetailPage';
+import ProfilePage from './pages/ProfilePage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import './index.css';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -38,12 +41,15 @@ function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
+      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/reset-password" element={<ResetPasswordPage />} />
       <Route path="/events" element={<EventListPage />} />
       <Route path="/events/:id" element={<EventDetailPage />} />
       <Route path="/events/:id/seats" element={<ProtectedRoute><SeatSelectionPage /></ProtectedRoute>} />
       <Route path="/events/:eventId/queue" element={<ProtectedRoute><WaitingRoomPage /></ProtectedRoute>} />
       <Route path="/checkout/:ticketId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
       <Route path="/tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
+      <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
       <Route path="/admin/events" element={<AdminRoute><AdminEventListPage /></AdminRoute>} />
       <Route path="/admin/events/create" element={<AdminRoute><AdminEventCreatePage /></AdminRoute>} />

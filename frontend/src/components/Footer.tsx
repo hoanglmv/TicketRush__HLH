@@ -22,11 +22,11 @@ export default function Footer() {
           
           <div className="tm-footer-title">{t('footer.letsConnect')}</div>
           <div className="tm-footer-socials" style={{ display: 'flex', gap: '20px', marginBottom: '32px', alignItems: 'center' }}>
-            <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><FbIcon /></a>
-            <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><XIcon /></a>
-            <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{fontSize: '0.85rem', fontWeight: 'bold'}}>BLOG</span></a>
-            <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><YtIcon /></a>
-            <a href="#" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><IgIcon /></a>
+            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><FbIcon /></a>
+            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><XIcon /></a>
+            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{fontSize: '0.85rem', fontWeight: 'bold'}}>BLOG</span></a>
+            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><YtIcon /></a>
+            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><IgIcon /></a>
           </div>
           
           <div className="tm-footer-title">{t('footer.downloadApps')}</div>
@@ -49,7 +49,7 @@ export default function Footer() {
 
           <div style={{ fontSize: '0.9rem', color: '#ccc', lineHeight: '1.4' }}>
             {t('footer.termsAgree')}<br/>
-            {' '}<a href="#" style={{ color: 'white', textDecoration: 'underline' }}>{t('footer.termsOfUse')}</a>
+            {' '}<a href="/" style={{ color: 'white', textDecoration: 'underline' }}>{t('footer.termsOfUse')}</a>
           </div>
         </div>
 
@@ -57,23 +57,23 @@ export default function Footer() {
         <div className="tm-footer-col" style={{ flex: 1 }}>
           <div className="tm-footer-title">{t('footer.helpfulLinks')}</div>
           <ul className="tm-footer-list">
-            <li><a href="#">{t('footer.helpFaq')}</a></li>
-            <li><a href="#">{t('footer.sell')}</a></li>
-            <li><a href="#">{t('footer.myAccount')}</a></li>
-            <li><a href="#">{t('footer.contactUs')}</a></li>
-            <li><a href="#">{t('footer.giftCards')}</a></li>
-            <li><a href="#">{t('footer.doNotSell')}</a></li>
-            <li><a href="#">{t('footer.getStarted')}</a></li>
+            <li><a href="/">{t('footer.helpFaq')}</a></li>
+            <li><a href="/">{t('footer.sell')}</a></li>
+            <li><a href="/">{t('footer.myAccount')}</a></li>
+            <li><a href="/">{t('footer.contactUs')}</a></li>
+            <li><a href="/">{t('footer.giftCards')}</a></li>
+            <li><a href="/">{t('footer.doNotSell')}</a></li>
+            <li><a href="/">{t('footer.getStarted')}</a></li>
           </ul>
 
           <div className="tm-footer-title" style={{ marginTop: '40px' }}>{t('footer.aboutUs')}</div>
           <ul className="tm-footer-list">
-            <li><a href="#">{t('footer.blog')}</a></li>
-            <li><a href="#">{t('footer.ticketingTruths')}</a></li>
-            <li><a href="#">{t('footer.adChoices')}</a></li>
-            <li><a href="#">{t('footer.careers')}</a></li>
-            <li><a href="#">{t('footer.ticketYourEvent')}</a></li>
-            <li><a href="#">{t('footer.innovation')}</a></li>
+            <li><a href="/">{t('footer.blog')}</a></li>
+            <li><a href="/">{t('footer.ticketingTruths')}</a></li>
+            <li><a href="/">{t('footer.adChoices')}</a></li>
+            <li><a href="/">{t('footer.careers')}</a></li>
+            <li><a href="/">{t('footer.ticketYourEvent')}</a></li>
+            <li><a href="/">{t('footer.innovation')}</a></li>
           </ul>
         </div>
 
@@ -81,29 +81,29 @@ export default function Footer() {
         <div className="tm-footer-col" style={{ flex: 1 }}>
           <div className="tm-footer-title">{t('footer.ourNetwork')}</div>
           <ul className="tm-footer-list">
-            <li><a href="#">Live Nation</a></li>
-            <li><a href="#">House of Blues</a></li>
-            <li><a href="#">Front Gate Tickets</a></li>
-            <li><a href="#">TicketWeb</a></li>
-            <li><a href="#">universe</a></li>
-            <li><a href="#">NFL</a></li>
-            <li><a href="#">NBA</a></li>
-            <li><a href="#">NHL</a></li>
+            <li><a href="/">Live Nation</a></li>
+            <li><a href="/">House of Blues</a></li>
+            <li><a href="/">Front Gate Tickets</a></li>
+            <li><a href="/">TicketWeb</a></li>
+            <li><a href="/">universe</a></li>
+            <li><a href="/">NFL</a></li>
+            <li><a href="/">NBA</a></li>
+            <li><a href="/">NHL</a></li>
           </ul>
 
           <div className="tm-footer-title" style={{ marginTop: '40px' }}>{t('footer.friendsPartners')}</div>
           <ul className="tm-footer-list">
-            <li><a href="#">PayPal</a></li>
-            <li><a href="#">Allianz</a></li>
-            <li><a href="#">AWS</a></li>
-            <li><a href="#">Affiliates</a></li>
+            <li><a href="/">PayPal</a></li>
+            <li><a href="/">Allianz</a></li>
+            <li><a href="/">AWS</a></li>
+            <li><a href="/">Affiliates</a></li>
           </ul>
         </div>
       </div>
 
       <div className="tm-footer-bottom">
         <div className="tm-footer-bottom-links">
-          <a href="#">{t('footer.ourPolicies')}</a> | <a href="#">{t('footer.privacyPolicy')}</a> | <a href="#">{t('footer.cookiePolicy')}</a> | <a href="#">{t('footer.manageCookies')}</a>
+          <a href="/">{t('footer.ourPolicies')}</a> | <a href="/">{t('footer.privacyPolicy')}</a> | <a href="/">{t('footer.cookiePolicy')}</a> | <a href="/">{t('footer.manageCookies')}</a>
         </div>
         <div className="tm-footer-copyright">
           {t('footer.copyright')}

@@ -7,7 +7,21 @@ export const authApi = {
     api.post<ApiResponse<AuthResponse>>('/auth/register', data),
   login: (data: { username: string; password: string }) =>
     api.post<ApiResponse<AuthResponse>>('/auth/login', data),
+  verifyOtp: (data: { email: string; otp: string }) =>
+    api.post<ApiResponse<AuthResponse>>('/auth/verify-otp', data),
   me: () => api.get<ApiResponse<AuthResponse>>('/auth/me'),
+  forgotPassword: (data: { email: string }) => 
+    api.post<ApiResponse<void>>('/auth/forgot-password', data),
+  resetPassword: (data: { email: string; otp: string; newPassword: string }) => 
+    api.post<ApiResponse<void>>('/auth/reset-password', data),
+  changePassword: (data: { oldPassword: string; newPassword: string }) => 
+    api.post<ApiResponse<void>>('/auth/change-password', data),
+};
+
+// ========== USERS ==========
+export const userApi = {
+  getProfile: () => api.get<ApiResponse<any>>('/users/me'),
+  updateProfile: (data: any) => api.put<ApiResponse<any>>('/users/me', data),
 };
 
 // ========== EVENTS (Public) ==========

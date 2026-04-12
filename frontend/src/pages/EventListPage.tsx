@@ -161,8 +161,9 @@ export default function EventListPage() {
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).map(event => {
               const dt = extractDateInfo(event.eventDate);
+              const isPast = event.eventDate && new Date(event.eventDate).getTime() < Date.now();
               return (
-                <div key={event.id} className="tm-event-row">
+                <div key={event.id} className="tm-event-row" style={{ opacity: isPast ? 0.6 : 1, filter: isPast ? 'grayscale(100%)' : 'none', background: isPast ? '#f0f0f0' : 'white' }}>
                   <div className="tm-event-date">
                     <div className="tm-event-date-month">{dt.month}</div>
                     <div className="tm-event-date-day">{dt.day}</div>
@@ -171,13 +172,19 @@ export default function EventListPage() {
                   
                   <div className="tm-event-details">
                     <h3 className="tm-event-title">{event.name}</h3>
-                    <div className="tm-event-venue">{event.venue || t('eventList.tbaVenue')} • {event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration')}</div>
+                    <div className="tm-event-venue">{event.venue || t('eventList.tbaVenue')} • {isPast ? (t('eventList.ended') || 'Ended') : (event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration'))}</div>
                   </div>
                   
                   <div className="tm-event-action">
-                    <Link to={`/events/${event.id}`} className="tm-event-btn">
-                      {t('eventList.findTickets')}
-                    </Link>
+                    {isPast ? (
+                      <button className="tm-event-btn" disabled style={{ background: '#999', cursor: 'not-allowed' }}>
+                        {t('eventList.ended') || 'Ended'}
+                      </button>
+                    ) : (
+                      <Link to={`/events/${event.id}`} className="tm-event-btn">
+                        {t('eventList.findTickets')}
+                      </Link>
+                    )}
                   </div>
                 </div>
               );

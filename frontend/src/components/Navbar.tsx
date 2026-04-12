@@ -7,7 +7,7 @@ export default function Navbar() {
   const { user, logout, isAdmin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { settings } = useSettings();
-  const { t, toggleLocale } = useLanguage();
+  const { t, locale, toggleLocale } = useLanguage();
 
   const navCategories = [
     {
@@ -99,9 +99,9 @@ export default function Navbar() {
                   <div className="mega-section-title" style={{ marginTop: '20px' }}>{t('nav.discoverMore')}</div>
                   <div className="mega-links">
                     {cat.links.map(link => (
-                      <a key={link} href="#">{link}</a>
+                      <Link key={link} to={`/events?category=${cat.title.toUpperCase()}`}>{link}</Link>
                     ))}
-                    <a href="#" style={{ color: '#026cdf !important', fontWeight: 600 }}>{t('nav.seeAll')} {cat.title} →</a>
+                    <Link to={`/events?category=${cat.title.toUpperCase()}`} style={{ color: '#026cdf !important', fontWeight: 600 }}>{t('nav.seeAll')} {cat.title} →</Link>
                   </div>
                 </div>
               </li>
@@ -114,6 +114,7 @@ export default function Navbar() {
                <span style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.8)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('nav.search')}</span>
                <input 
                  type="text" 
+                 className="nav-search-input"
                  placeholder={t('nav.searchPlaceholder')} 
                  style={{ background: 'transparent', border: 'none', color: 'white', fontSize: '0.9rem', outline: 'none', width: '100%', padding: '2px 0' }}
                  onKeyDown={(e) => {
@@ -126,7 +127,6 @@ export default function Navbar() {
              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" style={{ cursor: 'pointer' }}><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
           </div>
 
-          {/* Language Switcher */}
           <button
             onClick={toggleLocale}
             style={{
@@ -137,14 +137,14 @@ export default function Navbar() {
               borderRadius: '4px',
               cursor: 'pointer',
               fontSize: '0.8rem',
-              fontWeight: 600,
+              fontWeight: 800,
               whiteSpace: 'nowrap',
               transition: 'all 0.2s ease',
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.3)')}
             onMouseLeave={(e) => (e.currentTarget.style.background = 'rgba(255,255,255,0.15)')}
           >
-            {t('lang.switch')}
+            {locale === 'en' ? 'VN' : 'EN'}
           </button>
 
           <div className="navbar-user">
@@ -159,6 +159,7 @@ export default function Navbar() {
                 </span>
               </div>
               <div className="mega-menu" style={{ width: '250px', left: 'auto', right: '0', padding: '16px' }}>
+                <Link to="/profile" style={{ display: 'block', padding: '10px 0', borderBottom: '1px solid #333' }}>{t('nav.myProfile') || 'My Profile'}</Link>
                 {!isAdmin && <Link to="/tickets" style={{ display: 'block', padding: '10px 0', borderBottom: '1px solid #333' }}>{t('nav.myTickets')}</Link>}
                 {isAdmin && <Link to="/admin" style={{ display: 'block', padding: '10px 0', borderBottom: '1px solid #333' }}>{t('nav.adminDashboard')}</Link>}
                 <button className="btn btn-secondary btn-sm" onClick={logout} style={{ width: '100%', marginTop: '16px' }}>{t('nav.signOut')}</button>

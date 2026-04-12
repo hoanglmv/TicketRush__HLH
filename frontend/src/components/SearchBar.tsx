@@ -75,7 +75,9 @@ export default function SearchBar() {
         <div className="flex align-center gap-sm">
           <Calendar size={16} color="#026cdf" />
           <input 
-            type="text" 
+            type={dates ? "date" : "text"}
+            onFocus={(e) => e.target.type = 'date'}
+            onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
             className="tm-search-input" 
             placeholder={t('search.allDates')} 
             value={dates}

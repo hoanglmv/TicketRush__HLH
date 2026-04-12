@@ -1117,6 +1117,9 @@ a:hover { color: #818cf8; }
 .tm-search-input::placeholder {
   color: #999;
 }
+.nav-search-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
 .tm-search-btn {
   background: #026cdf;
   color: white;

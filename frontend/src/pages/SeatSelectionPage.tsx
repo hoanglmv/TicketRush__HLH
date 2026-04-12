@@ -39,7 +39,7 @@ export default function SeatSelectionPage() {
       
       // Compute initial centering based on window width
       if (typeof window !== 'undefined') {
-        setPosition({ x: (window.innerWidth - 800) / 2, y: 50 });
+        setPosition({ x: 0, y: 50 });
       }
     }).catch(() => setError('Failed to load seats'))
       .finally(() => setLoading(false));
@@ -94,7 +94,7 @@ export default function SeatSelectionPage() {
   // Drag and Zoom handlers
   const handleZoomIn = () => setScale(s => Math.min(s + 0.2, 3));
   const handleZoomOut = () => setScale(s => Math.max(s - 0.2, 0.4));
-  const handleResetZoom = () => { setScale(1); setPosition({ x: (window.innerWidth - 800)/2, y: 50 }); };
+  const handleResetZoom = () => { setScale(1); setPosition({ x: 0, y: 50 }); };
   
   const handleWheel = (e: React.WheelEvent) => {
     e.preventDefault();

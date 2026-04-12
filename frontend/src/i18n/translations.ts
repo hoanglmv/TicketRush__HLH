@@ -17,7 +17,24 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.adminDashboard': 'Admin Dashboard',
     'nav.signOut': 'Sign Out',
     'nav.signInRegister': 'Sign In/Register',
-
+    'nav.myProfile': 'My Profile',
+    
+    // Profile & Auth
+    'profile.personalInfo': 'Personal Information',
+    'profile.myTickets': 'My Tickets',
+    'profile.changePassword': 'Change Password',
+    'login.forgotPassword': 'Forgot Password?',
+    'login.forgotPasswordDesc': 'Enter your email address and we will send you an OTP to reset your password.',
+    'login.email': 'Email Address',
+    'login.sendingOtp': 'Sending OTP...',
+    'login.sendOtp': 'Send OTP',
+    'login.backToLogin': 'Back to Login',
+    'login.resetPassword': 'Reset Password',
+    'login.enterOtpDesc': 'Please enter the OTP sent to your email.',
+    'login.otp': '6-digit OTP',
+    'login.newPassword': 'New Password',
+    'login.updating': 'Updating...',
+    'login.resetPasswordBtn': 'Reset Password',
     // SearchBar
     'search.location': 'Location',
     'search.locationPlaceholder': 'City or Zip Code',
@@ -327,6 +344,24 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.adminDashboard': 'Bảng điều khiển',
     'nav.signOut': 'Đăng xuất',
     'nav.signInRegister': 'Đăng nhập/Đăng ký',
+    'nav.myProfile': 'Hồ sơ của tôi',
+    
+    // Profile & Auth
+    'profile.personalInfo': 'Thông tin cá nhân',
+    'profile.myTickets': 'Vé của tôi',
+    'profile.changePassword': 'Đổi mật khẩu',
+    'login.forgotPassword': 'Quên mật khẩu?',
+    'login.forgotPasswordDesc': 'Nhập địa chỉ email của bạn, chúng tôi sẽ gửi mã OTP để khôi phục mật khẩu.',
+    'login.email': 'Địa chỉ Email',
+    'login.sendingOtp': 'Đang gửi...',
+    'login.sendOtp': 'Gửi mã OTP',
+    'login.backToLogin': 'Quay lại Đăng nhập',
+    'login.resetPassword': 'Đặt lại Mật khẩu',
+    'login.enterOtpDesc': 'Vui lòng nhập mã OTP đã nhận qua Email.',
+    'login.otp': 'Mã OTP 6 số',
+    'login.newPassword': 'Mật khẩu mới',
+    'login.updating': 'Đang cập nhật...',
+    'login.resetPasswordBtn': 'Xác nhận Đặt lại',
 
     // SearchBar
     'search.location': 'Địa điểm',

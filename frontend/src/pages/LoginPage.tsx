@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
@@ -9,9 +9,15 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const { login } = useAuth();
+  const { login, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/events');
+    }
+  }, [isAuthenticated, navigate]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -42,7 +48,12 @@ export default function LoginPage() {
               onChange={e => setUsername(e.target.value)} required placeholder={t('login.usernamePlaceholder')} />
           </div>
           <div className="form-group">
-            <label className="form-label">{t('login.password')}</label>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <label className="form-label">{t('login.password')}</label>
+              <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', textDecoration: 'none' }}>
+                {t('login.forgotPassword') || 'Forgot Password?'}
+              </Link>
+            </div>
             <input className="form-input" type="password" value={password}
               onChange={e => setPassword(e.target.value)} required placeholder={t('login.passwordPlaceholder')} />
           </div>

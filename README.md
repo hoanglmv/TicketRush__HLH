@@ -42,9 +42,13 @@ docker compose up -d --build
 
 ### Bước 3: Login
 
-| Username | Password | Role |
-|----------|----------|------|
-| admin | admin123 | Admin |
+#### Tài khoản mặc định
+
+| Username | Password | Role | Ghi chú |
+|----------|----------|------|---------|
+| admin | admin123 | Admin | Tài khoản quản trị, được tạo tự động khi khởi động lần đầu |
+
+> **Lưu ý:** Hệ thống **không có tài khoản user mặc định**. Để đăng nhập với vai trò User, hãy tạo tài khoản mới qua trang **Đăng ký (Register)** trên giao diện web.
 
 ---
 

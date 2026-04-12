@@ -49,6 +49,7 @@ export default function EventDetailPage() {
   };
 
   const isNearingSoldOut = event.totalSeats > 0 && ((event.availableSeats / event.totalSeats) < 0.1);
+  const isPast = event.eventDate && new Date(event.eventDate).getTime() < Date.now();
 
   return (
     <motion.div 
@@ -178,7 +179,11 @@ export default function EventDetailPage() {
                 </div>
               )}
 
-              {event.status === 'ON_SALE' ? (
+              {isPast ? (
+                <button className="btn btn-secondary btn-lg" style={{ width: '100%', opacity: 0.7, background: '#555', color: 'white' }} disabled>
+                  {t('eventDetail.ended') || 'Event has ended'}
+                </button>
+              ) : event.status === 'ON_SALE' ? (
                 <motion.button 
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
