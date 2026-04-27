@@ -82,7 +82,6 @@ export default function EventListPage() {
       
       <div className="tm-hero-banner" style={{ backgroundImage: `url(${heroBackground})` }}>
         <div className="tm-hero-content">
-          <div className="tm-hero-breadcrumb">{t('eventList.home')} / {categoryParam || t('eventList.all')} / {heroCategory} {t('eventList.tickets')}</div>
           <h1 className="tm-hero-title">{heroCategory}</h1>
         </div>
       </div>
