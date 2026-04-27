@@ -99,6 +99,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'eventList.registration': 'Registration',
     'eventList.findTickets': 'Find Tickets',
     'eventList.tbaVenue': 'TBA Venue',
+    'eventList.ended': 'Ended',
 
     // EventDetailPage
     'eventDetail.events': 'Events',
@@ -441,6 +442,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'eventList.registration': 'Đăng ký',
     'eventList.findTickets': 'Tìm vé',
     'eventList.tbaVenue': 'Chưa xác định',
+    'eventList.ended': 'Đã kết thúc',
 
     // EventDetailPage
     'eventDetail.events': 'Sự kiện',
