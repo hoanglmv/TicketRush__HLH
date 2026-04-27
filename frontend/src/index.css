@@ -1470,6 +1470,7 @@ a:hover { color: #818cf8; }
   width: 100%;
   aspect-ratio: 16/10;
   object-fit: cover;
+  object-position: center top;
   border-radius: 8px;
   background: #333;
 }
