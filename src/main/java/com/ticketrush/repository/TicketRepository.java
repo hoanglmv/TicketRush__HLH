@@ -18,6 +18,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     Optional<Ticket> findByIdAndUserId(Long id, Long userId);
 
+    List<Ticket> findByIsResaleTrueAndStatus(TicketStatus status);
+
     Optional<Ticket> findBySeatAndStatus(Seat seat, TicketStatus status);
 
     List<Ticket> findByStatusAndExpiredAtBefore(TicketStatus status, LocalDateTime cutoff);

@@ -26,4 +26,6 @@ public class TicketResponse {
     private LocalDateTime createdAt;
     private LocalDateTime paidAt;
     private LocalDateTime expiredAt;
+    private boolean isResale;
+    private BigDecimal resalePrice;
 }

@@ -18,6 +18,12 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.signOut': 'Sign Out',
     'nav.signInRegister': 'Sign In/Register',
     'nav.myProfile': 'My Profile',
+    'nav.createEvent': 'Create Event',
+    'nav.workshop': 'Workshop & Seminar',
+    'nav.experience': 'Tours & Experience',
+    'nav.other': 'Other',
+    'nav.resale': 'Resale Tickets',
+    'nav.blog': 'Blog',
     
     // Profile & Auth
     'profile.personalInfo': 'Personal Information',
@@ -59,6 +65,14 @@ export const translations: Record<Locale, Record<string, string>> = {
     'home.seeAll': 'See All',
     'home.loadingEvents': 'Loading events...',
     'home.noConcerts': 'No concerts happening soon.',
+    'home.featuredEvents': 'Featured Events',
+    'home.viewDetails': 'View Details',
+    'home.specialEvents': 'Special Events',
+    'home.loading': 'Loading...',
+    'home.notUpdated': 'Not Updated',
+    'home.noEvents': 'No events found.',
+    'home.trendingSearches': 'Trending Searches',
+    'home.popularNearYou': 'Popular Near You',
     'home.presale': 'Presale',
     'home.ticketTips': 'TICKET TIPS',
     'home.artsTheater': 'ARTS & THEATER',
@@ -68,7 +82,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'home.signUpWhatToSee': 'Sign Up For What To See',
     'home.getNewsletter': 'Get the Ticketmaster newsletter that covers what\'s happening live...',
 
-    // EventListPage
+    'home.buyTicket': 'Buy Tickets',
     'eventList.home': 'Home',
     'eventList.all': 'All',
     'eventList.tickets': 'Tickets',
@@ -345,6 +359,12 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.signOut': 'Đăng xuất',
     'nav.signInRegister': 'Đăng nhập/Đăng ký',
     'nav.myProfile': 'Hồ sơ của tôi',
+    'nav.createEvent': 'Tạo sự kiện',
+    'nav.workshop': 'Hội thảo & Workshop',
+    'nav.experience': 'Tham quan & Trải nghiệm',
+    'nav.other': 'Khác',
+    'nav.resale': 'Vé bán lại',
+    'nav.blog': 'Blog',
     
     // Profile & Auth
     'profile.personalInfo': 'Thông tin cá nhân',
@@ -387,6 +407,14 @@ export const translations: Record<Locale, Record<string, string>> = {
     'home.seeAll': 'Xem tất cả',
     'home.loadingEvents': 'Đang tải sự kiện...',
     'home.noConcerts': 'Không có buổi hoà nhạc nào sắp tới.',
+    'home.featuredEvents': 'Sự kiện Nổi bật',
+    'home.viewDetails': 'Xem chi tiết',
+    'home.specialEvents': 'Sự kiện đặc biệt',
+    'home.loading': 'Đang tải...',
+    'home.notUpdated': 'Chưa cập nhật',
+    'home.noEvents': 'Không có sự kiện nào.',
+    'home.trendingSearches': 'Tìm kiếm Thịnh hành',
+    'home.popularNearYou': 'Có thể bạn quan tâm',
     'home.presale': 'Mở bán sớm',
     'home.ticketTips': 'MẸO MUA VÉ',
     'home.artsTheater': 'NGHỆ THUẬT & SÂN KHẤU',
@@ -396,7 +424,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'home.signUpWhatToSee': 'Đăng ký nhận thông tin sự kiện',
     'home.getNewsletter': 'Nhận bản tin về những sự kiện đang diễn ra trực tiếp...',
 
-    // EventListPage
+    'home.buyTicket': 'Mua vé ngay',
     'eventList.home': 'Trang chủ',
     'eventList.all': 'Tất cả',
     'eventList.tickets': 'Vé',

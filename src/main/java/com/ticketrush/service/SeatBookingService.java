@@ -211,6 +211,44 @@ public class SeatBookingService {
         return toTicketResponse(ticket);
     }
 
+    public List<TicketResponse> getResaleTickets() {
+        return ticketRepository.findByIsResaleTrueAndStatus(TicketStatus.PAID).stream()
+                .map(this::toTicketResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public TicketResponse buyResaleTicket(Long buyerId, Long ticketId) {
+        Ticket ticket = ticketRepository.findById(ticketId)
+                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
+
+        if (!ticket.isResale() || ticket.getStatus() != TicketStatus.PAID) {
+            throw new InvalidOperationException("Ticket is not available for resale");
+        }
+
+        User buyer = userRepository.findById(buyerId)
+                .orElseThrow(() -> new ResourceNotFoundException("Buyer not found"));
+
+        if (ticket.getUser().getId().equals(buyerId)) {
+            throw new InvalidOperationException("You cannot buy your own ticket");
+        }
+
+        log.info("User {} bought resale ticket {} from user {}", buyerId, ticketId, ticket.getUser().getId());
+
+        // Transfer ownership
+        ticket.setUser(buyer);
+        ticket.setResale(false);
+        ticket.setResalePrice(null);
+        ticket = ticketRepository.save(ticket);
+
+        // Update seat lock owner
+        Seat seat = ticket.getSeat();
+        seat.setLockedByUserId(buyer.getId());
+        seatRepository.save(seat);
+
+        return toTicketResponse(ticket);
+    }
+
     // ========== WebSocket Broadcasting ==========
 
     private void broadcastSeatUpdate(Long eventId, Seat seat) {
@@ -244,6 +282,8 @@ public class SeatBookingService {
                 .createdAt(ticket.getCreatedAt())
                 .paidAt(ticket.getPaidAt())
                 .expiredAt(ticket.getExpiredAt())
+                .isResale(ticket.isResale())
+                .resalePrice(ticket.getResalePrice())
                 .build();
     }
 }

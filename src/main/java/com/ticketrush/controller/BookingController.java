@@ -81,4 +81,18 @@ public class BookingController {
         TicketResponse ticket = bookingService.sellTicket(user.getId(), ticketId, request.getPrice());
         return ResponseEntity.ok(ApiResponse.success("Ticket listed for resale successfully", ticket));
     }
+
+    @GetMapping("/tickets/resale")
+    public ResponseEntity<ApiResponse<List<TicketResponse>>> getResaleTickets() {
+        return ResponseEntity.ok(ApiResponse.success(bookingService.getResaleTickets()));
+    }
+
+    @PostMapping("/tickets/{ticketId}/buy-resale")
+    public ResponseEntity<ApiResponse<TicketResponse>> buyResaleTicket(
+            @PathVariable Long ticketId,
+            @AuthenticationPrincipal UserDetails userDetails) {
+        User user = authService.getCurrentUser(userDetails.getUsername());
+        TicketResponse ticket = bookingService.buyResaleTicket(user.getId(), ticketId);
+        return ResponseEntity.ok(ApiResponse.success("Resale ticket purchased successfully", ticket));
+    }
 }

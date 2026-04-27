@@ -100,6 +100,8 @@ export interface TicketResponse {
   createdAt: string;
   paidAt: string;
   expiredAt: string;
+  isResale: boolean;
+  resalePrice: number;
 }
 
 export interface QueueStatusResponse {

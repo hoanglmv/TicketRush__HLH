@@ -23,7 +23,17 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!settingsLoading && Object.keys(formData).length === 0) {
-      setFormData(settings);
+      // Ensure specific banner keys exist
+      const defaultSettings = {
+        'tb_banner_1_img': '',
+        'tb_banner_1_title': '',
+        'tb_banner_1_link': '',
+        'tb_banner_2_img': '',
+        'tb_banner_2_title': '',
+        'tb_banner_2_link': '',
+        ...settings
+      };
+      setFormData(defaultSettings);
     }
   }, [settings, settingsLoading, formData]);
 

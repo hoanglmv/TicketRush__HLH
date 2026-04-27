@@ -14,6 +14,8 @@ import SeatSelectionPage from './pages/SeatSelectionPage';
 import CheckoutPage from './pages/CheckoutPage';
 import WaitingRoomPage from './pages/WaitingRoomPage';
 import MyTicketsPage from './pages/MyTicketsPage';
+import ResalePage from './pages/ResalePage';
+import ArtistDetailsPage from './pages/ArtistDetailsPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminEventListPage from './pages/admin/AdminEventListPage';
 import AdminEventCreatePage from './pages/admin/AdminEventCreatePage';
@@ -49,6 +51,8 @@ function AppRoutes() {
       <Route path="/events/:eventId/queue" element={<ProtectedRoute><WaitingRoomPage /></ProtectedRoute>} />
       <Route path="/checkout/:ticketId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
       <Route path="/tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
+      <Route path="/resale" element={<ResalePage />} />
+      <Route path="/artist/:id" element={<ArtistDetailsPage />} />
       <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
       <Route path="/admin/events" element={<AdminRoute><AdminEventListPage /></AdminRoute>} />

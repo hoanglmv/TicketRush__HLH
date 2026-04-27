@@ -103,14 +103,22 @@ export default function MyTicketsPage() {
 
                   <div className="safetix-barcode-area">
                     {ticket.status === 'PAID' ? (
-                      <>
-                        <div className="safetix-barcode-img">
-                          <div className="safetix-scanner-line" />
+                      ticket.isResale ? (
+                        <div style={{ padding: '40px 20px', textAlign: 'center' }}>
+                          <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🏷️</div>
+                          <span className="badge badge-warning">{t('myTickets.listedForResale') || 'Listed for Resale'}</span>
+                          <div style={{ marginTop: '10px', fontWeight: 'bold' }}>{ticket.resalePrice?.toLocaleString()} VND</div>
                         </div>
-                        <div className="safetix-warning">
-                          {t('myTickets.screenshotWarning')}
-                        </div>
-                      </>
+                      ) : (
+                        <>
+                          <div className="safetix-barcode-img">
+                            <div className="safetix-scanner-line" />
+                          </div>
+                          <div className="safetix-warning">
+                            {t('myTickets.screenshotWarning')}
+                          </div>
+                        </>
+                      )
                     ) : (
                       <div style={{ padding: '40px 20px', textAlign: 'center' }}>
                         <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{ticket.status === 'PENDING_PAYMENT' ? '💳' : '🚫'}</div>
@@ -130,7 +138,7 @@ export default function MyTicketsPage() {
                     </div>
                   </div>
 
-                  {ticket.status === 'PAID' && (
+                  {ticket.status === 'PAID' && !ticket.isResale && (
                     <div className="safetix-footer">
                       <button className="safetix-btn" onClick={() => handleTransfer(ticket.id)}>{t('myTickets.transfer')}</button>
                       <button className="safetix-btn" onClick={() => handleSell(ticket.id)}>{t('myTickets.sell')}</button>

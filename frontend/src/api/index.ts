@@ -51,6 +51,12 @@ export const bookingApi = {
   sell: (ticketId: number, price: number) => api.post<ApiResponse<TicketResponse>>(`/tickets/${ticketId}/sell`, { price })
 };
 
+// ========== RESALE ==========
+export const resaleApi = {
+  list: () => api.get<ApiResponse<TicketResponse[]>>('/tickets/resale'),
+  buy: (ticketId: number) => api.post<ApiResponse<TicketResponse>>(`/tickets/${ticketId}/buy-resale`)
+};
+
 // ========== QUEUE ==========
 export const queueApi = {
   join: (eventId: number) => api.post<ApiResponse<QueueStatusResponse>>(`/queue/${eventId}/join`),

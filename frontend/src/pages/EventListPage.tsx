@@ -78,7 +78,7 @@ export default function EventListPage() {
   };
 
   return (
-    <div style={{ background: '#f8f9fa', minHeight: '100vh', paddingBottom: '60px' }}>
+    <div style={{ background: '#1f1f1f', minHeight: '100vh', paddingBottom: '60px', color: 'white' }}>
       
       <div className="tm-hero-banner" style={{ backgroundImage: `url(${heroBackground})` }}>
         <div className="tm-hero-content">
@@ -87,7 +87,7 @@ export default function EventListPage() {
         </div>
       </div>
 
-      <div className="tm-filter-bar" style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap' }}>
+      <div className="tm-filter-bar" style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', background: '#2a2a2a', borderBottom: '1px solid #444' }}>
         <select 
           className="form-input" 
           style={{ width: '200px', cursor: 'pointer' }} 
@@ -95,12 +95,11 @@ export default function EventListPage() {
           onChange={(e) => window.location.href = `/events?category=${e.target.value === 'AllCategories' ? '' : e.target.value}`}
         >
           <option value="AllCategories">{t('eventList.allCategories')}</option>
-          <option value="ROCK">Rock</option>
-          <option value="HIP-HOP/RAP">Hip-Hop / Rap</option>
-          <option value="COUNTRY">Country</option>
-          <option value="SPORTS">Sports</option>
-          <option value="BROADWAY">Broadway</option>
-          <option value="FAMILY">Family</option>
+          <option value="LIVE_MUSIC">{t('nav.concerts')}</option>
+          <option value="ARTS">{t('nav.arts')}</option>
+          <option value="WORKSHOP">{t('nav.workshop')}</option>
+          <option value="EXPERIENCE">{t('nav.experience')}</option>
+          <option value="SPORTS">{t('nav.sports')}</option>
         </select>
         
         <select 
@@ -117,9 +116,9 @@ export default function EventListPage() {
         
         <button 
           style={{ 
-            background: dateFilter === 'This Weekend' ? '#111' : 'transparent', 
-            color: dateFilter === 'This Weekend' ? 'white' : '#111',
-            border: '1px solid #111', 
+            background: dateFilter === 'This Weekend' ? '#00b14f' : 'transparent', 
+            color: dateFilter === 'This Weekend' ? 'white' : '#ccc',
+            border: dateFilter === 'This Weekend' ? '1px solid #00b14f' : '1px solid #444', 
             borderRadius: '20px', 
             padding: '8px 16px', 
             fontWeight: 600, cursor: 'pointer' 
@@ -140,13 +139,13 @@ export default function EventListPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             style={{ width: '100%', paddingLeft: '36px', borderRadius: '20px' }}
           />
-          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5 }}>🔍</span>
+          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, color: 'white' }}>🔍</span>
         </div>
       </div>
 
       <div className="tm-event-list-container animate-slideIn">
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', borderBottom: '2px solid #111', display: 'inline-block', paddingBottom: '4px', marginBottom: '24px', letterSpacing: '0.5px' }}>
-          {heroCategory} {t('eventList.events')} <span style={{ fontWeight: 400, color: '#666', borderLeft: '1px solid #ccc', paddingLeft: '8px', marginLeft: '8px' }}>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', borderBottom: '2px solid #00b14f', display: 'inline-block', paddingBottom: '4px', marginBottom: '24px', letterSpacing: '0.5px', color: 'white' }}>
+          {heroCategory} {t('eventList.events')} <span style={{ fontWeight: 400, color: '#aaa', borderLeft: '1px solid #444', paddingLeft: '8px', marginLeft: '8px' }}>
             {events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).length} {t('eventList.results')}
           </span>
         </h2>
@@ -154,8 +153,8 @@ export default function EventListPage() {
         {loading ? (
           <div className="loading-container"><div className="spinner" /></div>
         ) : events.length === 0 ? (
-          <div style={{ background: 'white', padding: '40px', textAlign: 'center', border: '1px solid #e5e7eb' }}>
-            <p style={{ fontSize: '1.2rem', color: '#666' }}>{t('eventList.noEvents')} {heroCategory}. {t('eventList.tryAdjusting')}</p>
+          <div style={{ background: '#2a2a2a', padding: '40px', textAlign: 'center', border: '1px solid #444' }}>
+            <p style={{ fontSize: '1.2rem', color: '#ccc' }}>{t('eventList.noEvents')} {heroCategory}. {t('eventList.tryAdjusting')}</p>
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -163,25 +162,25 @@ export default function EventListPage() {
               const dt = extractDateInfo(event.eventDate);
               const isPast = event.eventDate && new Date(event.eventDate).getTime() < Date.now();
               return (
-                <div key={event.id} className="tm-event-row" style={{ opacity: isPast ? 0.6 : 1, filter: isPast ? 'grayscale(100%)' : 'none', background: isPast ? '#f0f0f0' : 'white' }}>
-                  <div className="tm-event-date">
+                <div key={event.id} className="tm-event-row" style={{ opacity: isPast ? 0.6 : 1, filter: isPast ? 'grayscale(100%)' : 'none', background: isPast ? '#222' : '#2a2a2a', border: '1px solid #444', marginBottom: '16px', borderRadius: '8px', padding: '16px', display: 'flex' }}>
+                  <div className="tm-event-date" style={{ color: 'white', marginRight: '24px', borderRight: '1px solid #444', paddingRight: '24px' }}>
                     <div className="tm-event-date-month">{dt.month}</div>
                     <div className="tm-event-date-day">{dt.day}</div>
                     <div className="tm-event-date-time">{dt.time}</div>
                   </div>
                   
-                  <div className="tm-event-details">
-                    <h3 className="tm-event-title">{event.name}</h3>
-                    <div className="tm-event-venue">{event.venue || t('eventList.tbaVenue')} • {isPast ? (t('eventList.ended') || 'Ended') : (event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration'))}</div>
+                  <div className="tm-event-details" style={{ flex: 1, color: 'white' }}>
+                    <h3 className="tm-event-title" style={{ color: 'white', margin: '0 0 8px 0' }}>{event.name}</h3>
+                    <div className="tm-event-venue" style={{ color: '#ccc' }}>{event.venue || t('eventList.tbaVenue')} • {isPast ? (t('eventList.ended') || 'Ended') : (event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration'))}</div>
                   </div>
                   
-                  <div className="tm-event-action">
+                  <div className="tm-event-action" style={{ alignSelf: 'center' }}>
                     {isPast ? (
-                      <button className="tm-event-btn" disabled style={{ background: '#999', cursor: 'not-allowed' }}>
+                      <button className="tm-event-btn" disabled style={{ background: '#444', color: '#888', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'not-allowed' }}>
                         {t('eventList.ended') || 'Ended'}
                       </button>
                     ) : (
-                      <Link to={`/events/${event.id}`} className="tm-event-btn">
+                      <Link to={`/events/${event.id}`} className="tm-event-btn" style={{ background: '#00b14f', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold' }}>
                         {t('eventList.findTickets')}
                       </Link>
                     )}
