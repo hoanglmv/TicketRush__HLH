@@ -104,12 +104,12 @@ export default function HomePage() {
             className="hide-scrollbar"
           >
             {[
-              { id: 1, name: 'Sơn Tùng M-TP', genre: 'POP', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cd/Son_Tung_M-TP_1_%282017%29.png/500px-Son_Tung_M-TP_1_%282017%29.png' },
-              { id: 2, name: 'Đen Vâu', genre: 'RAP', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/3/36/Den_Vau_2019.jpg/500px-Den_Vau_2019.jpg' },
-              { id: 3, name: 'Vũ.', genre: 'INDIE', img: 'https://i.scdn.co/image/ab6761610000e5ebc1db69cf49453dddd2934cd1' },
-              { id: 4, name: 'Hà Anh Tuấn', genre: 'POP', img: 'https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Ha_Anh_Tuan_2018.jpg/500px-Ha_Anh_Tuan_2018.jpg' },
-              { id: 5, name: 'SpaceSpeakers', genre: 'HIP-HOP', img: 'https://i.scdn.co/image/ab6761610000e5eb03a516e88ff19762dbda03d0' },
-              { id: 6, name: 'Ngọt', genre: 'INDIE', img: 'https://i.scdn.co/image/ab6761610000e5ebeb941566ccfa947f9fbf47bc' },
+              { id: 1, name: 'Sơn Tùng M-TP', genre: 'POP', img: '/images/artists/sontung.jpg' },
+              { id: 2, name: 'Đen Vâu', genre: 'RAP', img: '/images/artists/denvau.jpg' },
+              { id: 3, name: 'Vũ.', genre: 'INDIE', img: '/images/artists/vu.jpg' },
+              { id: 4, name: 'Hà Anh Tuấn', genre: 'POP', img: '/images/artists/haanhtuan.jpg' },
+              { id: 5, name: 'SpaceSpeakers', genre: 'HIP-HOP', img: '/images/artists/spacespeakers.jpg' },
+              { id: 6, name: 'Ngọt', genre: 'INDIE', img: '/images/artists/ngot.jpg' },
             ].map(artist => (
               <div key={artist.id} className="tm-trending-item" onClick={() => navigate(`/artist/${artist.id}`)}>
                 <img src={artist.img} alt={artist.name} className="tm-trending-img" draggable="false" />
