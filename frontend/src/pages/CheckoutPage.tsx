@@ -12,6 +12,7 @@ export default function CheckoutPage() {
   const [error, setError] = useState('');
   const [timeLeft, setTimeLeft] = useState(600);
   const [insuranceSelected, setInsuranceSelected] = useState<boolean | null>(null);
+  const [showQR, setShowQR] = useState(false);
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -37,11 +38,15 @@ export default function CheckoutPage() {
     return () => clearInterval(timer);
   }, [timeLeft]);
 
-  const handleConfirm = async () => {
+  const handleShowQR = () => {
     if (insuranceSelected === null) {
-      setError(t('checkout.selectInsurance'));
+      setError(t('checkout.selectInsurance') || 'Vui lòng chọn hoặc bỏ qua Bảo hiểm vé');
       return;
     }
+    setShowQR(true);
+  };
+
+  const handleConfirm = async () => {
     setConfirming(true);
     setError('');
     try {
@@ -135,7 +140,7 @@ export default function CheckoutPage() {
               </div>
               <div style={{ padding: '24px' }}>
                 <div style={{ padding: '16px', border: '1px solid #026cdf', borderRadius: '4px', background: '#f0f9ff', color: '#026cdf', fontWeight: 600, display: 'flex', justifyContent: 'center' }}>
-                  {t('checkout.sandboxPayment')}
+                  {t('checkout.sandboxPayment') || 'Hệ thống Thanh toán an toàn qua VNPay / ZaloPay'}
                 </div>
               </div>
             </div>
@@ -191,10 +196,10 @@ export default function CheckoutPage() {
                 <button 
                   className="btn" 
                   style={{ width: '100%', marginTop: '20px', padding: '16px', background: '#026cdf', color: 'white', fontSize: '1.1rem', fontWeight: 800, borderRadius: '4px' }}
-                  onClick={handleConfirm}
+                  onClick={handleShowQR}
                   disabled={confirming || expired}
                 >
-                  {confirming ? t('checkout.processing') : t('checkout.placeOrder')}
+                  {confirming ? t('checkout.processing') : (t('checkout.placeOrder') || 'Xác nhận thanh toán')}
                 </button>
               </div>
             </div>
@@ -202,6 +207,51 @@ export default function CheckoutPage() {
 
         </div>
       </div>
+
+      {/* QR Code Modal */}
+      {showQR && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+        }}>
+          <div className="glass-panel" style={{ width: 400, padding: 40, borderRadius: 24, textAlign: 'center', background: 'white', color: '#111' }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 8, color: '#026cdf' }}>Quét mã QR để thanh toán</h3>
+            <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: 24 }}>
+              Mở ứng dụng ngân hàng hoặc Momo/ZaloPay để quét mã QR này.
+            </p>
+
+            <div style={{ 
+              width: 250, height: 250, margin: '0 auto 24px', 
+              background: 'url(https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=TicketRushPaymentMock) center/cover',
+              border: '1px solid #eee', borderRadius: 12, padding: 8
+            }} />
+            
+            <div style={{ fontWeight: 800, fontSize: '1.6rem', color: '#111', marginBottom: 24 }}>
+              {orderTotal.toLocaleString('vi-VN')}₫
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <button 
+                className="btn btn-primary" 
+                style={{ width: '100%', padding: '16px', fontSize: '1.1rem', borderRadius: 8, background: '#22c55e', border: 'none' }}
+                onClick={handleConfirm}
+                disabled={confirming}
+              >
+                {confirming ? 'Đang xử lý...' : 'Giả lập: Đã quét & Thanh toán thành công'}
+              </button>
+              <button 
+                className="btn btn-outline" 
+                style={{ width: '100%', padding: '14px', borderRadius: 8 }} 
+                onClick={() => setShowQR(false)}
+                disabled={confirming}
+              >
+                Hủy thanh toán
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

@@ -1,9 +1,9 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { userApi, authApi, bookingApi } from '../api';
+import { userApi, authApi, bookingApi, wishlistApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../i18n';
-import { User, Key, Ticket, LogOut } from 'lucide-react';
+import { User, Key, Ticket, LogOut, Heart, Send } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user, logout } = useAuth();
@@ -29,10 +29,29 @@ export default function ProfilePage() {
   // Tickets State
   const [tickets, setTickets] = useState<any[]>([]);
 
+  // Wishlist State
+  const [wishlist, setWishlist] = useState<any[]>([]);
+
+  // Transfer State
+  const [showTransferModal, setShowTransferModal] = useState(false);
+  const [transferTicketId, setTransferTicketId] = useState<number | null>(null);
+  const [transferEmail, setTransferEmail] = useState('');
+  const [transferMsg, setTransferMsg] = useState({ text: '', type: '' });
+
   useEffect(() => {
     fetchProfile();
     fetchTickets();
+    fetchWishlist();
   }, []);
+
+  const fetchWishlist = async () => {
+    try {
+      const res = await wishlistApi.getAll();
+      setWishlist(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   const fetchProfile = async () => {
     try {
@@ -96,6 +115,24 @@ export default function ProfilePage() {
     navigate('/');
   };
 
+  const handleTransferTicket = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!transferTicketId) return;
+    setTransferMsg({ text: '', type: '' });
+    try {
+      await bookingApi.transfer(transferTicketId, transferEmail);
+      setTransferMsg({ text: t('profile.transferSuccess') || 'Ticket transferred successfully!', type: 'success' });
+      setTimeout(() => {
+        setShowTransferModal(false);
+        setTransferTicketId(null);
+        setTransferEmail('');
+        fetchTickets();
+      }, 1500);
+    } catch (err: any) {
+      setTransferMsg({ text: err.response?.data?.message || 'Failed to transfer ticket', type: 'error' });
+    }
+  };
+
   if (!profile) return <div className="page" style={{ paddingTop: 100, textAlign: 'center' }}><div className="spinner"></div></div>;
 
   return (
@@ -118,6 +155,9 @@ export default function ProfilePage() {
             </button>
             <button className={`btn ${activeTab === 'tickets' ? 'btn-primary' : 'btn-outline'}`} style={{ justifyContent: 'flex-start' }} onClick={() => setActiveTab('tickets')}>
               <Ticket size={18} style={{ marginRight: 8 }} /> {t('profile.myTickets') || 'My Tickets'}
+            </button>
+            <button className={`btn ${activeTab === 'wishlist' ? 'btn-primary' : 'btn-outline'}`} style={{ justifyContent: 'flex-start' }} onClick={() => setActiveTab('wishlist')}>
+              <Heart size={18} style={{ marginRight: 8 }} /> {t('profile.wishlist') || 'Sự kiện quan tâm'}
             </button>
             <button className={`btn ${activeTab === 'password' ? 'btn-primary' : 'btn-outline'}`} style={{ justifyContent: 'flex-start' }} onClick={() => setActiveTab('password')}>
               <Key size={18} style={{ marginRight: 8 }} /> {t('profile.changePassword') || 'Change Password'}
@@ -232,13 +272,53 @@ export default function ProfilePage() {
                   tickets.slice(0, 5).map(ticket => (
                     <div key={ticket.id} style={{ display: 'flex', justifyContent: 'space-between', padding: 16, background: 'rgba(0,0,0,0.02)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
                       <div>
-                        <div style={{ fontWeight: 800 }}>{ticket.event.name}</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{ticket.zone.name} - Row {ticket.seat.rowNumber} Seat {ticket.seat.seatNumber}</div>
+                        <div style={{ fontWeight: 800 }}>{ticket.eventName}</div>
+                        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{ticket.zoneName} - Row {ticket.seatLabel ? ticket.seatLabel[0] : ''} Seat {ticket.seatLabel}</div>
                       </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>{ticket.status}</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{ticket.price}đ</div>
+                      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                        <div>
+                          <div style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>{ticket.status}</div>
+                          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{ticket.price.toLocaleString('vi-VN')}đ</div>
+                        </div>
+                        {ticket.status === 'PAID' && (
+                          <button 
+                            className="btn btn-secondary" 
+                            style={{ padding: '6px 12px', fontSize: '0.85rem' }}
+                            onClick={() => {
+                              setTransferTicketId(ticket.id);
+                              setShowTransferModal(true);
+                              setTransferMsg({ text: '', type: '' });
+                            }}
+                          >
+                            <Send size={14} style={{ marginRight: 6 }} /> {t('profile.giftTicket') || 'Tặng vé'}
+                          </button>
+                        )}
                       </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          )}
+
+          {activeTab === 'wishlist' && (
+            <div className="animate-fadeIn">
+              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '24px' }}>
+                {t('profile.wishlist') || 'Sự kiện quan tâm'}
+              </h2>
+              
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
+                {wishlist.length === 0 ? (
+                  <div style={{ gridColumn: '1 / -1', padding: 40, textAlign: 'center', background: 'rgba(0,0,0,0.02)', borderRadius: 12 }}>
+                    <p style={{ color: 'var(--text-muted)' }}>{t('profile.emptyWishlist') || "You haven't saved any events yet."}</p>
+                  </div>
+                ) : (
+                  wishlist.map(event => (
+                    <div key={event.id} className="glass-card" style={{ padding: '16px', cursor: 'pointer' }} onClick={() => navigate(`/events/${event.id}`)}>
+                      <div style={{ width: '100%', height: '140px', borderRadius: '8px', background: `url(${event.bannerUrl}) center/cover`, marginBottom: '12px' }} />
+                      <h4 style={{ fontWeight: 700, marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{event.name}</h4>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>{new Date(event.eventDate).toLocaleDateString()}</div>
+                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{event.venue}</div>
                     </div>
                   ))
                 )}
@@ -248,6 +328,46 @@ export default function ProfilePage() {
 
         </div>
       </div>
+
+      {/* Transfer Modal */}
+      {showTransferModal && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
+        }}>
+          <div className="glass-panel" style={{ width: 400, padding: 32, borderRadius: 20 }}>
+            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 16 }}>{t('profile.giftTicket') || 'Tặng vé cho bạn bè'}</h3>
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 24 }}>
+              {t('profile.transferDesc') || 'Please enter the registered email address of the person you want to send this ticket to.'}
+            </p>
+
+            {transferMsg.text && <div className={`alert alert-${transferMsg.type}`} style={{ marginBottom: 20 }}>{transferMsg.text}</div>}
+
+            <form onSubmit={handleTransferTicket}>
+              <div className="form-group">
+                <label className="form-label">{t('auth.email') || 'Email Address'}</label>
+                <input 
+                  type="email" 
+                  className="form-input" 
+                  value={transferEmail} 
+                  onChange={e => setTransferEmail(e.target.value)} 
+                  required 
+                  placeholder="friend@example.com"
+                />
+              </div>
+              <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
+                <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowTransferModal(false)}>
+                  {t('profile.cancel') || 'Cancel'}
+                </button>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
+                  {t('profile.send') || 'Send Ticket'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

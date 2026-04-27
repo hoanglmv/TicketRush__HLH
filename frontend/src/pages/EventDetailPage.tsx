@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, Users, Info, ChevronRight, Share2, Heart, Armchair } from 'lucide-react';
-import { eventApi } from '../api';
+import { eventApi, wishlistApi } from '../api';
 import { EventResponse } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../i18n';
@@ -18,12 +18,47 @@ export default function EventDetailPage() {
   // Social Proof Simulation
   const liveViewers = useMemo(() => Math.floor(Math.random() * (150 - 30 + 1) + 30), []);
 
+  const [isWishlisted, setIsWishlisted] = useState(false);
+  const [wishlistLoading, setWishlistLoading] = useState(false);
+  const [timeUntilSale, setTimeUntilSale] = useState<string | null>(null);
+
   useEffect(() => {
     if (id) {
       eventApi.get(Number(id)).then(res => setEvent(res.data.data))
         .catch(() => {}).finally(() => setLoading(false));
     }
   }, [id]);
+
+  useEffect(() => {
+    if (isAuthenticated && event) {
+      wishlistApi.checkStatus(event.id)
+        .then(res => setIsWishlisted(res.data.data))
+        .catch(() => {});
+    }
+  }, [isAuthenticated, event]);
+
+  useEffect(() => {
+    if (!event || !event.saleStartTime) return;
+    const saleStart = new Date(event.saleStartTime).getTime();
+    
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = saleStart - now;
+      if (distance <= 0) {
+        setTimeUntilSale(null);
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        setTimeUntilSale(`${days}d ${hours}h ${minutes}m ${seconds}s`);
+      }
+    };
+    
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    return () => clearInterval(interval);
+  }, [event]);
 
   if (loading) return (
     <div className="page" style={{ paddingTop: '100px' }}>
@@ -45,6 +80,25 @@ export default function EventDetailPage() {
       navigate(`/events/${event.id}/queue`);
     } else {
       navigate(`/events/${event.id}/seats`);
+    }
+  };
+
+  const handleToggleWishlist = async () => {
+    if (!isAuthenticated) { navigate('/login'); return; }
+    if (!event || wishlistLoading) return;
+    setWishlistLoading(true);
+    try {
+      if (isWishlisted) {
+        await wishlistApi.remove(event.id);
+        setIsWishlisted(false);
+      } else {
+        await wishlistApi.add(event.id);
+        setIsWishlisted(true);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setWishlistLoading(false);
     }
   };
 
@@ -91,7 +145,14 @@ export default function EventDetailPage() {
               <h1 style={{ fontSize: '2.5rem', fontWeight: 800, lineHeight: 1.2, flex: 1 }}>{event.name}</h1>
               <div style={{ display: 'flex', gap: '12px' }}>
                  <button className="btn btn-secondary" style={{ padding: '10px', borderRadius: '50%' }}><Share2 size={20} /></button>
-                 <button className="btn btn-secondary" style={{ padding: '10px', borderRadius: '50%' }}><Heart size={20} /></button>
+                 <button 
+                   className="btn btn-secondary" 
+                   style={{ padding: '10px', borderRadius: '50%', color: isWishlisted ? '#ef4444' : 'inherit' }}
+                   onClick={handleToggleWishlist}
+                   disabled={wishlistLoading}
+                 >
+                   <Heart size={20} fill={isWishlisted ? '#ef4444' : 'none'} />
+                 </button>
               </div>
             </div>
 
@@ -182,6 +243,10 @@ export default function EventDetailPage() {
               {isPast ? (
                 <button className="btn btn-secondary btn-lg" style={{ width: '100%', opacity: 0.7, background: '#555', color: 'white' }} disabled>
                   {t('eventDetail.ended') || 'Event has ended'}
+                </button>
+              ) : timeUntilSale ? (
+                <button className="btn btn-secondary btn-lg" style={{ width: '100%', opacity: 0.9, background: 'linear-gradient(135deg, #1e293b, #334155)', color: 'white' }} disabled>
+                  {t('eventDetail.saleStartsIn') || 'Sale starts in'}: <strong style={{ color: '#fbbf24', marginLeft: '8px' }}>{timeUntilSale}</strong>
                 </button>
               ) : event.status === 'ON_SALE' ? (
                 <motion.button 

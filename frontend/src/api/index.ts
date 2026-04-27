@@ -24,6 +24,14 @@ export const userApi = {
   updateProfile: (data: any) => api.put<ApiResponse<any>>('/users/me', data),
 };
 
+// ========== WISHLIST ==========
+export const wishlistApi = {
+  add: (eventId: number) => api.post<ApiResponse<void>>(`/users/wishlist/${eventId}`),
+  remove: (eventId: number) => api.delete<ApiResponse<void>>(`/users/wishlist/${eventId}`),
+  getAll: () => api.get<ApiResponse<EventResponse[]>>('/users/wishlist'),
+  checkStatus: (eventId: number) => api.get<ApiResponse<boolean>>(`/users/wishlist/${eventId}/status`),
+};
+
 // ========== EVENTS (Public) ==========
 export const eventApi = {
   list: () => api.get<ApiResponse<EventResponse[]>>('/events'),
