@@ -267,12 +267,12 @@ export default function HomePage() {
           </div>
           <div className="grid-4" style={{ gap: '20px' }}>
             {[
-              { id: 'dd1', title: 'Tp. Hồ Chí Minh', img: 'https://picsum.photos/seed/hcm/400/400' },
-              { id: 'dd2', title: 'Hà Nội', img: 'https://picsum.photos/seed/hn/400/400' },
-              { id: 'dd3', title: 'Đà Lạt', img: 'https://picsum.photos/seed/dl/400/400' },
-              { id: 'dd4', title: 'Vị trí khác', img: 'https://picsum.photos/seed/other/400/400' },
+              { id: 'ho-chi-minh', title: 'Tp. Hồ Chí Minh', img: 'https://picsum.photos/seed/hcm/400/400' },
+              { id: 'ha-noi', title: 'Hà Nội', img: 'https://picsum.photos/seed/hn/400/400' },
+              { id: 'da-lat', title: 'Đà Lạt', img: 'https://picsum.photos/seed/dl/400/400' },
+              { id: 'da-nang', title: 'Đà Nẵng', img: 'https://picsum.photos/seed/dn/400/400' },
             ].map(item => (
-              <Link to="/events" key={item.id} className="tm-dest-card">
+              <Link to={`/city/${item.id}`} key={item.id} className="tm-dest-card">
                 <img src={item.img} alt={item.title} className="tm-dest-img" />
                 <div className="tm-dest-overlay">
                   {item.title}
