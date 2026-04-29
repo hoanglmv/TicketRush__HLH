@@ -1656,3 +1656,81 @@ a:hover { color: #818cf8; }
 .section-link:hover {
   color: white;
 }
+
+/* Base styles for new navbar classes */
+.navbar-top-left {
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  flex: 1;
+}
+
+.navbar-top-right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.navbar-search {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 4px;
+  padding: 8px 16px;
+  max-width: 500px;
+  flex: 1;
+}
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+  .navbar-tb-top {
+    height: auto;
+    padding: 12px 16px;
+  }
+  
+  .navbar-tb-top .navbar-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .navbar-top-left {
+    gap: 16px;
+    flex-wrap: wrap;
+    justify-content: space-between;
+  }
+  
+  .navbar-search {
+    width: 100%;
+    max-width: none;
+    order: 3;
+    flex: 0 0 100%;
+    margin-top: 8px;
+  }
+
+  .navbar-top-right {
+    gap: 12px;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .navbar-tb-bottom {
+    overflow-x: auto;
+    padding: 0 16px;
+  }
+  
+  .navbar-tb-bottom::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .navbar-tb-nav {
+    flex-wrap: nowrap;
+    width: max-content;
+    padding: 10px 0;
+  }
+  
+  .navbar-tb-nav li {
+    flex-shrink: 0;
+  }
+}
+

@@ -15,11 +15,11 @@ export default function Navbar() {
       {/* Top Tier: Green */}
       <div className="navbar-tb-top">
         <div className="navbar-inner">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '40px', flex: 1 }}>
+          <div className="navbar-top-left">
             <Link to="/" className="navbar-tb-brand">ticketbox</Link>
             
             {/* Search Bar */}
-            <div style={{ display: 'flex', alignItems: 'center', background: 'white', borderRadius: '4px', padding: '8px 16px', maxWidth: '500px', flex: 1 }}>
+            <div className="navbar-search">
                <Search size={18} color="#999" style={{ marginRight: '8px' }}/>
                <input 
                  type="text" 
@@ -37,7 +37,7 @@ export default function Navbar() {
             </div>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '20px' }}>
+          <div className="navbar-top-right">
             {isAdmin && (
               <Link to="/admin/events/create" style={{ color: 'white', textDecoration: 'none', border: '1px solid white', borderRadius: '20px', padding: '6px 16px', fontSize: '0.85rem', fontWeight: 600 }}>{t('nav.createEvent')}</Link>
             )}
