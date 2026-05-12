@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { userApi, authApi, bookingApi, wishlistApi } from '../api';
+import { userApi, authApi, bookingApi } from '../api';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../i18n';
-import { User, Key, Ticket, LogOut, Heart, Send } from 'lucide-react';
+import { User, Key, Ticket, LogOut } from 'lucide-react';
 
 export default function ProfilePage() {
-  const { user, logout } = useAuth();
+  const { logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
 
@@ -29,29 +29,12 @@ export default function ProfilePage() {
   // Tickets State
   const [tickets, setTickets] = useState<any[]>([]);
 
-  // Wishlist State
-  const [wishlist, setWishlist] = useState<any[]>([]);
 
-  // Transfer State
-  const [showTransferModal, setShowTransferModal] = useState(false);
-  const [transferTicketId, setTransferTicketId] = useState<number | null>(null);
-  const [transferEmail, setTransferEmail] = useState('');
-  const [transferMsg, setTransferMsg] = useState({ text: '', type: '' });
 
   useEffect(() => {
     fetchProfile();
     fetchTickets();
-    fetchWishlist();
   }, []);
-
-  const fetchWishlist = async () => {
-    try {
-      const res = await wishlistApi.getAll();
-      setWishlist(res.data.data || []);
-    } catch (err) {
-      console.error(err);
-    }
-  };
 
   const fetchProfile = async () => {
     try {
@@ -115,120 +98,102 @@ export default function ProfilePage() {
     navigate('/');
   };
 
-  const handleTransferTicket = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!transferTicketId) return;
-    setTransferMsg({ text: '', type: '' });
-    try {
-      await bookingApi.transfer(transferTicketId, transferEmail);
-      setTransferMsg({ text: t('profile.transferSuccess') || 'Ticket transferred successfully!', type: 'success' });
-      setTimeout(() => {
-        setShowTransferModal(false);
-        setTransferTicketId(null);
-        setTransferEmail('');
-        fetchTickets();
-      }, 1500);
-    } catch (err: any) {
-      setTransferMsg({ text: err.response?.data?.message || 'Failed to transfer ticket', type: 'error' });
-    }
-  };
 
-  if (!profile) return <div className="page" style={{ paddingTop: 100, textAlign: 'center' }}><div className="spinner"></div></div>;
+
+  if (!profile) return <div className="flex-1 pt-20 text-center flex justify-center"><div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="page" style={{ paddingTop: '80px', paddingBottom: '80px', background: '#f9fafb', minHeight: '100vh' }}>
-      <div className="container" style={{ display: 'grid', gridTemplateColumns: '250px 1fr', gap: '32px' }}>
+    <div className="flex-1 pt-20 pb-20 bg-gray-50 min-h-[calc(100vh-64px)] text-gray-900">
+      <div className="container mx-auto px-6 max-w-6xl grid grid-cols-1 md:grid-cols-[250px_1fr] gap-8">
         
         {/* Sidebar */}
-        <div className="glass-card" style={{ padding: '24px', height: 'fit-content' }}>
-          <div style={{ textAlign: 'center', marginBottom: '32px' }}>
-            <div style={{ width: 80, height: 80, borderRadius: '50%', background: 'linear-gradient(135deg, #3b82f6, #8b5cf6)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem', fontWeight: 800, margin: '0 auto 16px' }}>
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-6 h-fit">
+          <div className="text-center mb-8">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 text-white flex items-center justify-center text-3xl font-extrabold mx-auto mb-4 shadow-md">
               {profile.fullName ? profile.fullName[0].toUpperCase() : profile.username[0].toUpperCase()}
             </div>
-            <h3 style={{ fontWeight: 700, fontSize: '1.2rem' }}>{profile.fullName || profile.username}</h3>
-            <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{profile.email}</div>
+            <h3 className="font-bold text-lg text-gray-900">{profile.fullName || profile.username}</h3>
+            <div className="text-gray-500 text-sm mt-1">{profile.email}</div>
           </div>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <button className={`btn ${activeTab === 'profile' ? 'btn-primary' : 'btn-outline'}`} style={{ justifyContent: 'flex-start' }} onClick={() => setActiveTab('profile')}>
-              <User size={18} style={{ marginRight: 8 }} /> {t('profile.personalInfo') || 'Personal Info'}
+          <div className="flex flex-col gap-2">
+            <button className={`w-full flex items-center px-4 py-3 rounded-lg font-bold transition-colors ${activeTab === 'profile' ? 'bg-blue-600 text-white shadow-md' : 'bg-transparent text-gray-700 hover:bg-gray-100 border border-transparent'}`} onClick={() => setActiveTab('profile')}>
+              <User size={18} className="mr-3" /> {t('profile.personalInfo') || 'Personal Info'}
             </button>
-            <button className={`btn ${activeTab === 'tickets' ? 'btn-primary' : 'btn-outline'}`} style={{ justifyContent: 'flex-start' }} onClick={() => setActiveTab('tickets')}>
-              <Ticket size={18} style={{ marginRight: 8 }} /> {t('profile.myTickets') || 'My Tickets'}
+            <button className={`w-full flex items-center px-4 py-3 rounded-lg font-bold transition-colors ${activeTab === 'tickets' ? 'bg-blue-600 text-white shadow-md' : 'bg-transparent text-gray-700 hover:bg-gray-100 border border-transparent'}`} onClick={() => setActiveTab('tickets')}>
+              <Ticket size={18} className="mr-3" /> {t('profile.myTickets') || 'My Tickets'}
             </button>
-            <button className={`btn ${activeTab === 'wishlist' ? 'btn-primary' : 'btn-outline'}`} style={{ justifyContent: 'flex-start' }} onClick={() => setActiveTab('wishlist')}>
-              <Heart size={18} style={{ marginRight: 8 }} /> {t('profile.wishlist') || 'Sự kiện quan tâm'}
+
+            <button className={`w-full flex items-center px-4 py-3 rounded-lg font-bold transition-colors ${activeTab === 'password' ? 'bg-blue-600 text-white shadow-md' : 'bg-transparent text-gray-700 hover:bg-gray-100 border border-transparent'}`} onClick={() => setActiveTab('password')}>
+              <Key size={18} className="mr-3" /> {t('profile.changePassword') || 'Change Password'}
             </button>
-            <button className={`btn ${activeTab === 'password' ? 'btn-primary' : 'btn-outline'}`} style={{ justifyContent: 'flex-start' }} onClick={() => setActiveTab('password')}>
-              <Key size={18} style={{ marginRight: 8 }} /> {t('profile.changePassword') || 'Change Password'}
-            </button>
-            <button className="btn btn-outline" style={{ justifyContent: 'flex-start', color: 'var(--danger)', borderColor: 'var(--danger)' }} onClick={handleLogout}>
-              <LogOut size={18} style={{ marginRight: 8 }} /> {t('navbar.signOut') || 'Sign Out'}
+            <button className="w-full flex items-center px-4 py-3 rounded-lg font-bold transition-colors bg-transparent text-red-600 hover:bg-red-50 border border-red-200 mt-4" onClick={handleLogout}>
+              <LogOut size={18} className="mr-3" /> {t('navbar.signOut') || 'Sign Out'}
             </button>
           </div>
         </div>
 
         {/* Main Content */}
-        <div className="glass-card" style={{ padding: '32px' }}>
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-sm p-8">
           
           {activeTab === 'profile' && (
-            <div className="animate-fadeIn">
-              <div className="flex-between" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('profile.personalInfo') || 'Personal Information'}</h2>
-                <button className={editingProfile ? "btn btn-outline" : "btn btn-primary"} onClick={() => setEditingProfile(!editingProfile)}>
+            <div className="animate-[fadeIn_0.3s_ease-out]">
+              <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+                <h2 className="text-2xl font-extrabold">{t('profile.personalInfo') || 'Personal Information'}</h2>
+                <button className={`px-4 py-2 font-bold rounded-lg transition-colors border ${editingProfile ? "bg-white text-gray-700 border-gray-300 hover:bg-gray-50" : "bg-blue-600 text-white border-transparent hover:bg-blue-700 shadow-md"}`} onClick={() => setEditingProfile(!editingProfile)}>
                   {editingProfile ? 'Cancel' : 'Edit Profile'}
                 </button>
               </div>
 
-              {profileMsg.text && <div className={`alert alert-${profileMsg.type}`} style={{ marginBottom: 24 }}>{profileMsg.text}</div>}
+              {profileMsg.text && <div className={`p-4 rounded-lg mb-6 font-medium ${profileMsg.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>{profileMsg.text}</div>}
 
               {editingProfile ? (
-                <form onSubmit={handleUpdateProfile} style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '20px' }}>
-                  <div className="form-group" style={{ gridColumn: 'span 2' }}>
-                    <label className="form-label">Username (Locked)</label>
-                    <input className="form-input" type="text" value={profile.username} disabled style={{ background: '#f0f0f0' }} />
+                <form onSubmit={handleUpdateProfile} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  <div className="col-span-1 md:col-span-2 mb-2">
+                    <label className="block text-sm font-semibold text-gray-600 mb-2">Username (Locked)</label>
+                    <input className="w-full px-4 py-3 rounded-lg bg-gray-100 border border-gray-300 text-gray-500 cursor-not-allowed" type="text" value={profile.username} disabled />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Full Name</label>
-                    <input className="form-input" type="text" value={fullName} onChange={e => setFullName(e.target.value)} required />
+                  <div className="mb-2">
+                    <label className="block text-sm font-semibold text-gray-600 mb-2">Full Name</label>
+                    <input className="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" type="text" value={fullName} onChange={e => setFullName(e.target.value)} required />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Phone Number</label>
-                    <input className="form-input" type="text" value={phone} onChange={e => setPhone(e.target.value)} />
+                  <div className="mb-2">
+                    <label className="block text-sm font-semibold text-gray-600 mb-2">Phone Number</label>
+                    <input className="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" type="text" value={phone} onChange={e => setPhone(e.target.value)} />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Date of Birth</label>
-                    <input className="form-input" type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} />
+                  <div className="mb-2">
+                    <label className="block text-sm font-semibold text-gray-600 mb-2">Date of Birth</label>
+                    <input className="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" type="date" value={dateOfBirth} onChange={e => setDateOfBirth(e.target.value)} />
                   </div>
-                  <div className="form-group">
-                    <label className="form-label">Gender</label>
-                    <select className="form-input" value={gender} onChange={e => setGender(e.target.value)}>
+                  <div className="mb-2">
+                    <label className="block text-sm font-semibold text-gray-600 mb-2">Gender</label>
+                    <select className="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" value={gender} onChange={e => setGender(e.target.value)}>
                       <option value="MALE">Male</option>
                       <option value="FEMALE">Female</option>
                       <option value="OTHER">Other</option>
                     </select>
                   </div>
-                  <div style={{ gridColumn: 'span 2', marginTop: 16 }}>
-                    <button type="submit" className="btn btn-primary btn-lg" style={{ width: '100%' }}>Save Changes</button>
+                  <div className="col-span-1 md:col-span-2 mt-4">
+                    <button type="submit" className="w-full py-4 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md text-lg">Save Changes</button>
                   </div>
                 </form>
               ) : (
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '24px' }}>
-                  <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 4 }}>Full Name</div>
-                    <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{profile.fullName || '-'}</div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="text-gray-500 text-sm font-medium mb-1">Full Name</div>
+                    <div className="font-bold text-lg text-gray-900">{profile.fullName || '-'}</div>
                   </div>
-                  <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 4 }}>Phone</div>
-                    <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{profile.phone || '-'}</div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="text-gray-500 text-sm font-medium mb-1">Phone</div>
+                    <div className="font-bold text-lg text-gray-900">{profile.phone || '-'}</div>
                   </div>
-                  <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 4 }}>Date of Birth</div>
-                    <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{profile.dateOfBirth || '-'}</div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="text-gray-500 text-sm font-medium mb-1">Date of Birth</div>
+                    <div className="font-bold text-lg text-gray-900">{profile.dateOfBirth || '-'}</div>
                   </div>
-                  <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem', marginBottom: 4 }}>Gender</div>
-                    <div style={{ fontWeight: 600, fontSize: '1.1rem' }}>{profile.gender || '-'}</div>
+                  <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <div className="text-gray-500 text-sm font-medium mb-1">Gender</div>
+                    <div className="font-bold text-lg text-gray-900">{profile.gender || '-'}</div>
                   </div>
                 </div>
               )}
@@ -236,89 +201,52 @@ export default function ProfilePage() {
           )}
 
           {activeTab === 'password' && (
-            <div className="animate-fadeIn">
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '24px' }}>
+            <div className="animate-[fadeIn_0.3s_ease-out]">
+              <h2 className="text-2xl font-extrabold border-b border-gray-200 pb-4 mb-6">
                 {t('profile.changePassword') || 'Change Password'}
               </h2>
-              {pwdMsg.text && <div className={`alert alert-${pwdMsg.type}`} style={{ marginBottom: 24 }}>{pwdMsg.text}</div>}
+              {pwdMsg.text && <div className={`p-4 rounded-lg mb-6 font-medium ${pwdMsg.type === 'error' ? 'bg-red-50 text-red-700 border border-red-200' : 'bg-green-50 text-green-700 border border-green-200'}`}>{pwdMsg.text}</div>}
 
-              <form onSubmit={handleChangePassword} style={{ maxWidth: 400 }}>
-                <div className="form-group">
-                  <label className="form-label">Current Password</label>
-                  <input className="form-input" type="password" value={oldPassword} onChange={e => setOldPassword(e.target.value)} required />
+              <form onSubmit={handleChangePassword} className="max-w-[400px]">
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-gray-600 mb-2">Current Password</label>
+                  <input className="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" type="password" value={oldPassword} onChange={e => setOldPassword(e.target.value)} required />
                 </div>
-                <div className="form-group">
-                  <label className="form-label">New Password</label>
-                  <input className="form-input" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
+                <div className="mb-6">
+                  <label className="block text-sm font-semibold text-gray-600 mb-2">New Password</label>
+                  <input className="w-full px-4 py-3 rounded-lg bg-white border border-gray-300 text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-colors" type="password" value={newPassword} onChange={e => setNewPassword(e.target.value)} required />
                 </div>
-                <button type="submit" className="btn btn-primary" style={{ marginTop: 16 }}>Update Password</button>
+                <button type="submit" className="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md">Update Password</button>
               </form>
             </div>
           )}
 
           {activeTab === 'tickets' && (
-            <div className="animate-fadeIn">
-              <div className="flex-between" style={{ borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '24px' }}>
-                <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>{t('profile.myTickets') || 'My Tickets'}</h2>
-                <button className="btn btn-primary" onClick={() => navigate('/tickets')}>View Dashboard</button>
+            <div className="animate-[fadeIn_0.3s_ease-out]">
+              <div className="flex justify-between items-center border-b border-gray-200 pb-4 mb-6">
+                <h2 className="text-2xl font-extrabold">{t('profile.myTickets') || 'My Tickets'}</h2>
+                <button className="px-4 py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md" onClick={() => navigate('/tickets')}>View Dashboard</button>
               </div>
               
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+              <div className="flex flex-col gap-4">
                 {tickets.length === 0 ? (
-                  <div style={{ padding: 40, textAlign: 'center', background: 'rgba(0,0,0,0.02)', borderRadius: 12 }}>
-                    <p style={{ color: 'var(--text-muted)' }}>You don't have any tickets yet.</p>
+                  <div className="p-10 text-center bg-gray-50 border border-gray-200 rounded-xl">
+                    <p className="text-gray-500 font-medium">You don't have any tickets yet.</p>
                   </div>
                 ) : (
                   tickets.slice(0, 5).map(ticket => (
-                    <div key={ticket.id} style={{ display: 'flex', justifyContent: 'space-between', padding: 16, background: 'rgba(0,0,0,0.02)', borderRadius: 12, border: '1px solid var(--border-color)' }}>
+                    <div key={ticket.id} className="flex justify-between p-4 bg-white hover:bg-gray-50 transition-colors rounded-xl border border-gray-200 shadow-sm">
                       <div>
-                        <div style={{ fontWeight: 800 }}>{ticket.eventName}</div>
-                        <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>{ticket.zoneName} - Row {ticket.seatLabel ? ticket.seatLabel[0] : ''} Seat {ticket.seatLabel}</div>
+                        <div className="font-extrabold text-lg text-gray-900 mb-1">{ticket.eventName}</div>
+                        <div className="text-gray-500 text-sm font-medium">{ticket.zoneName} - Row {ticket.seatLabel ? ticket.seatLabel[0] : ''} Seat {ticket.seatLabel}</div>
                       </div>
-                      <div style={{ textAlign: 'right', display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '8px' }}>
+                      <div className="text-right flex flex-col items-end gap-1">
                         <div>
-                          <div style={{ fontWeight: 700, color: 'var(--accent-primary)' }}>{ticket.status}</div>
-                          <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>{ticket.price.toLocaleString('vi-VN')}đ</div>
+                          <div className="font-bold text-blue-600">{ticket.status}</div>
+                          <div className="text-gray-500 text-sm font-bold mt-1">{ticket.price.toLocaleString('vi-VN')}đ</div>
                         </div>
-                        {ticket.status === 'PAID' && (
-                          <button 
-                            className="btn btn-secondary" 
-                            style={{ padding: '6px 12px', fontSize: '0.85rem' }}
-                            onClick={() => {
-                              setTransferTicketId(ticket.id);
-                              setShowTransferModal(true);
-                              setTransferMsg({ text: '', type: '' });
-                            }}
-                          >
-                            <Send size={14} style={{ marginRight: 6 }} /> {t('profile.giftTicket') || 'Tặng vé'}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-                  ))
-                )}
-              </div>
-            </div>
-          )}
 
-          {activeTab === 'wishlist' && (
-            <div className="animate-fadeIn">
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, borderBottom: '1px solid var(--border-color)', paddingBottom: '16px', marginBottom: '24px' }}>
-                {t('profile.wishlist') || 'Sự kiện quan tâm'}
-              </h2>
-              
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: '20px' }}>
-                {wishlist.length === 0 ? (
-                  <div style={{ gridColumn: '1 / -1', padding: 40, textAlign: 'center', background: 'rgba(0,0,0,0.02)', borderRadius: 12 }}>
-                    <p style={{ color: 'var(--text-muted)' }}>{t('profile.emptyWishlist') || "You haven't saved any events yet."}</p>
-                  </div>
-                ) : (
-                  wishlist.map(event => (
-                    <div key={event.id} className="glass-card" style={{ padding: '16px', cursor: 'pointer' }} onClick={() => navigate(`/events/${event.id}`)}>
-                      <div style={{ width: '100%', height: '140px', borderRadius: '8px', background: `url(${event.bannerUrl}) center/cover`, marginBottom: '12px' }} />
-                      <h4 style={{ fontWeight: 700, marginBottom: '8px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{event.name}</h4>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '4px' }}>{new Date(event.eventDate).toLocaleDateString()}</div>
-                      <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)' }}>{event.venue}</div>
+                      </div>
                     </div>
                   ))
                 )}
@@ -328,46 +256,6 @@ export default function ProfilePage() {
 
         </div>
       </div>
-
-      {/* Transfer Modal */}
-      {showTransferModal && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
-        }}>
-          <div className="glass-panel" style={{ width: 400, padding: 32, borderRadius: 20 }}>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 16 }}>{t('profile.giftTicket') || 'Tặng vé cho bạn bè'}</h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 24 }}>
-              {t('profile.transferDesc') || 'Please enter the registered email address of the person you want to send this ticket to.'}
-            </p>
-
-            {transferMsg.text && <div className={`alert alert-${transferMsg.type}`} style={{ marginBottom: 20 }}>{transferMsg.text}</div>}
-
-            <form onSubmit={handleTransferTicket}>
-              <div className="form-group">
-                <label className="form-label">{t('auth.email') || 'Email Address'}</label>
-                <input 
-                  type="email" 
-                  className="form-input" 
-                  value={transferEmail} 
-                  onChange={e => setTransferEmail(e.target.value)} 
-                  required 
-                  placeholder="friend@example.com"
-                />
-              </div>
-              <div style={{ display: 'flex', gap: 12, marginTop: 24 }}>
-                <button type="button" className="btn btn-outline" style={{ flex: 1 }} onClick={() => setShowTransferModal(false)}>
-                  {t('profile.cancel') || 'Cancel'}
-                </button>
-                <button type="submit" className="btn btn-primary" style={{ flex: 1 }}>
-                  {t('profile.send') || 'Send Ticket'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

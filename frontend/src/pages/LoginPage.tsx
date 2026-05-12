@@ -35,35 +35,31 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="page flex-center" style={{ minHeight: 'calc(100vh - 64px)' }}>
-      <div className="glass-card animate-fadeIn" style={{ width: '100%', maxWidth: 420 }}>
-        <h1 style={{ textAlign: 'center', fontSize: '1.5rem', fontWeight: 800, marginBottom: 24 }}>
+    <div className="flex-1 flex items-center justify-center min-h-[calc(100vh-64px)] py-10 px-4">
+      <div className="w-full max-w-[420px] bg-bg-card border border-border-color rounded-2xl p-8 shadow-xl animate-[fadeIn_0.5s_ease-out]">
+        <h1 className="text-center text-2xl font-extrabold mb-6 text-text-primary">
           {t('login.welcomeBack')}
         </h1>
-        {error && <div className="alert alert-error">{error}</div>}
+        {error && <div className="bg-red-500/10 border border-red-500/20 text-red-400 px-4 py-3 rounded-lg mb-6 text-sm font-medium">{error}</div>}
         <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label className="form-label">{t('login.username')}</label>
-            <input className="form-input" type="text" value={username}
+          <div className="mb-5">
+            <label className="block text-sm font-semibold text-text-secondary mb-2">{t('login.username')}</label>
+            <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" type="text" value={username}
               onChange={e => setUsername(e.target.value)} required placeholder={t('login.usernamePlaceholder')} />
           </div>
-          <div className="form-group">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <label className="form-label">{t('login.password')}</label>
-              <Link to="/forgot-password" style={{ fontSize: '0.85rem', color: 'var(--accent-primary)', textDecoration: 'none' }}>
-                {t('login.forgotPassword') || 'Forgot Password?'}
-              </Link>
+          <div className="mb-5">
+            <div className="flex justify-between items-center">
+              <label className="block text-sm font-semibold text-text-secondary mb-2">{t('login.password')}</label>
             </div>
-            <input className="form-input" type="password" value={password}
+            <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" type="password" value={password}
               onChange={e => setPassword(e.target.value)} required placeholder={t('login.passwordPlaceholder')} />
           </div>
-          <button className="btn btn-primary btn-lg" type="submit" disabled={loading}
-            style={{ width: '100%', marginTop: 8 }}>
+          <button className="w-full mt-2 py-3 bg-accent-primary text-white font-bold rounded-lg hover:bg-accent-secondary transition-colors disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_4px_14px_0_rgba(0,177,79,0.39)]" type="submit" disabled={loading}>
             {loading ? t('login.signingIn') : t('login.signIn')}
           </button>
         </form>
-        <p style={{ textAlign: 'center', marginTop: 20, color: 'var(--text-secondary)', fontSize: '0.85rem' }}>
-          {t('login.noAccount')} <Link to="/register">{t('login.createOne')}</Link>
+        <p className="text-center mt-6 text-text-secondary text-sm">
+          {t('login.noAccount')} <Link to="/register" className="text-accent-primary hover:underline font-medium">{t('login.createOne')}</Link>
         </p>
       </div>
     </div>

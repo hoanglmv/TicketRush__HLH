@@ -20,40 +20,7 @@ export default function MyTicketsPage() {
     loadTickets();
   }, []);
 
-  const handleTransfer = (ticketId: number) => {
-    const email = window.prompt(t('myTickets.transferPrompt'));
-    if (!email) return;
 
-    bookingApi.transfer(ticketId, email)
-      .then(() => {
-        alert(t('myTickets.transferSuccess'));
-        loadTickets();
-      })
-      .catch(err => {
-        const msg = err.response?.data?.message || err.message;
-        alert(t('myTickets.transferFailed') + msg);
-      });
-  };
-
-  const handleSell = (ticketId: number) => {
-    const priceStr = window.prompt(t('myTickets.sellPrompt'));
-    if (!priceStr) return;
-    const price = parseFloat(priceStr);
-    if (isNaN(price) || price <= 0) {
-      alert(t('myTickets.invalidPrice'));
-      return;
-    }
-
-    bookingApi.sell(ticketId, price)
-      .then(() => {
-        alert(t('myTickets.sellSuccess'));
-        loadTickets();
-      })
-      .catch(err => {
-        const msg = err.response?.data?.message || err.message;
-        alert(t('myTickets.sellFailed') + msg);
-      });
-  };
 
   const statusBadge = (s: string) => {
     const map: Record<string, { cls: string; label: string }> = {
@@ -65,85 +32,79 @@ export default function MyTicketsPage() {
     return map[s] || { cls: 'badge-info', label: s };
   };
 
-  if (loading) return <div className="page"><div className="container"><div className="loading-container"><div className="spinner" /></div></div></div>;
+  if (loading) return <div className="flex-1 pt-20 text-center flex justify-center"><div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="page" style={{ background: '#f8f9fa' }}>
-      <div className="container animate-fadeIn" style={{ maxWidth: '1000px' }}>
-        <div className="page-header" style={{ textAlign: 'center', marginBottom: '40px' }}>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800 }}>{t('myTickets.title')}</h1>
-          <p style={{ color: '#666' }}>{t('myTickets.poweredBy')}</p>
+    <div className="flex-1 bg-[#f8f9fa] py-10 min-h-screen text-gray-900">
+      <div className="container mx-auto px-6 max-w-[1000px] animate-[fadeIn_0.5s_ease-out]">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl font-extrabold">{t('myTickets.title')}</h1>
+          <p className="text-gray-500 mt-2">{t('myTickets.poweredBy')}</p>
         </div>
 
         {tickets.length === 0 ? (
-          <div className="empty-state" style={{ background: 'white', borderRadius: '8px', border: '1px solid #e5e7eb' }}>
-            <p style={{ fontSize: '3rem', marginBottom: 12 }}>🎫</p>
-            <p>{t('myTickets.noEvents')}</p>
-            <button className="btn" style={{ background: '#026cdf', color: 'white', marginTop: '16px' }} onClick={() => window.location.href = '/events'}>
+          <div className="bg-white rounded-xl border border-gray-200 p-16 text-center shadow-sm">
+            <p className="text-5xl mb-4">🎫</p>
+            <p className="text-gray-600 font-medium">{t('myTickets.noEvents')}</p>
+            <button className="mt-6 px-6 py-3 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md" onClick={() => window.location.href = '/events'}>
               {t('myTickets.browseEvents')}
             </button>
           </div>
         ) : (
-          <div className="grid-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {tickets.map(ticket => {
               const badge = statusBadge(ticket.status);
               return (
-                <div key={ticket.id} className="safetix-container animate-slideIn">
+                <div key={ticket.id} className="bg-white rounded-2xl shadow-md overflow-hidden border border-gray-200 animate-[slideIn_0.3s_ease-out] flex flex-col hover:-translate-y-1 transition-transform">
                   
-                  <div className="safetix-header">
-                    <h3>{ticket.eventName}</h3>
-                    <p>{new Date(ticket.eventDate).toLocaleDateString('vi-VN', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
+                  <div className="p-5 bg-gradient-to-br from-blue-600 to-purple-700 text-white">
+                    <h3 className="font-extrabold text-xl mb-1 line-clamp-1">{ticket.eventName}</h3>
+                    <p className="text-blue-100 text-sm font-medium">{new Date(ticket.eventDate).toLocaleDateString('vi-VN', { weekday: 'short', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</p>
                   </div>
 
-                  <div style={{ background: ticket.zoneColor || '#ccc', color: 'white', padding: '8px 16px', display: 'flex', justifyContent: 'space-between', fontSize: '0.85rem', fontWeight: 700 }}>
+                  <div className="text-white px-4 py-2 flex justify-between text-sm font-bold" style={{ background: ticket.zoneColor || '#9ca3af' }}>
                     <span>Sec {ticket.zoneName}</span>
                     <span>Row {ticket.seatLabel.replace(/[0-9]/g, '')}</span>
                     <span>Seat {ticket.seatLabel.replace(/[^0-9]/g, '')}</span>
                   </div>
 
-                  <div className="safetix-barcode-area">
+                  <div className="p-6 flex flex-col items-center justify-center bg-gray-50 border-b border-gray-200 min-h-[160px] flex-1 relative overflow-hidden">
+                    {/* Add a subtle moving line background to make it look like a scanner area */}
+                    <div className="absolute inset-0 opacity-[0.03] bg-[linear-gradient(0deg,transparent_24%,#000_25%,#000_26%,transparent_27%,transparent_74%,#000_75%,#000_76%,transparent_77%,transparent)] bg-[length:100%_50px]"></div>
+
                     {ticket.status === 'PAID' ? (
-                      ticket.isResale ? (
-                        <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                          <div style={{ fontSize: '2rem', marginBottom: '10px' }}>🏷️</div>
-                          <span className="badge badge-warning">{t('myTickets.listedForResale') || 'Listed for Resale'}</span>
-                          <div style={{ marginTop: '10px', fontWeight: 'bold' }}>{ticket.resalePrice?.toLocaleString()} VND</div>
+                      <>
+                        <div className="w-[200px] h-[60px] bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/e9/UPC-A-036000291452.svg')] bg-center bg-[length:100%_100%] bg-no-repeat relative overflow-hidden mb-3 opacity-90">
+                          <div className="w-full h-0.5 bg-red-500 absolute left-0 animate-[scan_2.5s_linear_infinite] shadow-[0_0_8px_2px_rgba(239,68,68,0.8)]" />
                         </div>
-                      ) : (
-                        <>
-                          <div className="safetix-barcode-img">
-                            <div className="safetix-scanner-line" />
-                          </div>
-                          <div className="safetix-warning">
-                            {t('myTickets.screenshotWarning')}
-                          </div>
-                        </>
-                      )
+                        <div className="text-[11px] text-blue-600 font-extrabold uppercase tracking-widest bg-blue-50 px-3 py-1 rounded-full border border-blue-100">
+                          {t('myTickets.screenshotWarning')}
+                        </div>
+                      </>
                     ) : (
-                      <div style={{ padding: '40px 20px', textAlign: 'center' }}>
-                        <div style={{ fontSize: '2rem', marginBottom: '10px' }}>{ticket.status === 'PENDING_PAYMENT' ? '💳' : '🚫'}</div>
-                        <span className={`badge ${badge.cls}`}>{badge.label}</span>
+                      <div className="py-6 text-center z-10">
+                        <div className="text-4xl mb-3">{ticket.status === 'PENDING_PAYMENT' ? '💳' : '🚫'}</div>
+                        <span className={`px-4 py-1.5 rounded-full text-xs font-extrabold uppercase tracking-wider ${
+                            badge.cls === 'badge-success' ? 'bg-green-100 text-green-700 border border-green-200' :
+                            badge.cls === 'badge-warning' ? 'bg-yellow-100 text-yellow-700 border border-yellow-200' :
+                            badge.cls === 'badge-danger' ? 'bg-red-100 text-red-700 border border-red-200' :
+                            'bg-gray-100 text-gray-700 border border-gray-200'
+                        }`}>{badge.label}</span>
                       </div>
                     )}
                   </div>
 
-                  <div style={{ padding: '16px', background: '#f8f9fa', fontSize: '0.85rem', color: '#666', borderTop: '1px dashed #ccc', borderBottom: '1px solid #e5e7eb' }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
-                      <span>{t('myTickets.ticketType')}</span>
-                      <strong style={{ color: '#111' }}>{t('myTickets.standardTicket')}</strong>
+                  <div className="p-4 bg-white text-sm text-gray-500">
+                    <div className="flex justify-between mb-2">
+                      <span className="font-medium">{t('myTickets.ticketType')}</span>
+                      <strong className="text-gray-900 font-bold">{t('myTickets.standardTicket')}</strong>
                     </div>
-                    <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                      <span>{t('myTickets.orderNumber')}</span>
-                      <strong style={{ color: '#111' }}>{ticket.id.toString().padStart(6, '0')}</strong>
+                    <div className="flex justify-between">
+                      <span className="font-medium">{t('myTickets.orderNumber')}</span>
+                      <strong className="text-gray-900 font-mono bg-gray-100 px-2 py-0.5 rounded">{ticket.id.toString().padStart(6, '0')}</strong>
                     </div>
                   </div>
 
-                  {ticket.status === 'PAID' && !ticket.isResale && (
-                    <div className="safetix-footer">
-                      <button className="safetix-btn" onClick={() => handleTransfer(ticket.id)}>{t('myTickets.transfer')}</button>
-                      <button className="safetix-btn" onClick={() => handleSell(ticket.id)}>{t('myTickets.sell')}</button>
-                    </div>
-                  )}
 
                 </div>
               );

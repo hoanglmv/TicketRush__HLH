@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 public class EventCreateRequest {
@@ -24,4 +25,7 @@ public class EventCreateRequest {
     private LocalDateTime saleEndTime;
     private boolean queueEnabled;
     private Integer queueBatchSize;
+
+    private boolean isHot;
+    private List<String> images;
 }

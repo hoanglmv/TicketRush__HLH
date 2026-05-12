@@ -54,15 +54,15 @@ export default function SearchBar() {
   };
 
   return (
-    <form onSubmit={handleSearch} className="tm-search-container" style={{ position: 'relative', zIndex: 10 }}>
+    <form onSubmit={handleSearch} className="bg-white rounded-3xl md:rounded-full p-3 shadow-[0_8px_30px_rgb(0,0,0,0.12)] flex flex-col md:flex-row items-center max-w-5xl mx-auto border border-gray-100 relative z-10 w-full gap-2 md:gap-0">
       
-      <div className="tm-search-field" style={{ flex: '0.8' }}>
-        <div className="tm-search-label">{t('search.location')}</div>
-        <div className="flex align-center gap-sm">
-          <MapPin size={16} color="#026cdf" />
+      <div className="flex-[0.8] px-5 py-2 w-full md:w-auto md:border-r border-gray-200 relative">
+        <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{t('search.location')}</div>
+        <div className="flex items-center gap-3">
+          <MapPin size={18} className="text-[#026cdf] flex-shrink-0" />
           <input 
             type="text" 
-            className="tm-search-input" 
+            className="w-full bg-transparent border-none outline-none text-gray-900 font-bold placeholder-gray-400" 
             placeholder={t('search.locationPlaceholder')} 
             value={location}
             onChange={(e) => setLocation(e.target.value)}
@@ -70,15 +70,15 @@ export default function SearchBar() {
         </div>
       </div>
 
-      <div className="tm-search-field" style={{ flex: '0.8' }}>
-        <div className="tm-search-label">{t('search.dates')}</div>
-        <div className="flex align-center gap-sm">
-          <Calendar size={16} color="#026cdf" />
+      <div className="flex-[0.8] px-5 py-2 w-full md:w-auto md:border-r border-gray-200 relative">
+        <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{t('search.dates')}</div>
+        <div className="flex items-center gap-3">
+          <Calendar size={18} className="text-[#026cdf] flex-shrink-0" />
           <input 
             type={dates ? "date" : "text"}
             onFocus={(e) => e.target.type = 'date'}
             onBlur={(e) => { if (!e.target.value) e.target.type = 'text'; }}
-            className="tm-search-input" 
+            className="w-full bg-transparent border-none outline-none text-gray-900 font-bold placeholder-gray-400" 
             placeholder={t('search.allDates')} 
             value={dates}
             onChange={(e) => setDates(e.target.value)}
@@ -86,13 +86,13 @@ export default function SearchBar() {
         </div>
       </div>
 
-      <div className="tm-search-field" style={{ flex: '1.2' }} ref={searchRef}>
-        <div className="tm-search-label">{t('search.search')}</div>
-        <div className="flex align-center gap-sm">
-          <Search size={16} color="#026cdf" />
+      <div className="flex-[1.2] px-5 py-2 w-full md:w-auto relative" ref={searchRef}>
+        <div className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-1">{t('search.search')}</div>
+        <div className="flex items-center gap-3">
+          <Search size={18} className="text-[#026cdf] flex-shrink-0" />
           <input 
             type="text" 
-            className="tm-search-input" 
+            className="w-full bg-transparent border-none outline-none text-gray-900 font-bold placeholder-gray-400" 
             placeholder={t('search.searchPlaceholder')} 
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -102,40 +102,21 @@ export default function SearchBar() {
 
         {/* Suggestions Dropdown */}
         {showSuggestions && suggestions.length > 0 && (
-          <div style={{
-            position: 'absolute',
-            top: '100%',
-            left: 'auto', // aligns with the search container
-            right: '110px', // avoid overlapping the search button
-            width: '400px',
-            background: 'white',
-            borderRadius: '0 0 8px 8px',
-            boxShadow: '0 8px 24px rgba(0,0,0,0.15)',
-            borderTop: '1px solid #eee',
-            zIndex: 100,
-            maxHeight: '350px',
-            overflowY: 'auto'
-          }}>
-            <div style={{ padding: '8px 16px', fontSize: '0.8rem', fontWeight: 700, color: '#666', borderBottom: '1px solid #eee' }}>{t('search.suggestedEvents')} ({suggestions.length})</div>
+          <div className="absolute top-full left-0 md:left-auto right-0 md:right-4 w-full md:w-[400px] bg-white rounded-b-2xl md:rounded-2xl shadow-[0_12px_40px_rgba(0,0,0,0.15)] border border-gray-100 z-50 max-h-[350px] overflow-y-auto mt-4 md:mt-6 overflow-hidden">
+            <div className="px-5 py-3 text-xs font-extrabold text-gray-500 uppercase tracking-wider border-b border-gray-100 bg-gray-50">{t('search.suggestedEvents')} ({suggestions.length})</div>
             {suggestions.map(event => (
               <div 
                 key={event.id}
-                style={{ display: 'flex', padding: '12px 16px', borderBottom: '1px solid #eee', cursor: 'pointer', alignItems: 'center' }}
+                className="flex px-5 py-3 border-b border-gray-50 cursor-pointer items-center hover:bg-blue-50 transition-colors"
                 onClick={() => {
                   setShowSuggestions(false);
                   navigate(`/events/${event.id}`);
                 }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = '#f2f8fc')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'transparent')}
               >
-                <div style={{
-                  width: '40px', height: '40px', borderRadius: '4px',
-                  background: `url(${event.bannerUrl}) center/cover`,
-                  marginRight: '12px', flexShrink: 0
-                }} />
-                <div>
-                  <div style={{ fontWeight: 600, fontSize: '0.95rem', color: '#111' }}>{event.name}</div>
-                  <div style={{ fontSize: '0.8rem', color: '#666' }}>{event.city} • {event.venue}</div>
+                <div className="w-12 h-12 rounded-lg bg-cover bg-center mr-4 flex-shrink-0 shadow-sm" style={{ backgroundImage: `url(${event.bannerUrl})` }} />
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-gray-900 truncate">{event.name}</div>
+                  <div className="text-xs text-gray-500 font-medium truncate mt-0.5">{event.city} • {event.venue}</div>
                 </div>
               </div>
             ))}
@@ -143,7 +124,7 @@ export default function SearchBar() {
         )}
       </div>
 
-      <button type="submit" className="tm-search-btn">
+      <button type="submit" className="w-full md:w-auto bg-[#026cdf] hover:bg-blue-700 text-white px-8 py-4 rounded-xl md:rounded-full font-bold ml-0 md:ml-2 mt-2 md:mt-0 transition-colors shadow-md hover:shadow-lg text-lg md:text-base">
         {t('search.search')}
       </button>
 

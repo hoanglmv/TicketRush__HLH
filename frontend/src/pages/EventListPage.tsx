@@ -15,21 +15,13 @@ export default function EventListPage() {
   const { t } = useLanguage();
 
   const { settings } = useSettings();
-  const heroCategory = categoryParam.toUpperCase() || 'EVENTS';
+  const heroCategory = categoryParam ? categoryParam.replace('_', ' ').toUpperCase() : 'EVENTS';
   
   const getHeroBackground = (category: string) => {
-    const cat = category.toLowerCase();
-    if (cat.includes('rock')) return settings['hero_rock'] || 'https://picsum.photos/seed/rockbg/1600/800';
-    if (cat.includes('hip-hop') || cat.includes('rap')) return settings['hero_hiphop'] || 'https://picsum.photos/seed/hiphopbg/1600/800';
-    if (cat.includes('country')) return settings['hero_country'] || 'https://picsum.photos/seed/countrybg/1600/800';
-    if (cat.includes('alternative')) return settings['hero_alternative'] || 'https://picsum.photos/seed/altbg/1600/800';
-    if (cat.includes('concert')) return settings['hero_fallback'] || 'https://picsum.photos/seed/concertbg/1600/800';
-    if (cat.includes('sport') || cat.includes('football') || cat.includes('basketball')) return settings['hero_sports'] || 'https://picsum.photos/seed/sportsbg/1600/800';
-    if (cat.includes('art') || cat.includes('theater') || cat.includes('comedy') || cat.includes('broadway')) return settings['hero_arts'] || 'https://picsum.photos/seed/artsbg/1600/800';
-    if (cat.includes('family') || cat.includes('disney') || cat.includes('circus')) return settings['hero_family'] || 'https://picsum.photos/seed/familybg/1600/800';
-    if (cat.includes('city') || cat.includes('cities')) return settings['hero_cities'] || 'https://picsum.photos/seed/citybg/1600/800';
-    // Deep fallback
-    return settings['hero_fallback'] || 'https://picsum.photos/seed/fallback/1600/800';
+    if (!category) return settings['hero_fallback'] || '';
+    
+    const key = `hero_${category.toUpperCase()}`;
+    return settings[key] || settings['hero_fallback'] || '';
   };
   
   const heroBackground = getHeroBackground(categoryParam);
@@ -78,18 +70,21 @@ export default function EventListPage() {
   };
 
   return (
-    <div style={{ background: '#1f1f1f', minHeight: '100vh', paddingBottom: '60px', color: 'white' }}>
+    <div className="bg-bg-primary min-h-screen pb-[60px] text-white">
       
-      <div className="tm-hero-banner" style={{ backgroundImage: `url(${heroBackground})` }}>
-        <div className="tm-hero-content">
-          <h1 className="tm-hero-title">{heroCategory}</h1>
+      <div 
+        className="w-full h-[300px] bg-cover bg-center relative flex items-end p-10 text-white transition-all duration-700 bg-gray-900" 
+        style={{ backgroundImage: heroBackground ? `url(${heroBackground})` : 'none' }}
+      >
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 to-black/20"></div>
+        <div className="relative z-10">
+          <h1 className="text-6xl font-extrabold uppercase m-0 tracking-tight">{heroCategory}</h1>
         </div>
       </div>
 
-      <div className="tm-filter-bar" style={{ display: 'flex', gap: '16px', alignItems: 'center', flexWrap: 'wrap', background: '#2a2a2a', borderBottom: '1px solid #444' }}>
+      <div className="flex gap-4 items-center flex-wrap bg-bg-card border-b border-border-color py-4 px-10">
         <select 
-          className="form-input" 
-          style={{ width: '200px', cursor: 'pointer' }} 
+          className="w-[200px] cursor-pointer px-3 py-2 bg-bg-input border border-border-color rounded-md text-white focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20" 
           value={categoryParam || "AllCategories"}
           onChange={(e) => window.location.href = `/events?category=${e.target.value === 'AllCategories' ? '' : e.target.value}`}
         >
@@ -99,11 +94,11 @@ export default function EventListPage() {
           <option value="WORKSHOP">{t('nav.workshop')}</option>
           <option value="EXPERIENCE">{t('nav.experience')}</option>
           <option value="SPORTS">{t('nav.sports')}</option>
+          <option value="OTHER">{t('nav.other') || 'Khác'}</option>
         </select>
         
         <select 
-          className="form-input" 
-          style={{ width: '200px', cursor: 'pointer' }}
+          className="w-[200px] cursor-pointer px-3 py-2 bg-bg-input border border-border-color rounded-md text-white focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20" 
           value={dateFilter}
           onChange={(e) => setDateFilter(e.target.value)}
         >
@@ -114,72 +109,64 @@ export default function EventListPage() {
         </select>
         
         <button 
-          style={{ 
-            background: dateFilter === 'This Weekend' ? '#00b14f' : 'transparent', 
-            color: dateFilter === 'This Weekend' ? 'white' : '#ccc',
-            border: dateFilter === 'This Weekend' ? '1px solid #00b14f' : '1px solid #444', 
-            borderRadius: '20px', 
-            padding: '8px 16px', 
-            fontWeight: 600, cursor: 'pointer' 
-          }}
+          className={`px-4 py-2 font-semibold rounded-full border transition-colors ${dateFilter === 'This Weekend' ? 'bg-accent-primary text-white border-accent-primary' : 'bg-transparent text-gray-300 border-gray-600 hover:border-gray-400'}`}
           onClick={() => setDateFilter('This Weekend')}
         >
           {t('eventList.thisWeekend')}
         </button>
 
-        <div style={{ flex: 1 }}></div>
+        <div className="flex-1"></div>
 
-        <div style={{ position: 'relative', width: '300px' }}>
+        <div className="relative w-[300px]">
           <input 
             type="text" 
-            className="form-input" 
+            className="w-full pl-10 pr-4 py-2 bg-bg-input border border-border-color rounded-full text-white focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20" 
             placeholder={t('eventList.searchPlaceholder')} 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ width: '100%', paddingLeft: '36px', borderRadius: '20px' }}
           />
-          <span style={{ position: 'absolute', left: '12px', top: '50%', transform: 'translateY(-50%)', opacity: 0.5, color: 'white' }}>🔍</span>
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 opacity-50 text-white">🔍</span>
         </div>
       </div>
 
-      <div className="tm-event-list-container animate-slideIn">
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 800, textTransform: 'uppercase', borderBottom: '2px solid #00b14f', display: 'inline-block', paddingBottom: '4px', marginBottom: '24px', letterSpacing: '0.5px', color: 'white' }}>
-          {heroCategory} {t('eventList.events')} <span style={{ fontWeight: 400, color: '#aaa', borderLeft: '1px solid #444', paddingLeft: '8px', marginLeft: '8px' }}>
+      <div className="max-w-5xl mx-auto my-10 px-5">
+        <h2 className="text-xl font-extrabold uppercase border-b-2 border-accent-primary inline-block pb-1 mb-6 tracking-wide text-white">
+          {heroCategory} {t('eventList.events')} <span className="font-normal text-gray-400 border-l border-gray-600 pl-2 ml-2">
             {events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).length} {t('eventList.results')}
           </span>
         </h2>
 
         {loading ? (
-          <div className="loading-container"><div className="spinner" /></div>
+          <div className="flex justify-center p-10"><div className="w-10 h-10 border-4 border-border-color border-t-accent-primary rounded-full animate-spin" /></div>
         ) : events.length === 0 ? (
-          <div style={{ background: '#2a2a2a', padding: '40px', textAlign: 'center', border: '1px solid #444' }}>
-            <p style={{ fontSize: '1.2rem', color: '#ccc' }}>{t('eventList.noEvents')} {heroCategory}. {t('eventList.tryAdjusting')}</p>
+          <div className="bg-bg-card p-10 text-center border border-border-color rounded-lg">
+            <p className="text-lg text-gray-300">{t('eventList.noEvents')} {heroCategory}. {t('eventList.tryAdjusting')}</p>
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="flex flex-col gap-4">
             {events.filter(e => e.name.toLowerCase().includes(searchQuery.toLowerCase())).map(event => {
               const dt = extractDateInfo(event.eventDate);
               const isPast = event.eventDate && new Date(event.eventDate).getTime() < Date.now();
               return (
-                <div key={event.id} className="tm-event-row" style={{ opacity: isPast ? 0.6 : 1, filter: isPast ? 'grayscale(100%)' : 'none', background: isPast ? '#222' : '#2a2a2a', border: '1px solid #444', marginBottom: '16px', borderRadius: '8px', padding: '16px', display: 'flex' }}>
-                  <div className="tm-event-date" style={{ color: 'white', marginRight: '24px', borderRight: '1px solid #444', paddingRight: '24px' }}>
-                    <div className="tm-event-date-month">{dt.month}</div>
-                    <div className="tm-event-date-day">{dt.day}</div>
-                    <div className="tm-event-date-time">{dt.time}</div>
+                <div key={event.id} className={`flex items-center p-6 rounded-lg border transition-all ${isPast ? 'opacity-60 grayscale bg-[#222] border-gray-700' : 'bg-bg-card border-border-color hover:shadow-lg hover:-translate-y-0.5'}`}>
+                  <div className="w-[150px] border-r border-border-color pr-6 text-white">
+                    <div className="text-sm font-bold text-gray-400 uppercase">{dt.month}</div>
+                    <div className="text-3xl font-extrabold leading-none my-1">{dt.day}</div>
+                    <div className="text-xs text-gray-400">{dt.time}</div>
                   </div>
                   
-                  <div className="tm-event-details" style={{ flex: 1, color: 'white' }}>
-                    <h3 className="tm-event-title" style={{ color: 'white', margin: '0 0 8px 0' }}>{event.name}</h3>
-                    <div className="tm-event-venue" style={{ color: '#ccc' }}>{event.venue || t('eventList.tbaVenue')} • {isPast ? (t('eventList.ended') || 'Ended') : (event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration'))}</div>
+                  <div className="flex-1 pl-6 text-white">
+                    <h3 className="text-xl font-extrabold mb-2">{event.name}</h3>
+                    <div className="text-sm text-gray-300">{event.venue || t('eventList.tbaVenue')} • {isPast ? (t('eventList.ended') || 'Ended') : (event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration'))}</div>
                   </div>
                   
-                  <div className="tm-event-action" style={{ alignSelf: 'center' }}>
+                  <div className="self-center">
                     {isPast ? (
-                      <button className="tm-event-btn" disabled style={{ background: '#444', color: '#888', border: 'none', padding: '8px 16px', borderRadius: '4px', cursor: 'not-allowed' }}>
+                      <button className="px-4 py-2 bg-gray-700 text-gray-400 rounded cursor-not-allowed font-bold" disabled>
                         {t('eventList.ended') || 'Ended'}
                       </button>
                     ) : (
-                      <Link to={`/events/${event.id}`} className="tm-event-btn" style={{ background: '#00b14f', color: 'white', border: 'none', padding: '8px 16px', borderRadius: '4px', textDecoration: 'none', fontWeight: 'bold' }}>
+                      <Link to={`/events/${event.id}`} className="px-4 py-2 bg-accent-primary text-white rounded font-bold hover:bg-accent-secondary transition-colors inline-block">
                         {t('eventList.findTickets')}
                       </Link>
                     )}

@@ -28,4 +28,7 @@ public class EventResponse {
     private long totalSeats;
     private long availableSeats;
     private long soldSeats;
+    
+    private boolean isHot;
+    private List<String> images;
 }

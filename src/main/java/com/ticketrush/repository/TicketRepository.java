@@ -16,9 +16,9 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByUserIdOrderByCreatedAtDesc(Long userId);
 
-    Optional<Ticket> findByIdAndUserId(Long id, Long userId);
+    void deleteByEventId(Long eventId);
 
-    List<Ticket> findByIsResaleTrueAndStatus(TicketStatus status);
+    Optional<Ticket> findByIdAndUserId(Long id, Long userId);
 
     Optional<Ticket> findBySeatAndStatus(Seat seat, TicketStatus status);
 

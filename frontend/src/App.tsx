@@ -4,7 +4,6 @@ import { SettingsProvider } from './contexts/SettingsContext';
 import { LanguageProvider } from './i18n';
 import Navbar from './components/Navbar';
 import HomePage from './pages/HomePage';
-import Chatbot from './components/Chatbot';
 import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -14,16 +13,12 @@ import SeatSelectionPage from './pages/SeatSelectionPage';
 import CheckoutPage from './pages/CheckoutPage';
 import WaitingRoomPage from './pages/WaitingRoomPage';
 import MyTicketsPage from './pages/MyTicketsPage';
-import ResalePage from './pages/ResalePage';
-import ArtistDetailsPage from './pages/ArtistDetailsPage';
 import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 import AdminEventListPage from './pages/admin/AdminEventListPage';
 import AdminEventCreatePage from './pages/admin/AdminEventCreatePage';
+import AdminEventEditPage from './pages/admin/AdminEventEditPage';
 import AdminEventDetailPage from './pages/admin/AdminEventDetailPage';
 import ProfilePage from './pages/ProfilePage';
-import ForgotPasswordPage from './pages/ForgotPasswordPage';
-import ResetPasswordPage from './pages/ResetPasswordPage';
-import CityPage from './pages/CityPage';
 import './index.css';
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -44,21 +39,17 @@ function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<RegisterPage />} />
-      <Route path="/forgot-password" element={<ForgotPasswordPage />} />
-      <Route path="/reset-password" element={<ResetPasswordPage />} />
-      <Route path="/city/:cityId" element={<CityPage />} />
       <Route path="/events" element={<EventListPage />} />
       <Route path="/events/:id" element={<EventDetailPage />} />
       <Route path="/events/:id/seats" element={<ProtectedRoute><SeatSelectionPage /></ProtectedRoute>} />
       <Route path="/events/:eventId/queue" element={<ProtectedRoute><WaitingRoomPage /></ProtectedRoute>} />
       <Route path="/checkout/:ticketId" element={<ProtectedRoute><CheckoutPage /></ProtectedRoute>} />
       <Route path="/tickets" element={<ProtectedRoute><MyTicketsPage /></ProtectedRoute>} />
-      <Route path="/resale" element={<ResalePage />} />
-      <Route path="/artist/:id" element={<ArtistDetailsPage />} />
       <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
       <Route path="/admin" element={<AdminRoute><AdminDashboardPage /></AdminRoute>} />
       <Route path="/admin/events" element={<AdminRoute><AdminEventListPage /></AdminRoute>} />
       <Route path="/admin/events/create" element={<AdminRoute><AdminEventCreatePage /></AdminRoute>} />
+      <Route path="/admin/events/:id/edit" element={<AdminRoute><AdminEventEditPage /></AdminRoute>} />
       <Route path="/admin/events/:id" element={<AdminRoute><AdminEventDetailPage /></AdminRoute>} />
     </Routes>
   );
@@ -70,10 +61,13 @@ function App() {
       <LanguageProvider>
         <AuthProvider>
           <SettingsProvider>
-            <Navbar />
-            <AppRoutes />
-            <Footer />
-            <Chatbot />
+            <div className="min-h-screen flex flex-col bg-gray-50 text-gray-900 antialiased font-sans">
+              <Navbar />
+              <div className="flex-1 flex flex-col">
+                <AppRoutes />
+              </div>
+              <Footer />
+            </div>
           </SettingsProvider>
         </AuthProvider>
       </LanguageProvider>

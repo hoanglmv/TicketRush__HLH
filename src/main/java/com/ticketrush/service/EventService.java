@@ -26,11 +26,14 @@ public class EventService {
     private final EventRepository eventRepository;
     private final ZoneRepository zoneRepository;
     private final SeatRepository seatRepository;
+    private final com.ticketrush.repository.TicketRepository ticketRepository;
 
     // ========== EVENT CRUD ==========
 
     @Transactional
     public EventResponse createEvent(EventCreateRequest request) {
+        validateEventDates(request.getEventDate(), request.getSaleStartTime(), request.getSaleEndTime());
+
         Event event = Event.builder()
                 .name(request.getName())
                 .description(request.getDescription())
@@ -45,6 +48,8 @@ public class EventService {
                 .status(EventStatus.DRAFT)
                 .queueEnabled(request.isQueueEnabled())
                 .queueBatchSize(request.getQueueBatchSize() != null ? request.getQueueBatchSize() : 50)
+                .isHot(request.isHot())
+                .images(request.getImages() != null ? request.getImages() : new ArrayList<>())
                 .build();
 
         event = eventRepository.save(event);
@@ -53,6 +58,8 @@ public class EventService {
 
     @Transactional
     public EventResponse updateEvent(Long eventId, EventCreateRequest request) {
+        validateEventDates(request.getEventDate(), request.getSaleStartTime(), request.getSaleEndTime());
+
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found: " + eventId));
 
@@ -69,6 +76,11 @@ public class EventService {
         event.setQueueEnabled(request.isQueueEnabled());
         if (request.getQueueBatchSize() != null) {
             event.setQueueBatchSize(request.getQueueBatchSize());
+        }
+        event.setHot(request.isHot());
+        if (request.getImages() != null) {
+            event.getImages().clear();
+            event.getImages().addAll(request.getImages());
         }
 
         event = eventRepository.save(event);
@@ -90,6 +102,14 @@ public class EventService {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found: " + eventId));
         return toEventResponse(event);
+    }
+
+    @Transactional
+    public void deleteEvent(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event not found"));
+        ticketRepository.deleteByEventId(eventId);
+        eventRepository.delete(event);
     }
 
     public List<EventResponse> getPublicEvents() {
@@ -147,6 +167,19 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional
+    public void updateZoneOrder(Long eventId, List<Long> zoneIds) {
+        for (int i = 0; i < zoneIds.size(); i++) {
+            Long zoneId = zoneIds.get(i);
+            Zone zone = zoneRepository.findById(zoneId)
+                    .orElseThrow(() -> new ResourceNotFoundException("Zone not found"));
+            if (zone.getEvent().getId().equals(eventId)) {
+                zone.setSortOrder(i);
+                zoneRepository.save(zone);
+            }
+        }
+    }
+
     // ========== SEAT LISTING ==========
 
     public List<SeatResponse> getSeatsByEvent(Long eventId) {
@@ -173,6 +206,20 @@ public class EventService {
             }
         }
         seatRepository.saveAll(seats);
+    }
+
+    private void validateEventDates(java.time.LocalDateTime eventDate, java.time.LocalDateTime saleStart, java.time.LocalDateTime saleEnd) {
+        if (eventDate != null && eventDate.isBefore(java.time.LocalDateTime.now())) {
+            throw new InvalidOperationException("Thời gian sự kiện phải sau thời điểm hiện tại.");
+        }
+        if (saleStart != null && saleEnd != null) {
+            if (saleStart.isAfter(saleEnd) || saleStart.isEqual(saleEnd)) {
+                throw new InvalidOperationException("Thời gian mở bán phải diễn ra trước thời gian đóng bán vé.");
+            }
+            if (eventDate != null && (saleEnd.isAfter(eventDate) || saleEnd.isEqual(eventDate))) {
+                throw new InvalidOperationException("Thời gian đóng bán vé phải trước khi sự kiện diễn ra.");
+            }
+        }
     }
 
     private void validateStatusTransition(EventStatus current, EventStatus next) {
@@ -218,6 +265,8 @@ public class EventService {
                 .totalSeats(totalSeats)
                 .availableSeats(availableSeats)
                 .soldSeats(soldSeats)
+                .isHot(event.isHot())
+                .images(event.getImages())
                 .build();
     }
 

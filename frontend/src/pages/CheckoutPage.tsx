@@ -20,7 +20,11 @@ export default function CheckoutPage() {
     bookingApi.getTicket(Number(ticketId)).then(res => {
       setTicket(res.data.data);
       if (res.data.data.expiredAt) {
-        const exp = new Date(res.data.data.expiredAt).getTime();
+        let expStr = res.data.data.expiredAt;
+        if (typeof expStr === 'string' && !expStr.endsWith('Z') && !expStr.includes('+')) {
+          expStr += 'Z'; // Force UTC parsing since backend docker runs in UTC
+        }
+        const exp = new Date(expStr).getTime();
         const now = Date.now();
         setTimeLeft(Math.max(0, Math.floor((exp - now) / 1000)));
       }
@@ -74,72 +78,72 @@ export default function CheckoutPage() {
   const orderTotal = ticket.price + serviceFee + insurancePrice;
 
   return (
-    <div className="page" style={{ background: '#f8f9fa', padding: '40px 0' }}>
-      <div className="container" style={{ maxWidth: '1100px' }}>
+    <div className="flex-1 bg-[#f8f9fa] py-10 text-gray-900">
+      <div className="container mx-auto px-6 max-w-[1100px]">
         
-        {expired && <div className="alert alert-error">{t('checkout.expired')}</div>}
-        {error && <div className="alert alert-error">{error}</div>}
+        {expired && <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-6 font-bold">{t('checkout.expired')}</div>}
+        {error && <div className="bg-red-100 text-red-700 px-4 py-3 rounded mb-6 font-bold">{error}</div>}
 
-        <div className="grid-2" style={{ gridTemplateColumns: 'minmax(0, 2fr) minmax(0, 1.2fr)', gap: '30px' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[2fr_1.2fr] gap-8">
           
           {/* LEFT COLUMN: Configuration */}
-          <div className="flex flex-col gap-lg">
+          <div className="flex flex-col gap-6">
             
             {/* Delivery Section */}
-            <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-              <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb' }}>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>{t('checkout.delivery')}</h2>
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-2xl font-extrabold">{t('checkout.delivery')}</h2>
               </div>
-              <div style={{ padding: '24px' }}>
-                <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '8px' }}>{t('checkout.mobileTicket')}</h3>
-                <p style={{ color: '#444', fontSize: '0.9rem' }}>
+              <div className="p-6">
+                <h3 className="text-lg font-bold mb-2">{t('checkout.mobileTicket')}</h3>
+                <p className="text-gray-600 text-sm">
                   {t('checkout.mobileDesc')}
                 </p>
-                <div style={{ marginTop: '16px', background: '#e0f2fe', color: '#0369a1', padding: '12px', borderRadius: '4px', fontSize: '0.85rem' }}>
-                  <strong>{t('checkout.note')}</strong> {t('checkout.qrNote')}
+                <div className="mt-4 bg-sky-50 text-sky-700 p-4 rounded-lg text-sm border border-sky-100">
+                  <strong className="font-bold">{t('checkout.note')}</strong> {t('checkout.qrNote')}
                 </div>
               </div>
             </div>
 
             {/* Ticket Protection Section */}
-            <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-              <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb' }}>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, display: 'flex', justifyContent: 'space-between' }}>
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-2xl font-extrabold flex justify-between items-center">
                   {t('checkout.ticketProtector')} 
-                  <span style={{ fontSize: '0.9rem', color: '#666', fontWeight: 400 }}>{t('checkout.optional')}</span>
+                  <span className="text-sm text-gray-500 font-normal">{t('checkout.optional')}</span>
                 </h2>
               </div>
-              <div style={{ padding: '24px' }}>
-                <div style={{ display: 'flex', gap: '16px', marginBottom: '20px' }}>
-                  <div style={{ width: '60px', height: '60px', background: '#22c55e', color: 'white', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '2rem' }}>☔</div>
+              <div className="p-6">
+                <div className="flex gap-4 mb-6">
+                  <div className="w-16 h-16 bg-green-500 text-white rounded-full flex items-center justify-center text-3xl shrink-0">☔</div>
                   <div>
-                    <h3 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '4px' }}>{t('checkout.protectPurchase')}</h3>
-                    <p style={{ color: '#444', fontSize: '0.9rem', lineHeight: 1.5 }}>
+                    <h3 className="text-lg font-bold mb-1">{t('checkout.protectPurchase')}</h3>
+                    <p className="text-gray-600 text-sm leading-relaxed">
                       {t('checkout.protectDesc')}
                     </p>
                   </div>
                 </div>
                 
-                <div style={{ border: '1px solid #ccc', borderRadius: '8px', overflow: 'hidden' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', cursor: 'pointer', borderBottom: '1px solid #ccc', background: insuranceSelected === true ? '#f0f9ff' : 'white' }}>
-                    <input type="radio" name="insurance" checked={insuranceSelected === true} onChange={() => setInsuranceSelected(true)} style={{ width: '20px', height: '20px' }} />
-                    <span style={{ fontWeight: 600 }}>{t('checkout.yesProtect')}</span>
+                <div className="border border-gray-300 rounded-xl overflow-hidden">
+                  <label className={`flex items-center gap-3 p-4 cursor-pointer border-b border-gray-300 transition-colors ${insuranceSelected === true ? 'bg-sky-50' : 'bg-white hover:bg-gray-50'}`}>
+                    <input type="radio" name="insurance" checked={insuranceSelected === true} onChange={() => setInsuranceSelected(true)} className="w-5 h-5 text-sky-600 focus:ring-sky-500" />
+                    <span className="font-bold">{t('checkout.yesProtect')}</span>
                   </label>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '16px', cursor: 'pointer', background: insuranceSelected === false ? '#f0f9ff' : 'white' }}>
-                    <input type="radio" name="insurance" checked={insuranceSelected === false} onChange={() => setInsuranceSelected(false)} style={{ width: '20px', height: '20px' }} />
-                    <span style={{ fontWeight: 600 }}>{t('checkout.noProtect')}</span>
+                  <label className={`flex items-center gap-3 p-4 cursor-pointer transition-colors ${insuranceSelected === false ? 'bg-sky-50' : 'bg-white hover:bg-gray-50'}`}>
+                    <input type="radio" name="insurance" checked={insuranceSelected === false} onChange={() => setInsuranceSelected(false)} className="w-5 h-5 text-sky-600 focus:ring-sky-500" />
+                    <span className="font-bold">{t('checkout.noProtect')}</span>
                   </label>
                 </div>
               </div>
             </div>
 
             {/* Payment Info Mock */}
-            <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-              <div style={{ padding: '24px', borderBottom: '1px solid #e5e7eb' }}>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800 }}>{t('checkout.payment')}</h2>
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm">
+              <div className="p-6 border-b border-gray-200">
+                <h2 className="text-2xl font-extrabold">{t('checkout.payment')}</h2>
               </div>
-              <div style={{ padding: '24px' }}>
-                <div style={{ padding: '16px', border: '1px solid #026cdf', borderRadius: '4px', background: '#f0f9ff', color: '#026cdf', fontWeight: 600, display: 'flex', justifyContent: 'center' }}>
+              <div className="p-6">
+                <div className="p-4 border border-blue-500 rounded-lg bg-blue-50 text-blue-700 font-bold flex justify-center text-center">
                   {t('checkout.sandboxPayment') || 'Hệ thống Thanh toán an toàn qua VNPay / ZaloPay'}
                 </div>
               </div>
@@ -149,53 +153,52 @@ export default function CheckoutPage() {
 
           {/* RIGHT COLUMN: Order Summary & Timer */}
           <div>
-            <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', position: 'sticky', top: '90px' }}>
+            <div className="bg-white border border-gray-200 rounded-xl shadow-sm sticky top-24">
               
               {/* TM Timer */}
-              <div style={{ padding: '16px 24px', borderBottom: '1px solid #e5e7eb', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                <span style={{ fontWeight: 800, fontSize: '1rem' }}>{t('checkout.timeLeft')}</span>
-                <span style={{ fontSize: '1.5rem', fontWeight: 900, color: timeLeft < 60 ? '#ef4444' : '#026cdf' }}>
+              <div className="p-4 px-6 border-b border-gray-200 flex justify-between items-center bg-gray-50 rounded-t-xl">
+                <span className="font-extrabold text-gray-700">{t('checkout.timeLeft')}</span>
+                <span className={`text-3xl font-black ${timeLeft < 60 ? 'text-red-500' : 'text-blue-600'}`}>
                   {formatTime(timeLeft)}
                 </span>
               </div>
 
-              <div style={{ padding: '24px' }}>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 800, marginBottom: '20px' }}>{t('checkout.orderSummary')}</h2>
+              <div className="p-6">
+                <h2 className="text-2xl font-extrabold mb-6">{t('checkout.orderSummary')}</h2>
                 
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
-                  <span style={{ fontWeight: 600 }}>{ticket.eventName}</span>
+                <div className="flex justify-between mb-2">
+                  <span className="font-bold text-lg">{ticket.eventName}</span>
                 </div>
-                <div style={{ color: '#666', fontSize: '0.85rem', marginBottom: '20px' }}>
+                <div className="text-gray-500 text-sm mb-6 pb-6 border-b border-dashed border-gray-300">
                   {ticket.zoneName} - {t('checkout.seatRow')} {ticket.seatLabel.replace(/[0-9]/g, '')} - {t('checkout.seat')} {ticket.seatLabel}
                 </div>
 
-                <div style={{ borderTop: '1px dashed #ccc', paddingTop: '16px', display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <span style={{ color: '#444' }}>{t('checkout.standardPrice')}</span>
+                <div className="flex justify-between mb-4 font-medium">
+                  <span className="text-gray-600">{t('checkout.standardPrice')}</span>
                   <span>{ticket.price.toLocaleString('vi-VN')}₫</span>
                 </div>
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px' }}>
-                  <span style={{ color: '#444' }}>{t('checkout.serviceFee')}</span>
+                <div className="flex justify-between mb-4 font-medium">
+                  <span className="text-gray-600">{t('checkout.serviceFee')}</span>
                   <span>{serviceFee.toLocaleString('vi-VN')}₫</span>
                 </div>
                 {insuranceSelected && (
-                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '12px', color: '#22c55e', fontWeight: 600 }}>
+                  <div className="flex justify-between mb-4 text-green-600 font-bold">
                     <span>{t('checkout.ticketProtectorFee')}</span>
                     <span>190.000₫</span>
                   </div>
                 )}
                 
-                <div style={{ borderTop: '1px solid #ccc', paddingTop: '16px', marginTop: '16px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: '1.2rem', fontWeight: 800 }}>{t('checkout.total')}</span>
-                  <span style={{ fontSize: '1.4rem', fontWeight: 900, color: '#111' }}>{orderTotal.toLocaleString('vi-VN')}₫</span>
+                <div className="border-t border-gray-200 pt-6 mt-2 flex justify-between items-center">
+                  <span className="text-xl font-extrabold">{t('checkout.total')}</span>
+                  <span className="text-3xl font-black text-black">{orderTotal.toLocaleString('vi-VN')}₫</span>
                 </div>
 
-                <p style={{ fontSize: '0.75rem', color: '#666', marginTop: '24px', lineHeight: 1.5 }}>
+                <p className="text-xs text-gray-500 mt-6 leading-relaxed">
                   {t('checkout.termsNotice')}
                 </p>
 
                 <button 
-                  className="btn" 
-                  style={{ width: '100%', marginTop: '20px', padding: '16px', background: '#026cdf', color: 'white', fontSize: '1.1rem', fontWeight: 800, borderRadius: '4px' }}
+                  className="w-full mt-6 py-4 bg-blue-600 text-white text-lg font-extrabold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   onClick={handleShowQR}
                   disabled={confirming || expired}
                 >
@@ -210,39 +213,29 @@ export default function CheckoutPage() {
 
       {/* QR Code Modal */}
       {showQR && (
-        <div style={{
-          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
-          background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(5px)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 9999
-        }}>
-          <div className="glass-panel" style={{ width: 400, padding: 40, borderRadius: 24, textAlign: 'center', background: 'white', color: '#111' }}>
-            <h3 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: 8, color: '#026cdf' }}>Quét mã QR để thanh toán</h3>
-            <p style={{ color: '#666', fontSize: '0.95rem', marginBottom: 24 }}>
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="w-full max-w-[400px] p-10 rounded-3xl text-center bg-white text-black shadow-2xl">
+            <h3 className="text-2xl font-extrabold mb-2 text-blue-600">Quét mã QR để thanh toán</h3>
+            <p className="text-gray-500 text-sm mb-6">
               Mở ứng dụng ngân hàng hoặc Momo/ZaloPay để quét mã QR này.
             </p>
 
-            <div style={{ 
-              width: 250, height: 250, margin: '0 auto 24px', 
-              background: 'url(https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=TicketRushPaymentMock) center/cover',
-              border: '1px solid #eee', borderRadius: 12, padding: 8
-            }} />
+            <div className="w-[250px] h-[250px] mx-auto mb-6 bg-[url('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=TicketRushPaymentMock')] bg-center bg-cover border border-gray-200 rounded-xl p-2" />
             
-            <div style={{ fontWeight: 800, fontSize: '1.6rem', color: '#111', marginBottom: 24 }}>
+            <div className="font-black text-3xl text-black mb-8">
               {orderTotal.toLocaleString('vi-VN')}₫
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div className="flex flex-col gap-3">
               <button 
-                className="btn btn-primary" 
-                style={{ width: '100%', padding: '16px', fontSize: '1.1rem', borderRadius: 8, background: '#22c55e', border: 'none' }}
+                className="w-full py-4 text-lg font-bold rounded-xl bg-green-500 hover:bg-green-600 text-white transition-colors disabled:opacity-50"
                 onClick={handleConfirm}
                 disabled={confirming}
               >
                 {confirming ? 'Đang xử lý...' : 'Giả lập: Đã quét & Thanh toán thành công'}
               </button>
               <button 
-                className="btn btn-outline" 
-                style={{ width: '100%', padding: '14px', borderRadius: 8 }} 
+                className="w-full py-3 font-bold rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors disabled:opacity-50" 
                 onClick={() => setShowQR(false)}
                 disabled={confirming}
               >

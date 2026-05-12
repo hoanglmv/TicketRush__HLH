@@ -1,105 +1,123 @@
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { useSettings } from '../contexts/SettingsContext';
+
 import { useLanguage } from '../i18n';
-import { Search } from 'lucide-react';
+import { Search, Plus, Ticket, LogOut, ChevronDown } from 'lucide-react';
 
 export default function Navbar() {
   const { user, logout, isAdmin, isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const { settings } = useSettings();
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const currentCategory = searchParams.get('category') || '';
+
   const { t, locale, toggleLocale } = useLanguage();
 
+  const isCategoryActive = (cat: string) => {
+    return currentCategory === cat;
+  };
+
   return (
-    <nav className="navbar-tb" style={{ width: '100%', position: 'sticky', top: 0, zIndex: 100 }}>
-      {/* Top Tier: Green */}
-      <div className="navbar-tb-top">
-        <div className="navbar-inner">
-          <div className="navbar-top-left">
-            <Link to="/" className="navbar-tb-brand">ticketbox</Link>
-            
-            {/* Search Bar */}
-            <div className="navbar-search">
-               <Search size={18} color="#999" style={{ marginRight: '8px' }}/>
-               <input 
-                 type="text" 
-                 placeholder={t('nav.searchPlaceholder')}
-                 style={{ background: 'transparent', border: 'none', color: 'black', fontSize: '0.9rem', outline: 'none', width: '100%' }}
-                 onKeyDown={(e) => {
-                   if (e.key === 'Enter') {
-                     navigate(`/events?search=${encodeURIComponent(e.currentTarget.value)}`);
-                   }
-                 }}
-               />
-               <div style={{ borderLeft: '1px solid #ddd', paddingLeft: '16px', marginLeft: '8px' }}>
-                 <button style={{ background: 'transparent', border: 'none', color: '#00b14f', fontWeight: 600, cursor: 'pointer' }}>{t('nav.search')}</button>
-               </div>
+    <nav className="w-full sticky top-0 z-[1000] bg-[#111111]/90 backdrop-blur-md border-b border-white/5 transition-all duration-300">
+      <div className="container mx-auto px-6 max-w-[95%]">
+        {/* Main Bar */}
+        <div className="flex items-center justify-between py-4 gap-8">
+          {/* Logo */}
+          <Link to="/" className="flex items-center gap-2 group">
+            <div className="text-2xl font-black tracking-tighter text-white">
+              <span className="italic">ticket</span>
+              <span className="text-[#00b14f]">rush</span>
             </div>
+          </Link>
+          
+          {/* Search Bar */}
+          <div className="hidden md:flex items-center flex-1 max-w-xl relative group">
+            <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-[#00b14f] transition-colors">
+              <Search size={18} />
+            </div>
+            <input 
+              type="text" 
+              placeholder={t('nav.searchPlaceholder')}
+              className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-11 pr-24 text-sm text-white focus:outline-none focus:border-[#00b14f] focus:bg-white/10 transition-all placeholder:text-white/20"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  navigate(`/events?search=${encodeURIComponent(e.currentTarget.value)}`);
+                }
+              }}
+            />
+            <button className="absolute right-1.5 top-1.5 bottom-1.5 px-6 bg-[#00b14f] text-white text-[11px] font-black uppercase rounded-full hover:bg-[#008a3d] transition-all tracking-wider">
+              {t('nav.search')}
+            </button>
           </div>
 
-          <div className="navbar-top-right">
+          {/* User Actions */}
+          <div className="flex items-center gap-4">
             {isAdmin && (
-              <Link to="/admin/events/create" style={{ color: 'white', textDecoration: 'none', border: '1px solid white', borderRadius: '20px', padding: '6px 16px', fontSize: '0.85rem', fontWeight: 600 }}>{t('nav.createEvent')}</Link>
+              <Link to="/admin/events/create" className="hidden lg:flex items-center gap-2 text-white/70 hover:text-white transition-colors">
+                <div className="p-1.5 bg-white/5 rounded-lg border border-white/10 group-hover:border-[#00b14f] transition-colors">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" className="text-[#00b14f]"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                </div>
+                <span className="text-[11px] font-black uppercase tracking-widest">{t('nav.createEvent')}</span>
+              </Link>
             )}
             
             {isAuthenticated ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-                <Link to="/tickets" style={{ color: 'white', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '6px' }}>
-                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
+              <div className="flex items-center gap-6">
+                <Link to="/tickets" className="text-white/70 text-[11px] font-black uppercase tracking-widest flex items-center gap-2 hover:text-[#00b14f] transition-colors">
+                   <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-[#00b14f]"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>
                    {t('nav.myTickets')}
                 </Link>
                 
-                <div className="nav-item-dropdown" style={{ position: 'relative' }}>
-                  <div className="flex-center gap-sm" style={{ cursor: 'pointer' }}>
-                    <div className="navbar-avatar">
-                      {user?.username?.charAt(0).toUpperCase()}
+                <div className="relative group">
+                  <div className="flex items-center gap-3 cursor-pointer py-1">
+                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#00b14f] to-[#008a3d] p-[2px] shadow-lg shadow-[#00b14f]/20 group-hover:scale-105 transition-transform">
+                      <div className="w-full h-full rounded-full bg-black flex items-center justify-center font-black text-xs text-white">
+                        {user?.username?.charAt(0).toUpperCase()}
+                      </div>
                     </div>
-                    <span style={{ fontSize: '0.9rem', color: 'white', fontWeight: 600 }}>
-                      {user?.fullName || user?.username}
-                    </span>
+                    <div className="hidden sm:block">
+                      <div className="text-[9px] text-white/40 uppercase font-black tracking-widest leading-none mb-1">{isAdmin ? 'Admin' : 'Member'}</div>
+                      <div className="text-xs font-bold text-white group-hover:text-[#00b14f] transition-colors">{user?.username}</div>
+                    </div>
                   </div>
-                  <div className="mega-menu" style={{ width: '200px', left: 'auto', right: '0', padding: '16px', background: '#2a2a2a', color: 'white' }}>
-                    <Link to="/profile" style={{ display: 'block', padding: '8px 0', borderBottom: '1px solid #444', color: 'white', textDecoration: 'none' }}>{t('nav.myProfile')}</Link>
-                    {isAdmin && <Link to="/admin" style={{ display: 'block', padding: '8px 0', borderBottom: '1px solid #444', color: 'white', textDecoration: 'none' }}>{t('nav.adminDashboard')}</Link>}
-                    <button className="btn btn-secondary btn-sm" onClick={logout} style={{ width: '100%', marginTop: '16px', background: 'transparent', color: 'white', borderColor: 'white' }}>{t('nav.signOut')}</button>
+                  {/* Dropdown */}
+                  <div className="absolute right-0 top-full mt-2 w-56 bg-[#1a1a1a] rounded-2xl shadow-2xl border border-white/5 p-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                    <Link to="/profile" className="flex items-center gap-3 px-4 py-3 text-xs text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all font-bold uppercase tracking-wider">{t('nav.myProfile')}</Link>
+                    {isAdmin && <Link to="/admin" className="flex items-center gap-3 px-4 py-3 text-xs text-white/70 hover:text-white hover:bg-white/5 rounded-xl transition-all font-bold uppercase tracking-wider">{t('nav.adminDashboard')}</Link>}
+                    <div className="h-px bg-white/5 my-1 mx-2"></div>
+                    <button onClick={logout} className="w-full flex items-center gap-3 px-4 py-3 text-xs text-red-400 hover:bg-red-400/10 rounded-xl transition-all font-bold uppercase tracking-wider">{t('nav.signOut')}</button>
                   </div>
                 </div>
               </div>
             ) : (
-              <Link to="/login" style={{ color: 'white', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 600 }}>{t('nav.signInRegister')}</Link>
+              <Link to="/login" className="px-6 py-2 bg-[#00b14f] text-white text-[11px] font-black uppercase tracking-widest rounded-full hover:bg-[#008a3d] transition-all shadow-lg shadow-[#00b14f]/20">
+                {t('nav.signInRegister')}
+              </Link>
             )}
 
             <button
               onClick={toggleLocale}
-              style={{
-                background: 'transparent', border: 'none', color: 'white', cursor: 'pointer', fontSize: '0.85rem', fontWeight: 700, display: 'flex', alignItems: 'center', gap: '4px'
-              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-full transition-all ml-2"
             >
               {locale === 'vi' ? (
-                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '20px', height: '20px', background: '#da251d', borderRadius: '50%' }}>
-                  <span style={{ color: 'yellow', fontSize: '10px' }}>★</span>
-                </div>
+                <img src="https://flagcdn.com/w40/vn.png" className="w-4 h-3 object-cover rounded-sm" alt="VI" />
               ) : (
-                <img src="https://upload.wikimedia.org/wikipedia/en/a/a4/Flag_of_the_United_States.svg" style={{ width: '20px', height: '20px', borderRadius: '50%', objectFit: 'cover' }} alt="EN" />
+                <img src="https://flagcdn.com/w40/us.png" className="w-4 h-3 object-cover rounded-sm" alt="EN" />
               )}
-              ▾
+              <span className="text-[10px] font-bold text-white/40 uppercase">{locale}</span>
             </button>
           </div>
         </div>
-      </div>
 
-      {/* Bottom Tier: Dark */}
-      <div className="navbar-tb-bottom">
-        <div className="navbar-inner">
-          <ul className="navbar-tb-nav">
-            <li><Link to="/events?category=CONCERTS">{t('nav.concerts')}</Link></li>
-            <li><Link to="/events?category=THEATER">{t('nav.arts')}</Link></li>
-            <li><Link to="/events?category=SPORTS">{t('nav.sports')}</Link></li>
-            <li><Link to="/events?category=WORKSHOP">{t('nav.workshop')}</Link></li>
-            <li><Link to="/events?category=EXPERIENCE">{t('nav.experience')}</Link></li>
-            <li><Link to="/events?category=OTHER">{t('nav.other')}</Link></li>
-            <li><Link to="/tickets">{t('nav.resale')}</Link></li>
-            <li><Link to="/">{t('nav.blog')}</Link></li>
+        {/* Categories Bar */}
+        <div className="border-t border-white/5 overflow-x-auto no-scrollbar">
+          <ul className="flex items-center justify-center gap-10 py-3 text-[10px] font-black uppercase tracking-[0.2em]">
+            <li><Link to="/events?category=LIVE_MUSIC" className={`${isCategoryActive('LIVE_MUSIC') ? 'text-[#00b14f]' : 'text-white/40'} hover:text-white transition-colors whitespace-nowrap`}>{t('nav.concerts')}</Link></li>
+            <li><Link to="/events?category=ARTS" className={`${isCategoryActive('ARTS') ? 'text-[#00b14f]' : 'text-white/40'} hover:text-[#00b14f] transition-colors whitespace-nowrap`}>{t('nav.arts')}</Link></li>
+            <li><Link to="/events?category=SPORTS" className={`${isCategoryActive('SPORTS') ? 'text-[#00b14f]' : 'text-white/40'} hover:text-[#00b14f] transition-colors whitespace-nowrap`}>{t('nav.sports')}</Link></li>
+            <li><Link to="/events?category=WORKSHOP" className={`${isCategoryActive('WORKSHOP') ? 'text-[#00b14f]' : 'text-white/40'} hover:text-[#00b14f] transition-colors whitespace-nowrap`}>{t('nav.workshop')}</Link></li>
+            <li><Link to="/events?category=EXPERIENCE" className={`${isCategoryActive('EXPERIENCE') ? 'text-[#00b14f]' : 'text-white/40'} hover:text-[#00b14f] transition-colors whitespace-nowrap`}>{t('nav.experience')}</Link></li>
+            <li><Link to="/events?category=OTHER" className={`${isCategoryActive('OTHER') ? 'text-[#00b14f]' : 'text-white/40'} hover:text-[#00b14f] transition-colors whitespace-nowrap`}>{t('nav.other')}</Link></li>
           </ul>
         </div>
       </div>

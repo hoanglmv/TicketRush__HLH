@@ -56,6 +56,12 @@ public class AdminController {
         return ResponseEntity.ok(ApiResponse.success("Status updated to " + status, event));
     }
 
+    @DeleteMapping("/events/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteEvent(@PathVariable Long id) {
+        eventService.deleteEvent(id);
+        return ResponseEntity.ok(ApiResponse.success("Event deleted", null));
+    }
+
     // ========== ZONE MANAGEMENT ==========
 
     @PostMapping("/events/{eventId}/zones")
@@ -64,6 +70,14 @@ public class AdminController {
             @Valid @RequestBody ZoneCreateRequest request) {
         ZoneResponse zone = eventService.createZone(eventId, request);
         return ResponseEntity.ok(ApiResponse.success("Zone created with seats", zone));
+    }
+
+    @PutMapping("/events/{eventId}/zones/reorder")
+    public ResponseEntity<ApiResponse<Void>> reorderZones(
+            @PathVariable Long eventId,
+            @RequestBody List<Long> zoneIds) {
+        eventService.updateZoneOrder(eventId, zoneIds);
+        return ResponseEntity.ok(ApiResponse.success("Zones reordered", null));
     }
 
     // ========== STATS ==========

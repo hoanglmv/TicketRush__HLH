@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Calendar, MapPin, Users, Info, ChevronRight, Share2, Heart, Armchair } from 'lucide-react';
-import { eventApi, wishlistApi } from '../api';
+import { Calendar, MapPin, Users, Info, ChevronRight, Share2, Armchair } from 'lucide-react';
+import { eventApi } from '../api';
 import { EventResponse } from '../types';
 import { useAuth } from '../contexts/AuthContext';
 import { useLanguage } from '../i18n';
@@ -11,6 +11,7 @@ export default function EventDetailPage() {
   const { id } = useParams<{ id: string }>();
   const [event, setEvent] = useState<EventResponse | null>(null);
   const [loading, setLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { t, locale } = useLanguage();
@@ -18,8 +19,6 @@ export default function EventDetailPage() {
   // Social Proof Simulation
   const liveViewers = useMemo(() => Math.floor(Math.random() * (150 - 30 + 1) + 30), []);
 
-  const [isWishlisted, setIsWishlisted] = useState(false);
-  const [wishlistLoading, setWishlistLoading] = useState(false);
   const [timeUntilSale, setTimeUntilSale] = useState<string | null>(null);
 
   useEffect(() => {
@@ -29,13 +28,6 @@ export default function EventDetailPage() {
     }
   }, [id]);
 
-  useEffect(() => {
-    if (isAuthenticated && event) {
-      wishlistApi.checkStatus(event.id)
-        .then(res => setIsWishlisted(res.data.data))
-        .catch(() => {});
-    }
-  }, [isAuthenticated, event]);
 
   useEffect(() => {
     if (!event || !event.saleStartTime) return;
@@ -61,14 +53,14 @@ export default function EventDetailPage() {
   }, [event]);
 
   if (loading) return (
-    <div className="page" style={{ paddingTop: '100px' }}>
-       <div className="container" style={{ display: 'flex', justifyContent: 'center' }}>
-          <div className="spinner" style={{ width: 40, height: 40, animation: 'spin 1s linear infinite' }} />
+    <div className="flex-1 pt-[100px]">
+       <div className="container mx-auto px-6 max-w-7xl flex justify-center">
+          <div className="w-10 h-10 border-4 border-border-color border-t-accent-primary rounded-full animate-spin" />
        </div>
     </div>
   );
   
-  if (!event) return <div className="page"><div className="container"><div className="empty-state">{t('eventDetail.eventNotFound')}</div></div></div>;
+  if (!event) return <div className="flex-1"><div className="container mx-auto px-6 max-w-7xl"><div className="text-center py-20 text-text-muted text-xl">{t('eventDetail.eventNotFound')}</div></div></div>;
 
   const formatDate = (d: string) => d ? new Date(d).toLocaleDateString(locale === 'vi' ? 'vi-VN' : 'en-US', {
     weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit'
@@ -83,24 +75,6 @@ export default function EventDetailPage() {
     }
   };
 
-  const handleToggleWishlist = async () => {
-    if (!isAuthenticated) { navigate('/login'); return; }
-    if (!event || wishlistLoading) return;
-    setWishlistLoading(true);
-    try {
-      if (isWishlisted) {
-        await wishlistApi.remove(event.id);
-        setIsWishlisted(false);
-      } else {
-        await wishlistApi.add(event.id);
-        setIsWishlisted(true);
-      }
-    } catch (e) {
-      console.error(e);
-    } finally {
-      setWishlistLoading(false);
-    }
-  };
 
   const isNearingSoldOut = event.totalSeats > 0 && ((event.availableSeats / event.totalSeats) < 0.1);
   const isPast = event.eventDate && new Date(event.eventDate).getTime() < Date.now();
@@ -110,49 +84,57 @@ export default function EventDetailPage() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="page"
-      style={{ paddingTop: '80px', paddingBottom: '100px' }}
+      className="bg-bg-primary min-h-screen pt-[80px] pb-[100px]"
     >
-      <div className="container">
+      <div className="container mx-auto px-6 max-w-7xl">
         {/* Breadcrumb like header */}
-        <div style={{ marginBottom: '24px', display: 'flex', alignItems: 'center', gap: '8px', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-          <span style={{ cursor: 'pointer' }} onClick={() => navigate('/events')}>{t('eventDetail.events')}</span>
+        <div className="mb-6 flex items-center gap-2 text-text-muted text-sm">
+          <span className="cursor-pointer hover:text-accent-primary transition-colors font-medium" onClick={() => navigate('/events')}>{t('eventDetail.events')}</span>
           <ChevronRight size={14} />
-          <span style={{ color: 'var(--text-primary)' }}>{event.name}</span>
+          <span className="text-text-primary/70">{event.name}</span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 400px', gap: '40px' }}>
+        <div className="grid grid-cols-1 lg:grid-cols-[1fr_400px] gap-10">
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
           >
-            {/* Main Banner */}
-            <div style={{
-              width: '100%', height: 400, borderRadius: 'var(--radius-lg)',
-              background: event.bannerUrl ? `url(${event.bannerUrl}) center/cover` : 'linear-gradient(135deg, #6366f1, #ec4899)',
-              marginBottom: 32,
-              boxShadow: '0 20px 40px rgba(0,0,0,0.4)',
-              position: 'relative'
-            }}>
-              {/* Category Tag Overlay */}
-              <div style={{ position: 'absolute', top: 20, left: 20, background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(10px)', padding: '6px 16px', borderRadius: '20px', fontWeight: 600, fontSize: '0.85rem' }}>
-                {t('eventDetail.featured')}
+            {/* Main Banner & Carousel */}
+            <div className="mb-8">
+              <div className="w-full h-[400px] rounded-2xl shadow-[0_20px_40px_rgba(0,0,0,0.4)] relative bg-cover bg-center transition-all duration-300" 
+                style={{ backgroundImage: (event.images && event.images.length > 0) ? `url(${event.images[currentImageIndex]})` : (event.bannerUrl ? `url(${event.bannerUrl})` : 'linear-gradient(135deg, #6366f1, #ec4899)') }}>
+                {event.hot ? (
+                  <div className="absolute top-5 left-5 bg-red-600/90 backdrop-blur-md px-4 py-1.5 rounded-full font-bold text-sm text-white flex items-center gap-1 shadow-lg">
+                    <span>🔥</span> Sự kiện Hot
+                  </div>
+                ) : (
+                  <div className="absolute top-5 left-5 bg-black/60 backdrop-blur-md px-4 py-1.5 rounded-full font-semibold text-sm text-white">
+                    {t('eventDetail.featured')}
+                  </div>
+                )}
               </div>
+
+              {/* Thumbnails */}
+              {event.images && event.images.length > 1 && (
+                <div className="flex gap-3 mt-4 overflow-x-auto pb-2 custom-scrollbar">
+                  {event.images.map((img, idx) => (
+                    <div 
+                      key={idx} 
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`w-24 h-16 rounded-lg overflow-hidden cursor-pointer flex-shrink-0 border-2 transition-all duration-200 ${currentImageIndex === idx ? 'border-accent-primary opacity-100 scale-105 shadow-lg' : 'border-transparent opacity-50 hover:opacity-100'}`}
+                    >
+                      <img src={img} alt={`Thumbnail ${idx}`} className="w-full h-full object-cover" />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 24 }}>
-              <h1 style={{ fontSize: '2.5rem', fontWeight: 800, lineHeight: 1.2, flex: 1 }}>{event.name}</h1>
-              <div style={{ display: 'flex', gap: '12px' }}>
-                 <button className="btn btn-secondary" style={{ padding: '10px', borderRadius: '50%' }}><Share2 size={20} /></button>
-                 <button 
-                   className="btn btn-secondary" 
-                   style={{ padding: '10px', borderRadius: '50%', color: isWishlisted ? '#ef4444' : 'inherit' }}
-                   onClick={handleToggleWishlist}
-                   disabled={wishlistLoading}
-                 >
-                   <Heart size={20} fill={isWishlisted ? '#ef4444' : 'none'} />
-                 </button>
+            <div className="flex justify-between items-start mb-6">
+              <h1 className="text-4xl lg:text-5xl font-black leading-tight flex-1 text-text-primary tracking-tight">{event.name}</h1>
+              <div className="flex gap-3 ml-4">
+                 <button className="p-3 bg-bg-card text-text-primary border border-border-color rounded-full hover:bg-bg-card-hover hover:border-accent-primary transition-all shadow-md active:scale-95"><Share2 size={20} /></button>
               </div>
             </div>
 
@@ -160,16 +142,21 @@ export default function EventDetailPage() {
             {event.status === 'ON_SALE' && (
               <motion.div 
                 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-                style={{ background: 'rgba(239, 68, 68, 0.1)', border: '1px solid rgba(239, 68, 68, 0.2)', padding: '12px 16px', borderRadius: 'var(--radius-md)', display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '32px', color: '#fca5a5' }}
+                className="bg-red-500/10 border border-red-500/30 px-5 py-4 rounded-2xl flex items-center gap-4 mb-8 text-red-400"
               >
                 <Users size={20} className="animate-pulse" />
-                <span style={{ fontWeight: 500 }}>{t('eventDetail.currentlyViewing')} <b style={{ color: 'white' }}>{liveViewers}</b> {t('eventDetail.viewingNow')}</span>
+                <span className="font-semibold text-sm lg:text-base">{t('eventDetail.currentlyViewing')} <b className="text-white font-black">{liveViewers}</b> {t('eventDetail.viewingNow')}</span>
               </motion.div>
             )}
 
-            <div style={{ padding: '32px', background: 'var(--bg-card)', borderRadius: 'var(--radius-lg)', border: '1px solid var(--border-color)' }}>
-              <h3 style={{ fontSize: '1.4rem', fontWeight: 700, marginBottom: '20px', display: 'flex', alignItems: 'center', gap: '10px' }}><Info size={24} color="var(--accent-primary)" /> {t('eventDetail.aboutEvent')}</h3>
-              <p style={{ color: 'var(--text-secondary)', lineHeight: 1.8, fontSize: '1.05rem', whiteSpace: 'pre-wrap' }}>
+            <div className="p-8 bg-bg-card rounded-2xl border border-border-color shadow-xl">
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-text-primary">
+                <div className="w-10 h-10 rounded-xl bg-accent-primary/10 flex items-center justify-center">
+                  <Info size={24} className="text-accent-primary" />
+                </div>
+                {t('eventDetail.aboutEvent')}
+              </h3>
+              <p className="text-text-secondary leading-relaxed text-lg whitespace-pre-wrap">
                 {event.description || t('eventDetail.noDescription')}
               </p>
             </div>
@@ -181,57 +168,54 @@ export default function EventDetailPage() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <div className="glass-panel" style={{ position: 'sticky', top: 100, padding: '32px' }}>
-              <h3 style={{ fontWeight: 800, fontSize: '1.5rem', marginBottom: 24 }}>{t('eventDetail.bookingInfo')}</h3>
+            <div className="bg-bg-card border border-border-color rounded-2xl sticky top-[100px] p-8 shadow-2xl">
+              <h3 className="font-black text-2xl mb-8 text-text-primary uppercase tracking-tighter">{t('eventDetail.bookingInfo')}</h3>
 
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 20, marginBottom: 32 }}>
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(99, 102, 241, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#818cf8' }}>
+              <div className="flex flex-col gap-5 mb-8">
+                <div className="flex gap-4">
+                  <div className="w-11 h-11 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400 shrink-0">
                     <Calendar size={22} />
                   </div>
                   <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>{t('eventDetail.dateTime')}</div>
-                    <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{formatDate(event.eventDate)}</div>
+                    <div className="text-text-muted text-xs font-bold uppercase tracking-wider mb-1">{t('eventDetail.dateTime')}</div>
+                    <div className="font-bold text-lg text-text-primary">{formatDate(event.eventDate)}</div>
                   </div>
                 </div>
 
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(236, 72, 153, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#f472b6' }}>
+                <div className="flex gap-4">
+                  <div className="w-11 h-11 rounded-full bg-pink-500/10 flex items-center justify-center text-pink-400 shrink-0">
                     <MapPin size={22} />
                   </div>
                   <div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px' }}>{t('eventDetail.venue')}</div>
-                    <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{event.venue || t('eventDetail.venueUpdating')}</div>
+                    <div className="text-text-muted text-xs font-bold uppercase tracking-wider mb-1">{t('eventDetail.venue')}</div>
+                    <div className="font-bold text-lg text-text-primary">{event.venue || t('eventDetail.venueUpdating')}</div>
                   </div>
                 </div>
                 
-                <div style={{ display: 'flex', gap: '16px' }}>
-                  <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'rgba(34, 197, 94, 0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#4ade80' }}>
+                <div className="flex gap-4">
+                  <div className="w-11 h-11 rounded-full bg-green-500/10 flex items-center justify-center text-green-400 shrink-0">
                     <Armchair size={22} />
                   </div>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '4px', display: 'flex', justifyContent: 'space-between' }}>
+                  <div className="flex-1">
+                    <div className="text-text-muted text-xs font-bold uppercase tracking-wider mb-1 flex justify-between">
                       <span>{t('eventDetail.availableSeats')}</span>
-                      {isNearingSoldOut && <span style={{ color: 'var(--danger)', fontWeight: 600 }}>{t('eventDetail.nearingSoldOut')}</span>}
+                      {isNearingSoldOut && <span className="text-danger animate-pulse">{t('eventDetail.nearingSoldOut')}</span>}
                     </div>
-                    <div style={{ fontWeight: 600, fontSize: '1.05rem' }}>{event.availableSeats} / {event.totalSeats}</div>
+                    <div className="font-bold text-lg text-text-primary">{event.availableSeats} <span className="text-text-muted font-medium text-sm">/ {event.totalSeats}</span></div>
                   </div>
                 </div>
               </div>
 
-              <hr className="divider" style={{ borderColor: 'rgba(255,255,255,0.05)' }} />
+              <hr className="border-white/5 my-6" />
 
               {event.zones && event.zones.length > 0 && (
-                <div style={{ marginBottom: 32 }}>
-                  <div style={{ fontWeight: 600, color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: 16, textTransform: 'uppercase', letterSpacing: '1px' }}>{t('eventDetail.zonePricing')}</div>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <div className="mb-8">
+                  <div className="font-bold text-text-muted text-[10px] mb-4 uppercase tracking-[0.2em] opacity-80">{t('eventDetail.zonePricing')}</div>
+                  <div className="flex flex-col gap-3">
                     {event.zones.map(z => (
-                      <div key={z.id} className="flex-between" style={{
-                        padding: '12px 16px', background: 'rgba(0,0,0,0.2)', borderRadius: 'var(--radius-md)',
-                        borderLeft: `4px solid ${z.color}`
-                      }}>
-                        <span style={{ fontWeight: 500 }}>{z.name}</span>
-                        <span style={{ fontWeight: 800, color: 'var(--text-primary)', fontSize: '1.1rem' }}>
+                      <div key={z.id} className="flex justify-between items-center px-4 py-4 bg-bg-primary/50 rounded-xl border-l-[6px] transition-transform hover:scale-[1.02]" style={{ borderColor: z.color }}>
+                        <span className="font-bold text-text-primary text-sm">{z.name}</span>
+                        <span className="font-black text-accent-primary text-lg">
                           {z.price.toLocaleString('vi-VN')}₫
                         </span>
                       </div>
@@ -241,30 +225,29 @@ export default function EventDetailPage() {
               )}
 
               {isPast ? (
-                <button className="btn btn-secondary btn-lg" style={{ width: '100%', opacity: 0.7, background: '#555', color: 'white' }} disabled>
+                <button className="w-full py-4 text-lg font-bold rounded-xl opacity-70 bg-gray-600 text-white cursor-not-allowed" disabled>
                   {t('eventDetail.ended') || 'Event has ended'}
                 </button>
               ) : timeUntilSale ? (
-                <button className="btn btn-secondary btn-lg" style={{ width: '100%', opacity: 0.9, background: 'linear-gradient(135deg, #1e293b, #334155)', color: 'white' }} disabled>
-                  {t('eventDetail.saleStartsIn') || 'Sale starts in'}: <strong style={{ color: '#fbbf24', marginLeft: '8px' }}>{timeUntilSale}</strong>
+                <button className="w-full py-4 text-lg font-bold rounded-xl opacity-90 bg-gradient-to-br from-slate-800 to-slate-700 text-white cursor-not-allowed" disabled>
+                  {t('eventDetail.saleStartsIn') || 'Sale starts in'}: <strong className="text-amber-400 ml-2">{timeUntilSale}</strong>
                 </button>
               ) : event.status === 'ON_SALE' ? (
                 <motion.button 
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="btn btn-primary btn-lg" 
-                  style={{ width: '100%', padding: '18px', fontSize: '1.15rem', borderRadius: '12px' }} 
+                  className="w-full py-4 text-lg font-bold rounded-xl bg-gradient-to-br from-accent-primary to-accent-secondary text-white shadow-[0_4px_20px_rgba(0,177,79,0.4)] hover:shadow-[0_6px_25px_rgba(0,177,79,0.6)] transition-all" 
                   onClick={handleBuyTicket}
                 >
                   {t('eventDetail.buyNow')}
                 </motion.button>
               ) : (
-                <button className="btn btn-secondary btn-lg" style={{ width: '100%', opacity: 0.7 }} disabled>
+                <button className="w-full py-4 text-lg font-bold rounded-xl opacity-70 bg-bg-card border border-border-color text-white cursor-not-allowed" disabled>
                   {event.status === 'PUBLISHED' ? t('eventDetail.notOnSale') : event.status}
                 </button>
               )}
               
-              <p style={{ textAlign: 'center', fontSize: '0.8rem', color: 'var(--text-muted)', marginTop: '16px' }}>
+              <p className="text-center text-sm text-text-muted mt-4">
                 {t('eventDetail.securePayment')}
               </p>
             </div>

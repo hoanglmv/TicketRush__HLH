@@ -1,0 +1,30 @@
+package com.ticketrush.controller;
+
+import com.ticketrush.service.CloudinaryService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
+import java.util.Map;
+
+@RestController
+@RequestMapping("/api/upload")
+public class FileUploadController {
+
+    private final CloudinaryService cloudinaryService;
+
+    public FileUploadController(CloudinaryService cloudinaryService) {
+        this.cloudinaryService = cloudinaryService;
+    }
+
+    @PostMapping
+    public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            String url = cloudinaryService.uploadImage(file);
+            return ResponseEntity.ok(Map.of("data", url));
+        } catch (IOException e) {
+            return ResponseEntity.internalServerError().body(Map.of("message", "Failed to upload image"));
+        }
+    }
+}

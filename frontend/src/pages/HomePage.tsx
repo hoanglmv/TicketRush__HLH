@@ -1,37 +1,41 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Calendar, MapPin } from 'lucide-react';
+import { Calendar, MapPin, ChevronLeft, ChevronRight, Play } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { eventApi } from '../api';
 import { EventResponse } from '../types';
-import { useSettings } from '../contexts/SettingsContext';
+
 import { useLanguage } from '../i18n';
 
 export default function HomePage() {
   const [events, setEvents] = useState<EventResponse[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [currentSlide, setCurrentSlide] = useState(0);
-  
-  // Drag to scroll logic
-  const scrollRef = useRef<HTMLDivElement>(null);
-  const [isDown, setIsDown] = useState(false);
-  const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
 
+  const [currentSlide, setCurrentSlide] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
   const navigate = useNavigate();
-  const { settings } = useSettings();
-  const { t, locale } = useLanguage();
+  const { t } = useLanguage();
+
+  const bannerEvents = events.filter(e => e.hot).slice(0, 5); // Max 5 hot events for the banner
+  const eventsToShow = bannerEvents.length > 0 ? bannerEvents : events.slice(0, 2);
 
   useEffect(() => {
+    if (eventsToShow.length === 0 || isPaused) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev === 0 ? 1 : 0));
-    }, 4000);
+      setCurrentSlide((prev) => (prev + 1) % eventsToShow.length);
+    }, 7000);
     return () => clearInterval(timer);
-  }, []);
+  }, [eventsToShow.length, isPaused]);
 
   useEffect(() => {
     eventApi.list().then(res => {
-      setEvents(res.data.data || []);
-    }).catch(() => {}).finally(() => setLoading(false));
+      const data = res.data.data || [];
+      const sorted = [...data].sort((a, b) => {
+        if (a.hot && !b.hot) return -1;
+        if (!a.hot && b.hot) return 1;
+        return 0;
+      });
+      setEvents(sorted);
+    }).catch(() => { });
   }, []);
 
   const formatDate = (d: string) => {
@@ -43,245 +47,196 @@ export default function HomePage() {
     return `${day}/${month}/${year}`;
   };
 
-  const handleMouseDown = (e: React.MouseEvent) => {
-    if (!scrollRef.current) return;
-    setIsDown(true);
-    setStartX(e.pageX - scrollRef.current.offsetLeft);
-    setScrollLeft(scrollRef.current.scrollLeft);
-  };
-  const handleMouseLeave = () => setIsDown(false);
-  const handleMouseUp = () => setIsDown(false);
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDown || !scrollRef.current) return;
-    e.preventDefault();
-    const x = e.pageX - scrollRef.current.offsetLeft;
-    const walk = (x - startX) * 2;
-    scrollRef.current.scrollLeft = scrollLeft - walk;
-  };
-
   return (
-    <div style={{ background: '#1f1f1f', minHeight: '100vh', paddingBottom: '60px' }}>
-      <div className="container">
-        
-        {/* Ticketbox Carousel */}
-        <div className="tb-carousel-container" style={{ position: 'relative' }}>
-          <div className="tb-carousel-inner" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-            <div className="tb-carousel-item" onClick={() => navigate(settings['tb_banner_1_link'] || '/events')}>
-              <img src={settings['tb_banner_1_img'] || "https://picsum.photos/seed/tb1/800/400"} alt="Banner 1" />
-              <div className="tb-carousel-content">
-                <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px' }}>{settings['tb_banner_1_title'] || t('home.featuredEvents')}</h2>
-                <button className="tb-btn-outline">{t('home.viewDetails')}</button>
-              </div>
-            </div>
-            <div className="tb-carousel-item" onClick={() => navigate(settings['tb_banner_2_link'] || '/events')}>
-              <img src={settings['tb_banner_2_img'] || "https://picsum.photos/seed/tb2/800/400"} alt="Banner 2" />
-              <div className="tb-carousel-content">
-                <h2 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '8px' }}>{settings['tb_banner_2_title'] || 'VinhVerse Concert'}</h2>
-                <button className="tb-btn-outline">{t('home.viewDetails')}</button>
-              </div>
-            </div>
-          </div>
-          
-          {/* Dots Indicator */}
-          <div style={{ position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: '8px' }}>
-            <div onClick={(e) => { e.stopPropagation(); setCurrentSlide(0); }} style={{ width: '12px', height: '12px', borderRadius: '50%', background: currentSlide === 0 ? 'white' : 'rgba(255,255,255,0.5)', cursor: 'pointer', transition: 'background 0.3s' }}></div>
-            <div onClick={(e) => { e.stopPropagation(); setCurrentSlide(1); }} style={{ width: '12px', height: '12px', borderRadius: '50%', background: currentSlide === 1 ? 'white' : 'rgba(255,255,255,0.5)', cursor: 'pointer', transition: 'background 0.3s' }}></div>
-          </div>
-        </div>
+    <div className="bg-bg-primary min-h-screen pb-[60px] overflow-hidden">
 
-        {/* Section: Trending Searches */}
-        <div style={{ marginTop: '40px' }}>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white', marginBottom: '20px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            {t('home.trendingSearches') || 'Trending Searches'}
-          </h2>
-          <div 
-            ref={scrollRef}
-            onMouseDown={handleMouseDown}
-            onMouseLeave={handleMouseLeave}
-            onMouseUp={handleMouseUp}
-            onMouseMove={handleMouseMove}
-            style={{ display: 'flex', gap: '20px', overflowX: 'auto', paddingBottom: '16px', cursor: isDown ? 'grabbing' : 'grab' }} 
-            className="hide-scrollbar"
+      {/* Cinematic Premium Banner - EXPANDED WIDTH CONTENT */}
+      <div
+        className="relative h-[800px] w-full overflow-hidden shadow-2xl group mb-20"
+        onMouseEnter={() => setIsPaused(true)}
+        onMouseLeave={() => setIsPaused(false)}
+      >
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentSlide}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="absolute inset-0"
           >
-            {[
-              { id: 1, name: 'Sơn Tùng M-TP', genre: 'POP', img: '/images/artists/sontung.jpg' },
-              { id: 2, name: 'Đen Vâu', genre: 'RAP', img: '/images/artists/denvau.jpg' },
-              { id: 3, name: 'Vũ.', genre: 'INDIE', img: '/images/artists/vu.jpg' },
-              { id: 4, name: 'Hà Anh Tuấn', genre: 'POP', img: '/images/artists/haanhtuan.jpg' },
-              { id: 5, name: 'SpaceSpeakers', genre: 'HIP-HOP', img: '/images/artists/spacespeakers.jpg' },
-              { id: 6, name: 'Ngọt', genre: 'INDIE', img: '/images/artists/ngot.jpg' },
-            ].map(artist => (
-              <div key={artist.id} className="tm-trending-item" onClick={() => navigate(`/artist/${artist.id}`)}>
-                <img src={artist.img} alt={artist.name} className="tm-trending-img" draggable="false" />
-                <div className="tm-trending-genre">{artist.genre}</div>
-                <div className="tm-trending-name">{artist.name}</div>
+            <img
+              src={eventsToShow[currentSlide]?.bannerUrl || eventsToShow[currentSlide]?.images?.[0] || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30'}
+              alt="Banner"
+              className="w-full h-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/40 to-transparent"></div>
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent"></div>
+          </motion.div>
+        </AnimatePresence>
+
+        {/* Content Layer - Expanded Horizontal Space */}
+        <div className="absolute inset-0 z-10">
+          <div className="container relative mx-auto px-6 max-w-[95%] h-full flex flex-col justify-center">
+
+            {/* Left Content */}
+            <motion.div
+              key={`content-${currentSlide}`}
+              initial={{ opacity: 0, x: -50 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6, delay: 0.2 }}
+              className="max-w-4xl"
+            >
+              <div className="flex items-center gap-2 text-accent-primary mb-6">
+                <div className="w-12 h-[2px] bg-accent-primary"></div>
+                <span className="font-bold tracking-[0.3em] text-sm uppercase">{eventsToShow[currentSlide]?.category}</span>
               </div>
-            ))}
-          </div>
-        </div>
+              <h2 className="text-6xl lg:text-8xl font-black text-white mb-8 uppercase leading-[0.85] tracking-tighter drop-shadow-2xl">
+                {eventsToShow[currentSlide]?.name}
+              </h2>
+              <p className="text-text-secondary text-xl mb-10 line-clamp-3 max-w-2xl leading-relaxed drop-shadow-md">
+                {eventsToShow[currentSlide]?.description || 'Trải nghiệm những khoảnh khắc bùng nổ cùng TicketRush. Đặt vé ngay để nhận ưu đãi hấp dẫn nhất mùa hè này!'}
+              </p>
+              <div className="flex gap-6">
+                <button
+                  onClick={() => navigate(`/events/${eventsToShow[currentSlide]?.id}`)}
+                  className="px-12 py-5 bg-accent-primary text-white font-black rounded-full hover:bg-accent-secondary hover:scale-105 active:scale-95 transition-all shadow-2xl shadow-accent-primary/40 flex items-center gap-3 group/btn text-lg"
+                >
+                  {t('home.viewDetails')}
+                  <ChevronRight size={24} className="group-hover/btn:translate-x-1 transition-transform" />
+                </button>
+              </div>
+            </motion.div>
 
-        {/* Section: Nhạc sống */}
-        <div style={{ marginTop: '40px' }}>
-          <div className="section-header">
-            <div className="section-title">Nhạc sống</div>
-            <Link to="/events?category=LIVE_MUSIC" className="section-link">Xem thêm &gt;</Link>
-          </div>
-          <div className="grid-4" style={{ gap: '20px' }}>
-            {[
-              { id: 5, title: '[NUNA NU NONG X BLUE AQUARIUM] XƯƠNG RỒNG LOVE YOU', price: '800.000đ', date: '06 tháng 06, 2026', img: 'https://picsum.photos/seed/ns1/400/250' },
-              { id: 6, title: 'BADASS CITY 2026 - Saigon Hiphop Festival', price: '250.000đ', date: '16 tháng 05, 2026', img: 'https://picsum.photos/seed/ns2/400/250' },
-              { id: 7, title: '2026 KIM SUNG KYU LIVE [LV4: LEAP to VECTOR] IN HO CHI MINH CITY', price: '2.500.000đ', date: '13 tháng 06, 2026', img: 'https://picsum.photos/seed/ns3/400/250' },
-              { id: 8, title: '[BẾN THÀNH] Đêm nhạc Minh Tuyết - Hoàng Hải', price: '500.000đ', date: '28 tháng 04, 2026', img: 'https://picsum.photos/seed/ns4/400/250' },
-            ].map(item => (
-              <Link to={`/events/${item.id}`} key={item.id} className="tm-portrait-card">
-                <div className="tm-portrait-img-wrapper">
-                  <img src={item.img} alt={item.title} className="tm-portrait-img" />
-                  <div className="tm-portrait-img-overlay">
-                    <span className="btn btn-primary" style={{ background: '#00b14f', color: 'white', border: 'none', borderRadius: '4px' }}>{t('home.buyTicket') || 'Mua vé ngay'}</span>
+            {/* Right-Bottom Navigation (Thumbnails + Controls) */}
+            <div className="absolute right-0 bottom-8 lg:bottom-12 flex flex-col items-center lg:items-end gap-6 w-full lg:w-auto">
+
+              {/* Thumbnails - Hidden on Mobile/Tablet */}
+              <div className="hidden lg:flex gap-4 pointer-events-auto">
+                {eventsToShow.map((item, index) => {
+                  if (index === currentSlide) return null;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => setCurrentSlide(index)}
+                      className="w-44 h-60 rounded-2xl overflow-hidden border-2 border-white/10 cursor-pointer shadow-2xl relative group/thumb transition-all"
+                    >
+                      <img src={item.images?.[0] || item.bannerUrl || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30'} alt="Thumb" className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/50 group-hover/thumb:bg-black/0 transition-all duration-300"></div>
+                      <div className="absolute bottom-5 left-5 right-5 text-white z-10">
+                        <p className="text-[10px] font-bold uppercase opacity-70 mb-1">{item.category}</p>
+                        <p className="text-sm font-black line-clamp-2 leading-tight uppercase tracking-tighter">{item.name}</p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+
+              {/* Controls (Arrows + Progress) - Always visible, repositioned for mobile */}
+              <div className="flex w-full items-center gap-4 lg:gap-8 bg-black/40 lg:bg-black/20 backdrop-blur-md p-3 lg:p-4 rounded-full lg:rounded-2xl border border-white/10 pointer-events-auto">
+                <div className="flex gap-2 lg:gap-3">
+                  <button
+                    onClick={() => setCurrentSlide(prev => (prev - 1 + eventsToShow.length) % eventsToShow.length)}
+                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-90"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                  <button
+                    onClick={() => setCurrentSlide(prev => (prev + 1) % eventsToShow.length)}
+                    className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-90"
+                  >
+                    <ChevronRight size={20} />
+                  </button>
+                </div>
+
+                <div className="flex w-full items-end gap-1.5 lg:gap-2 pr-2">
+                  <span className="text-xl lg:text-3xl font-black text-white leading-none">0{currentSlide + 1}</span>
+                  <div className="w-full h-[2px] lg:h-[3px] bg-white/20 mb-1 lg:mb-1.5 mx-1 relative overflow-hidden rounded-full">
+                    <motion.div
+                      className="absolute inset-0 bg-accent-primary"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${((currentSlide + 1) / eventsToShow.length) * 100}%` }}
+                    />
                   </div>
+                  <span className="text-xs lg:text-sm font-bold text-white/40 leading-none">0{eventsToShow.length}</span>
                 </div>
-                <div className="tm-portrait-title">{item.title}</div>
-                <div className="tm-portrait-price">Từ {item.price}</div>
-                <div className="tm-portrait-date"><Calendar size={12} style={{ display: 'inline', marginRight: '4px' }}/> {item.date}</div>
-              </Link>
-            ))}
+              </div>
+
+            </div>
           </div>
         </div>
+      </div>
 
-        {/* Section: Sân khấu & Nghệ thuật */}
-        <div style={{ marginTop: '40px' }}>
-          <div className="section-header">
-            <div className="section-title">Sân khấu & Nghệ thuật</div>
-            <Link to="/events?category=ARTS" className="section-link">Xem thêm &gt;</Link>
-          </div>
-          <div className="grid-4" style={{ gap: '20px' }}>
-            {[
-              { id: 9, title: 'ART WORKSHOP "SAKURA BLOSSOM WHITE CHOCOLATE MOUSSE CAKE"', price: '420.000đ', date: '29 tháng 04, 2026', img: 'https://picsum.photos/seed/sk1/400/250' },
-              { id: 10, title: 'Thanh Gươm Và Bà Mẹ', price: '200.000đ', date: '27 tháng 04, 2026', img: 'https://picsum.photos/seed/sk2/400/250' },
-              { id: 11, title: 'Chào Show', price: '1.040.000đ', date: '28 tháng 04, 2026', img: 'https://picsum.photos/seed/sk3/400/250' },
-              { id: 12, title: 'ART WORKSHOP "UJI MATCHA CHEESECAKE TARTE"', price: '420.000đ', date: '29 tháng 04, 2026', img: 'https://picsum.photos/seed/sk4/400/250' },
-            ].map(item => (
-              <Link to={`/events/${item.id}`} key={item.id} className="tm-portrait-card">
-                <div className="tm-portrait-img-wrapper">
-                  <img src={item.img} alt={item.title} className="tm-portrait-img" />
-                  <div className="tm-portrait-img-overlay">
-                    <span className="btn btn-primary" style={{ background: '#00b14f', color: 'white', border: 'none', borderRadius: '4px' }}>{t('home.buyTicket') || 'Mua vé ngay'}</span>
-                  </div>
+      {/* Categories Content - Centered by Container */}
+      <div className="container mx-auto px-6 max-w-7xl">
+        {/* Dynamic Category Sections based on Standard Filters */}
+        {[
+          { id: 'LIVE_MUSIC', label: t('nav.concerts') },
+          { id: 'ARTS', label: t('nav.arts') },
+          { id: 'SPORTS', label: t('nav.sports') },
+          { id: 'WORKSHOP', label: t('nav.workshop') },
+          { id: 'EXPERIENCE', label: t('nav.experience') },
+          { id: 'OTHER', label: t('nav.other') },
+        ].map(cat => {
+          const categoryEvents = events.filter(e => e.category === cat.id).slice(0, 4);
+          if (categoryEvents.length === 0) return null;
+
+          return (
+            <div key={cat.id} className="mt-20 first:mt-0">
+              <div className="flex justify-between items-end mb-8">
+                <div className="flex items-center gap-3">
+                  <div className="w-1.5 h-8 bg-accent-primary rounded-full"></div>
+                  <h2 className="text-3xl font-black uppercase tracking-tighter text-white">{cat.label}</h2>
                 </div>
-                <div className="tm-portrait-title">{item.title}</div>
-                <div className="tm-portrait-price">Từ {item.price}</div>
-                <div className="tm-portrait-date"><Calendar size={12} style={{ display: 'inline', marginRight: '4px' }}/> {item.date}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
+                <Link to={`/events?category=${cat.id}`} className="text-accent-primary text-sm font-bold hover:underline transition-all">
+                  {t('home.seeAll') || 'Xem tất cả'} &gt;
+                </Link>
+              </div>
 
-        {/* Section: Hội thảo & Workshop */}
-        <div style={{ marginTop: '40px' }}>
-          <div className="section-header">
-            <div className="section-title">Hội thảo & Workshop</div>
-            <Link to="/events?category=WORKSHOP" className="section-link">Xem thêm &gt;</Link>
-          </div>
-          <div className="grid-4" style={{ gap: '20px' }}>
-            {[
-              { id: 13, title: 'WORKSHOP NẤU ĂN ẤN ĐỘ - INDIAN COOKING EXPERIENCE', price: '500.000đ', date: '16 tháng 05, 2026', img: 'https://picsum.photos/seed/ht1/400/250' },
-              { id: 14, title: 'ART WORKSHOP "BLUSH & BERRIES CHARLOTTE"', price: '420.000đ', date: '30 tháng 04, 2026', img: 'https://picsum.photos/seed/ht2/400/250' },
-              { id: 15, title: 'ART WORKSHOP THÊU TÚI "HOA TRONG LÒNG"', price: '370.000đ', date: '02 tháng 05, 2026', img: 'https://picsum.photos/seed/ht3/400/250' },
-              { id: 16, title: 'GSTAR SUMMIT: AI & HUMANITY 2026', price: '1.200.000đ', date: '29 tháng 05, 2026', img: 'https://picsum.photos/seed/ht4/400/250' },
-            ].map(item => (
-              <Link to={`/events/${item.id}`} key={item.id} className="tm-portrait-card">
-                <div className="tm-portrait-img-wrapper">
-                  <img src={item.img} alt={item.title} className="tm-portrait-img" />
-                  <div className="tm-portrait-img-overlay">
-                    <span className="btn btn-primary" style={{ background: '#00b14f', color: 'white', border: 'none', borderRadius: '4px' }}>{t('home.buyTicket') || 'Mua vé ngay'}</span>
-                  </div>
-                </div>
-                <div className="tm-portrait-title">{item.title}</div>
-                <div className="tm-portrait-price">Từ {item.price}</div>
-                <div className="tm-portrait-date"><Calendar size={12} style={{ display: 'inline', marginRight: '4px' }}/> {item.date}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                {categoryEvents.map(item => (
+                  <Link to={`/events/${item.id}`} key={item.id} className="group bg-bg-card rounded-2xl overflow-hidden border border-border-color hover:border-accent-primary/40 hover:-translate-y-2 hover:shadow-[0_20px_50px_rgba(0,177,79,0.15)] transition-all duration-500">
+                    <div className="relative h-[280px] overflow-hidden">
+                      <img src={item.images?.[0] || item.bannerUrl || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30'} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                        <span className="px-8 py-3 bg-accent-primary text-white font-black rounded-full shadow-2xl transform translate-y-6 group-hover:translate-y-0 transition-all duration-500">
+                          {t('home.buyTicket') || 'Mua vé ngay'}
+                        </span>
+                      </div>
+                      {item.hot && (
+                        <div className="absolute top-4 left-4 bg-red-600 text-white text-[10px] font-black px-3 py-1.5 rounded-full flex items-center gap-1 uppercase tracking-widest shadow-lg">
+                          <span>🔥</span> HOT
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-6">
+                      <div className="text-xl font-bold text-white mb-4 line-clamp-1 group-hover:text-accent-primary transition-colors">
+                        {item.name}
+                      </div>
+                      <div className="space-y-3">
+                        <div className="text-sm text-text-muted flex items-center gap-2">
+                          <MapPin size={16} className="text-accent-primary" />
+                          <span className="truncate font-medium">{item.venue}, {item.city}</span>
+                        </div>
+                        <div className="text-sm text-text-muted flex items-center gap-2">
+                          <Calendar size={16} className="text-accent-primary" />
+                          <span className="font-medium">{formatDate(item.eventDate)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          );
+        })}
 
-        {/* Section: Tham quan & Trải nghiệm */}
-        <div style={{ marginTop: '40px' }}>
-          <div className="section-header">
-            <div className="section-title">Tham quan & Trải nghiệm</div>
-            <Link to="/events?category=EXPERIENCE" className="section-link">Xem thêm &gt;</Link>
+        {events.length === 0 && (
+          <div className="mt-20 text-center py-24 bg-bg-card rounded-3xl border border-dashed border-border-color">
+            <div className="text-6xl mb-6">🎫</div>
+            <div className="text-text-muted text-xl font-bold">Chưa có sự kiện nào trong hệ thống.</div>
           </div>
-          <div className="grid-4" style={{ gap: '20px' }}>
-            {[
-              { id: 17, title: 'VÉ CỔNG VÀ COMBO DU LỊCH VĂN HÓA SUỐI TIÊN', price: '150.000đ', date: '01 tháng 04, 2026', img: 'https://picsum.photos/seed/tq1/400/250' },
-              { id: 18, title: 'Vé Trải Nghiệm Khu Vui Chơi Hướng Nghiệp KidZania Hà Nội', price: '250.000đ', date: '27 tháng 04, 2026', img: 'https://picsum.photos/seed/tq2/400/250' },
-              { id: 19, title: 'Sự kiện trải nghiệm tiệc cưới Sensation of I DO tại White Palace HVT', price: '700.000đ', date: '23 tháng 05, 2026', img: 'https://picsum.photos/seed/tq3/400/250' },
-              { id: 20, title: 'Sự kiện trải nghiệm tiệc cưới Sensation of I DO tại White Palace PVD', price: '700.000đ', date: '16 tháng 05, 2026', img: 'https://picsum.photos/seed/tq4/400/250' },
-            ].map(item => (
-              <Link to={`/events/${item.id}`} key={item.id} className="tm-portrait-card">
-                <div className="tm-portrait-img-wrapper">
-                  <img src={item.img} alt={item.title} className="tm-portrait-img" />
-                  <div className="tm-portrait-img-overlay">
-                    <span className="btn btn-primary" style={{ background: '#00b14f', color: 'white', border: 'none', borderRadius: '4px' }}>{t('home.buyTicket') || 'Mua vé ngay'}</span>
-                  </div>
-                </div>
-                <div className="tm-portrait-title">{item.title}</div>
-                <div className="tm-portrait-price">Từ {item.price}</div>
-                <div className="tm-portrait-date"><Calendar size={12} style={{ display: 'inline', marginRight: '4px' }}/> {item.date}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Section: Thể thao & Thể loại khác */}
-        <div style={{ marginTop: '40px' }}>
-          <div className="section-header">
-            <div className="section-title">Thể thao & Thể loại khác</div>
-            <Link to="/events?category=SPORTS" className="section-link">Xem thêm &gt;</Link>
-          </div>
-          <div className="grid-4" style={{ gap: '20px' }}>
-            {[
-              { id: 21, title: 'Trải nghiệm bay dù lượn cùng phi công tại Sapa', price: '2.000.000đ', date: '28 tháng 01, 2026', img: 'https://picsum.photos/seed/tt1/400/250' },
-              { id: 22, title: 'PHÂN TÍCH DỮ LIỆU VỚI POWER BI - TỐI ƯU HÓA HOẠT ĐỘNG KINH DOANH', price: '999.000đ', date: '06 tháng 04, 2026', img: 'https://picsum.photos/seed/tt2/400/250' },
-              { id: 23, title: 'PPA ASIA 1000 - MB HANOI CUP 2026 OFFICIAL MERCHANDISE', price: '45.000đ', date: '08 tháng 04, 2026', img: 'https://picsum.photos/seed/tt3/400/250' },
-              { id: 24, title: 'VCT Pacific Stage 1 Finals: Ho Chi Minh', price: '399.000đ', date: '15 tháng 05, 2026', img: 'https://picsum.photos/seed/tt4/400/250' },
-            ].map(item => (
-              <Link to={`/events/${item.id}`} key={item.id} className="tm-portrait-card">
-                <div className="tm-portrait-img-wrapper">
-                  <img src={item.img} alt={item.title} className="tm-portrait-img" />
-                  <div className="tm-portrait-img-overlay">
-                    <span className="btn btn-primary" style={{ background: '#00b14f', color: 'white', border: 'none', borderRadius: '4px' }}>{t('home.buyTicket') || 'Mua vé ngay'}</span>
-                  </div>
-                </div>
-                <div className="tm-portrait-title">{item.title}</div>
-                <div className="tm-portrait-price">Từ {item.price}</div>
-                <div className="tm-portrait-date"><Calendar size={12} style={{ display: 'inline', marginRight: '4px' }}/> {item.date}</div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Section: Điểm đến thú vị */}
-        <div style={{ marginTop: '40px' }}>
-          <div className="section-header">
-            <div className="section-title">Điểm đến thú vị</div>
-          </div>
-          <div className="grid-4" style={{ gap: '20px' }}>
-            {[
-              { id: 'ho-chi-minh', title: 'Tp. Hồ Chí Minh', img: 'https://picsum.photos/seed/hcm/400/400' },
-              { id: 'ha-noi', title: 'Hà Nội', img: 'https://picsum.photos/seed/hn/400/400' },
-              { id: 'da-lat', title: 'Đà Lạt', img: 'https://picsum.photos/seed/dl/400/400' },
-              { id: 'da-nang', title: 'Đà Nẵng', img: 'https://picsum.photos/seed/dn/400/400' },
-            ].map(item => (
-              <Link to={`/city/${item.id}`} key={item.id} className="tm-dest-card">
-                <img src={item.img} alt={item.title} className="tm-dest-img" />
-                <div className="tm-dest-overlay">
-                  {item.title}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
+        )}
       </div>
     </div>
   );

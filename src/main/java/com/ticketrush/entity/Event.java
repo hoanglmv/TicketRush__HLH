@@ -57,6 +57,16 @@ public class Event {
     @Builder.Default
     private int queueBatchSize = 50;
 
+    @Column(nullable = false)
+    @Builder.Default
+    private boolean isHot = false;
+
+    @ElementCollection
+    @CollectionTable(name = "event_images", joinColumns = @JoinColumn(name = "event_id"))
+    @Column(name = "image_url")
+    @Builder.Default
+    private List<String> images = new ArrayList<>();
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private List<Zone> zones = new ArrayList<>();

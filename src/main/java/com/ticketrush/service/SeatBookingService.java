@@ -164,90 +164,7 @@ public class SeatBookingService {
         return toTicketResponse(ticket);
     }
 
-    @Transactional
-    public TicketResponse transferTicket(Long currentUserId, Long ticketId, String targetEmail) {
-        Ticket ticket = ticketRepository.findByIdAndUserId(ticketId, currentUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found in your account"));
-                
-        if (ticket.getStatus() != TicketStatus.PAID) {
-            throw new InvalidOperationException("Only PAID tickets can be transferred.");
-        }
 
-        User targetUser = userRepository.findByEmail(targetEmail)
-                .orElseThrow(() -> new ResourceNotFoundException("User with email " + targetEmail + " not found"));
-                
-        if (targetUser.getId().equals(currentUserId)) {
-            throw new InvalidOperationException("Cannot transfer ticket to yourself");
-        }
-
-        ticket.setUser(targetUser);
-        ticket.setResale(false);
-        ticket.setResalePrice(null);
-        ticket = ticketRepository.save(ticket);
-        
-        // Transferring ownership means we must update the seat lock metadata
-        Seat seat = ticket.getSeat();
-        seat.setLockedByUserId(targetUser.getId());
-        seatRepository.save(seat);
-
-        log.info("Ticket {} transferred from user {} to user {} ({})", ticketId, currentUserId, targetUser.getId(), targetEmail);
-        return toTicketResponse(ticket);
-    }
-
-    @Transactional
-    public TicketResponse sellTicket(Long currentUserId, Long ticketId, java.math.BigDecimal price) {
-        Ticket ticket = ticketRepository.findByIdAndUserId(ticketId, currentUserId)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found in your account"));
-                
-        if (ticket.getStatus() != TicketStatus.PAID) {
-            throw new InvalidOperationException("Only PAID tickets can be sold.");
-        }
-
-        ticket.setResale(true);
-        ticket.setResalePrice(price);
-        ticket = ticketRepository.save(ticket);
-
-        log.info("Ticket {} marked for resale by user {} for price {}", ticketId, currentUserId, price);
-        return toTicketResponse(ticket);
-    }
-
-    public List<TicketResponse> getResaleTickets() {
-        return ticketRepository.findByIsResaleTrueAndStatus(TicketStatus.PAID).stream()
-                .map(this::toTicketResponse)
-                .collect(Collectors.toList());
-    }
-
-    @Transactional
-    public TicketResponse buyResaleTicket(Long buyerId, Long ticketId) {
-        Ticket ticket = ticketRepository.findById(ticketId)
-                .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
-
-        if (!ticket.isResale() || ticket.getStatus() != TicketStatus.PAID) {
-            throw new InvalidOperationException("Ticket is not available for resale");
-        }
-
-        User buyer = userRepository.findById(buyerId)
-                .orElseThrow(() -> new ResourceNotFoundException("Buyer not found"));
-
-        if (ticket.getUser().getId().equals(buyerId)) {
-            throw new InvalidOperationException("You cannot buy your own ticket");
-        }
-
-        log.info("User {} bought resale ticket {} from user {}", buyerId, ticketId, ticket.getUser().getId());
-
-        // Transfer ownership
-        ticket.setUser(buyer);
-        ticket.setResale(false);
-        ticket.setResalePrice(null);
-        ticket = ticketRepository.save(ticket);
-
-        // Update seat lock owner
-        Seat seat = ticket.getSeat();
-        seat.setLockedByUserId(buyer.getId());
-        seatRepository.save(seat);
-
-        return toTicketResponse(ticket);
-    }
 
     // ========== WebSocket Broadcasting ==========
 
@@ -282,8 +199,6 @@ public class SeatBookingService {
                 .createdAt(ticket.getCreatedAt())
                 .paidAt(ticket.getPaidAt())
                 .expiredAt(ticket.getExpiredAt())
-                .isResale(ticket.isResale())
-                .resalePrice(ticket.getResalePrice())
                 .build();
     }
 }

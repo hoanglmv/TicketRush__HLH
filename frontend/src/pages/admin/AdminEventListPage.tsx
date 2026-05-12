@@ -31,57 +31,83 @@ export default function AdminEventListPage() {
     }
   };
 
-  if (loading) return <div className="page"><div className="container"><div className="loading-container"><div className="spinner" /></div></div></div>;
+  const handleDeleteEvent = async (eventId: number) => {
+    if (!window.confirm('Bạn có chắc chắn muốn xóa sự kiện này không? Mọi dữ liệu (bao gồm cả vé đã đặt nếu có) sẽ bị xóa sạch!')) return;
+    try {
+      await adminApi.deleteEvent(eventId);
+      setEvents(events.filter(e => e.id !== eventId));
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Không thể xóa sự kiện');
+    }
+  };
+
+  if (loading) return <div className="flex-1 pt-20 text-center flex justify-center"><div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="page">
-      <div className="container animate-fadeIn">
-        <div className="page-header flex-between">
+    <div className="flex-1 py-10 bg-[#0a0a0a] min-h-screen text-white">
+      <div className="container mx-auto px-6 max-w-6xl animate-[fadeIn_0.5s_ease-out]">
+        <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
           <div>
-            <h1>{t('admin.eventManagement')}</h1>
-            <p>{t('admin.createAndManage')}</p>
+            <h1 className="text-3xl font-extrabold text-white">{t('admin.eventManagement')}</h1>
+            <p className="text-white/40 mt-2">{t('admin.createAndManage')}</p>
           </div>
-          <Link to="/admin/events/create" className="btn btn-primary">{t('admin.createEvent')}</Link>
+          <Link to="/admin/events/create" className="px-8 py-3 bg-[#00b14f] text-white font-black uppercase tracking-widest text-xs rounded-lg hover:bg-[#008a3d] transition-all shadow-lg shadow-[#00b14f]/20">{t('admin.createEvent')}</Link>
         </div>
 
         {events.length === 0 ? (
-          <div className="empty-state"><p>{t('admin.noEvents')}</p></div>
+          <div className="bg-[#111111] p-20 text-center rounded-3xl border border-white/5 shadow-2xl text-white/20 font-medium">
+            <p className="text-lg uppercase tracking-[0.2em]">{t('admin.noEvents')}</p>
+          </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+          <div className="flex flex-col gap-6">
             {events.map(event => (
-              <div key={event.id} className="card" style={{ cursor: 'default' }}>
-                <div className="card-body flex-between">
-                  <div style={{ flex: 1 }}>
-                    <div className="flex gap-sm" style={{ alignItems: 'center', marginBottom: 6 }}>
-                      <h3 style={{ fontWeight: 700 }}>{event.name}</h3>
-                      <span className={`badge ${statusColor[event.status] || 'badge-info'}`}>
+              <div key={event.id} className="bg-[#111111] rounded-2xl border border-white/5 shadow-xl hover:border-white/10 transition-all group overflow-hidden">
+                <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-8">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-4 mb-3">
+                      <h3 className="text-xl font-black text-white group-hover:text-[#00b14f] transition-colors">{event.name}</h3>
+                      <span className={`px-4 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${
+                        statusColor[event.status] === 'badge-success' ? 'bg-green-500/10 text-green-500 border border-green-500/20' :
+                        statusColor[event.status] === 'badge-warning' ? 'bg-yellow-500/10 text-yellow-500 border border-yellow-500/20' :
+                        statusColor[event.status] === 'badge-info' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
+                        statusColor[event.status] === 'badge-primary' ? 'bg-purple-500/10 text-purple-500 border border-purple-500/20' :
+                        statusColor[event.status] === 'badge-danger' ? 'bg-red-500/10 text-red-500 border border-red-500/20' :
+                        'bg-white/5 text-white/40 border border-white/10'
+                      }`}>
                         {event.status}
                       </span>
                     </div>
-                    <div style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>
-                      📍 {event.venue || 'TBA'} &nbsp;|&nbsp; 📅 {event.eventDate ? new Date(event.eventDate).toLocaleDateString('vi-VN') : '—'}
-                      &nbsp;|&nbsp; 💺 {event.soldSeats}/{event.totalSeats} {t('admin.sold')}
+                    <div className="text-xs font-bold text-white/30 flex flex-wrap gap-6 uppercase tracking-wider">
+                      <span className="flex items-center gap-2"><span className="text-[#00b14f]">📍</span> {event.venue || 'TBA'}</span>
+                      <span className="flex items-center gap-2"><span className="text-[#00b14f]">📅</span> {event.eventDate ? new Date(event.eventDate).toLocaleDateString('vi-VN') : '—'}</span>
+                      <span className="flex items-center gap-2"><span className="text-[#00b14f]">💺</span> {event.soldSeats}/{event.totalSeats} {t('admin.sold')}</span>
                     </div>
                   </div>
-                  <div className="flex gap-sm">
-                    <Link to={`/admin/events/${event.id}`} className="btn btn-secondary btn-sm">
+                  <div className="flex flex-wrap gap-3">
+                    <Link to={`/admin/events/${event.id}`} className="px-5 py-2.5 bg-white/5 text-white/70 font-black uppercase tracking-widest text-[10px] rounded-lg border border-white/10 hover:bg-white/10 transition-all">
                       {t('admin.details')}
                     </Link>
+                    <Link to={`/admin/events/${event.id}/edit`} className="px-5 py-2.5 bg-white/5 text-white/70 font-black uppercase tracking-widest text-[10px] rounded-lg border border-white/10 hover:bg-white/10 transition-all">
+                      Sửa
+                    </Link>
                     {event.status === 'DRAFT' && (
-                      <button className="btn btn-primary btn-sm" onClick={() => handleStatusChange(event.id, 'PUBLISHED')}>
+                      <button className="px-5 py-2.5 bg-blue-600 text-white font-black uppercase tracking-widest text-[10px] rounded-lg hover:bg-blue-700 transition-all shadow-lg shadow-blue-600/20" onClick={() => handleStatusChange(event.id, 'PUBLISHED')}>
                         {t('admin.publish')}
                       </button>
                     )}
                     {event.status === 'PUBLISHED' && (
-                      <button className="btn btn-success btn-sm" onClick={() => handleStatusChange(event.id, 'ON_SALE')}>
+                      <button className="px-5 py-2.5 bg-[#00b14f] text-white font-black uppercase tracking-widest text-[10px] rounded-lg hover:bg-[#008a3d] transition-all shadow-lg shadow-[#00b14f]/20" onClick={() => handleStatusChange(event.id, 'ON_SALE')}>
                         {t('admin.openSale')}
                       </button>
                     )}
                     {event.status === 'ON_SALE' && (
-                      <button className="btn btn-secondary btn-sm" onClick={() => handleStatusChange(event.id, 'COMPLETED')}>
+                      <button className="px-5 py-2.5 bg-white/10 text-white font-black uppercase tracking-widest text-[10px] rounded-lg hover:bg-white/20 transition-all" onClick={() => handleStatusChange(event.id, 'COMPLETED')}>
                         {t('admin.complete')}
                       </button>
                     )}
+                    <button className="px-5 py-2.5 bg-red-600/10 text-red-500 font-black uppercase tracking-widest text-[10px] rounded-lg border border-red-500/20 hover:bg-red-500 hover:text-white transition-all" onClick={() => handleDeleteEvent(event.id)}>
+                      Xóa
+                    </button>
                   </div>
                 </div>
               </div>

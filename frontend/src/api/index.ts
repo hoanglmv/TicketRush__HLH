@@ -7,13 +7,7 @@ export const authApi = {
     api.post<ApiResponse<AuthResponse>>('/auth/register', data),
   login: (data: { username: string; password: string }) =>
     api.post<ApiResponse<AuthResponse>>('/auth/login', data),
-  verifyOtp: (data: { email: string; otp: string }) =>
-    api.post<ApiResponse<AuthResponse>>('/auth/verify-otp', data),
   me: () => api.get<ApiResponse<AuthResponse>>('/auth/me'),
-  forgotPassword: (data: { email: string }) => 
-    api.post<ApiResponse<void>>('/auth/forgot-password', data),
-  resetPassword: (data: { email: string; otp: string; newPassword: string }) => 
-    api.post<ApiResponse<void>>('/auth/reset-password', data),
   changePassword: (data: { oldPassword: string; newPassword: string }) => 
     api.post<ApiResponse<void>>('/auth/change-password', data),
 };
@@ -24,13 +18,7 @@ export const userApi = {
   updateProfile: (data: any) => api.put<ApiResponse<any>>('/users/me', data),
 };
 
-// ========== WISHLIST ==========
-export const wishlistApi = {
-  add: (eventId: number) => api.post<ApiResponse<void>>(`/users/wishlist/${eventId}`),
-  remove: (eventId: number) => api.delete<ApiResponse<void>>(`/users/wishlist/${eventId}`),
-  getAll: () => api.get<ApiResponse<EventResponse[]>>('/users/wishlist'),
-  checkStatus: (eventId: number) => api.get<ApiResponse<boolean>>(`/users/wishlist/${eventId}/status`),
-};
+
 
 // ========== EVENTS (Public) ==========
 export const eventApi = {
@@ -55,15 +43,9 @@ export const bookingApi = {
   cancelTicket: (ticketId: number) => api.delete<ApiResponse<void>>(`/tickets/${ticketId}`),
   myTickets: () => api.get<ApiResponse<TicketResponse[]>>('/tickets/my'),
   getTicket: (ticketId: number) => api.get<ApiResponse<TicketResponse>>(`/tickets/${ticketId}`),
-  transfer: (ticketId: number, targetEmail: string) => api.post<ApiResponse<TicketResponse>>(`/tickets/${ticketId}/transfer`, { targetEmail }),
-  sell: (ticketId: number, price: number) => api.post<ApiResponse<TicketResponse>>(`/tickets/${ticketId}/sell`, { price })
 };
 
-// ========== RESALE ==========
-export const resaleApi = {
-  list: () => api.get<ApiResponse<TicketResponse[]>>('/tickets/resale'),
-  buy: (ticketId: number) => api.post<ApiResponse<TicketResponse>>(`/tickets/${ticketId}/buy-resale`)
-};
+
 
 // ========== QUEUE ==========
 export const queueApi = {
@@ -84,8 +66,13 @@ export const adminApi = {
   events: () => api.get<ApiResponse<EventResponse[]>>('/admin/events'),
   createEvent: (data: any) => api.post<ApiResponse<EventResponse>>('/admin/events', data),
   updateEvent: (id: number, data: any) => api.put<ApiResponse<EventResponse>>(`/admin/events/${id}`, data),
+  deleteEvent: (id: number) => api.delete<ApiResponse<void>>(`/admin/events/${id}`),
   updateStatus: (id: number, status: string) => api.put<ApiResponse<EventResponse>>(`/admin/events/${id}/status`, null, { params: { status } }),
   createZone: (eventId: number, data: any) => api.post<ApiResponse<ZoneResponse>>(`/admin/events/${eventId}/zones`, data),
+  updateZoneOrder: (eventId: number, zoneIds: number[]) => api.put<ApiResponse<void>>(`/admin/events/${eventId}/zones/reorder`, zoneIds),
   eventStats: (eventId: number) => api.get<ApiResponse<Record<string, any>>>(`/admin/events/${eventId}/stats`),
   demographics: (eventId: number) => api.get<ApiResponse<Record<string, any>>>(`/admin/events/${eventId}/demographics`),
+  uploadImage: (formData: FormData) => api.post<ApiResponse<string>>('/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  }),
 };

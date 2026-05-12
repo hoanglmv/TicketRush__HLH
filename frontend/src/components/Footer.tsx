@@ -10,103 +10,111 @@ export default function Footer() {
   const { t } = useLanguage();
 
   return (
-    <footer className="tm-footer">
-      <div className="tm-footer-container">
+    <footer className="bg-[#020b18] text-white pt-16 pb-8 border-t-[6px] border-[#026cdf]">
+      <div className="container mx-auto px-6 max-w-7xl">
         
-        {/* Column 1 */}
-        <div className="tm-footer-col" style={{ flex: '1.2' }}>
-          <div className="tm-footer-brand" style={{ fontSize: '1.5rem', fontWeight: 800, color: 'white', marginBottom: '32px', letterSpacing: '-0.5px' }}>
-            <i style={{ fontStyle: 'italic' }}>ticketrush</i>
-            <span style={{ fontSize: '0.8rem', verticalAlign: 'super', marginLeft: '2px', fontStyle: 'normal' }}>®</span>
-          </div>
-          
-          <div className="tm-footer-title">{t('footer.letsConnect')}</div>
-          <div className="tm-footer-socials" style={{ display: 'flex', gap: '20px', marginBottom: '32px', alignItems: 'center' }}>
-            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><FbIcon /></a>
-            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><XIcon /></a>
-            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem', display: 'flex', alignItems: 'center', gap: '4px' }}><span style={{fontSize: '0.85rem', fontWeight: 'bold'}}>BLOG</span></a>
-            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><YtIcon /></a>
-            <a href="/" style={{ color: 'white', textDecoration: 'none', fontSize: '1.2rem' }}><IgIcon /></a>
-          </div>
-          
-          <div className="tm-footer-title">{t('footer.downloadApps')}</div>
-          <div className="tm-footer-apps" style={{ display: 'flex', flexDirection: 'column', gap: '12px', marginBottom: '32px' }}>
-            <button className="btn" style={{ background: 'transparent', border: '1px solid #ccc', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 16px', borderRadius: '4px', width: 'fit-content', cursor: 'pointer' }}>
-              <Apple size={28} />
-              <div style={{ textAlign: 'left', lineHeight: 1.1 }}>
-                <div style={{ fontSize: '0.65rem' }}>{t('footer.downloadOn')}</div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>App Store</div>
-              </div>
-            </button>
-            <button className="btn" style={{ background: 'transparent', border: '1px solid #ccc', color: 'white', display: 'flex', alignItems: 'center', gap: '12px', padding: '8px 16px', borderRadius: '4px', width: 'fit-content', cursor: 'pointer' }}>
-              <Play size={24} />
-              <div style={{ textAlign: 'left', lineHeight: 1.1 }}>
-                <div style={{ fontSize: '0.65rem' }}>{t('footer.getItOn')}</div>
-                <div style={{ fontSize: '1.1rem', fontWeight: 600 }}>Google Play</div>
-              </div>
-            </button>
+        <div className="flex flex-col md:flex-row gap-10 lg:gap-16 pb-12 border-b border-white/10">
+          {/* Column 1 */}
+          <div className="flex-1 lg:flex-[1.5]">
+            <div className="text-3xl font-black text-white mb-8 tracking-tighter">
+              <i className="italic">ticketrush</i>
+              <span className="text-xs align-super ml-0.5 not-italic">®</span>
+            </div>
+            
+            <div className="text-sm font-bold uppercase tracking-wider mb-4 text-white/80">{t('footer.letsConnect')}</div>
+            <div className="flex gap-4 mb-8 items-center text-white/90">
+              <a href="/" className="hover:text-white transition-colors"><FbIcon /></a>
+              <a href="/" className="hover:text-white transition-colors"><XIcon /></a>
+              <a href="/" className="hover:text-white transition-colors flex items-center gap-1"><span className="text-sm font-bold">BLOG</span></a>
+              <a href="/" className="hover:text-white transition-colors"><YtIcon /></a>
+              <a href="/" className="hover:text-white transition-colors"><IgIcon /></a>
+            </div>
+            
+            <div className="text-sm font-bold uppercase tracking-wider mb-4 text-white/80">{t('footer.downloadApps')}</div>
+            <div className="flex flex-col sm:flex-row gap-3 mb-8">
+              <button className="bg-transparent border border-white/30 text-white flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-left">
+                <Apple size={28} />
+                <div className="leading-tight">
+                  <div className="text-[10px] uppercase text-white/70 tracking-wider">{t('footer.downloadOn')}</div>
+                  <div className="text-base font-bold">App Store</div>
+                </div>
+              </button>
+              <button className="bg-transparent border border-white/30 text-white flex items-center gap-3 px-4 py-2 rounded-lg hover:bg-white/10 transition-colors text-left">
+                <Play size={24} />
+                <div className="leading-tight">
+                  <div className="text-[10px] uppercase text-white/70 tracking-wider">{t('footer.getItOn')}</div>
+                  <div className="text-base font-bold">Google Play</div>
+                </div>
+              </button>
+            </div>
+
+            <div className="text-xs text-white/50 leading-relaxed max-w-sm">
+              {t('footer.termsAgree')}<br/>
+              {' '}<a href="/" className="text-white/70 hover:text-white underline transition-colors">{t('footer.termsOfUse')}</a>
+            </div>
           </div>
 
-          <div style={{ fontSize: '0.9rem', color: '#ccc', lineHeight: '1.4' }}>
-            {t('footer.termsAgree')}<br/>
-            {' '}<a href="/" style={{ color: 'white', textDecoration: 'underline' }}>{t('footer.termsOfUse')}</a>
+          {/* Column 2 */}
+          <div className="flex-1">
+            <div className="text-sm font-bold uppercase tracking-wider mb-5 text-white/90">{t('footer.helpfulLinks')}</div>
+            <ul className="flex flex-col gap-3 text-sm font-medium">
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.helpFaq')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.sell')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.myAccount')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.contactUs')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.giftCards')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.doNotSell')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.getStarted')}</a></li>
+            </ul>
+
+            <div className="text-sm font-bold uppercase tracking-wider mb-5 mt-10 text-white/90">{t('footer.aboutUs')}</div>
+            <ul className="flex flex-col gap-3 text-sm font-medium">
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.blog')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.ticketingTruths')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.adChoices')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.careers')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.ticketYourEvent')}</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">{t('footer.innovation')}</a></li>
+            </ul>
+          </div>
+
+          {/* Column 3 */}
+          <div className="flex-1">
+            <div className="text-sm font-bold uppercase tracking-wider mb-5 text-white/90">{t('footer.ourNetwork')}</div>
+            <ul className="flex flex-col gap-3 text-sm font-medium">
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">Live Nation</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">House of Blues</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">Front Gate Tickets</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">TicketWeb</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">universe</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">NFL</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">NBA</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">NHL</a></li>
+            </ul>
+
+            <div className="text-sm font-bold uppercase tracking-wider mb-5 mt-10 text-white/90">{t('footer.friendsPartners')}</div>
+            <ul className="flex flex-col gap-3 text-sm font-medium">
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">PayPal</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">Allianz</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">AWS</a></li>
+              <li><a href="/" className="text-white/60 hover:text-white hover:translate-x-1 inline-block transition-all">Affiliates</a></li>
+            </ul>
           </div>
         </div>
 
-        {/* Column 2 */}
-        <div className="tm-footer-col" style={{ flex: 1 }}>
-          <div className="tm-footer-title">{t('footer.helpfulLinks')}</div>
-          <ul className="tm-footer-list">
-            <li><a href="/">{t('footer.helpFaq')}</a></li>
-            <li><a href="/">{t('footer.sell')}</a></li>
-            <li><a href="/">{t('footer.myAccount')}</a></li>
-            <li><a href="/">{t('footer.contactUs')}</a></li>
-            <li><a href="/">{t('footer.giftCards')}</a></li>
-            <li><a href="/">{t('footer.doNotSell')}</a></li>
-            <li><a href="/">{t('footer.getStarted')}</a></li>
-          </ul>
-
-          <div className="tm-footer-title" style={{ marginTop: '40px' }}>{t('footer.aboutUs')}</div>
-          <ul className="tm-footer-list">
-            <li><a href="/">{t('footer.blog')}</a></li>
-            <li><a href="/">{t('footer.ticketingTruths')}</a></li>
-            <li><a href="/">{t('footer.adChoices')}</a></li>
-            <li><a href="/">{t('footer.careers')}</a></li>
-            <li><a href="/">{t('footer.ticketYourEvent')}</a></li>
-            <li><a href="/">{t('footer.innovation')}</a></li>
-          </ul>
-        </div>
-
-        {/* Column 3 */}
-        <div className="tm-footer-col" style={{ flex: 1 }}>
-          <div className="tm-footer-title">{t('footer.ourNetwork')}</div>
-          <ul className="tm-footer-list">
-            <li><a href="/">Live Nation</a></li>
-            <li><a href="/">House of Blues</a></li>
-            <li><a href="/">Front Gate Tickets</a></li>
-            <li><a href="/">TicketWeb</a></li>
-            <li><a href="/">universe</a></li>
-            <li><a href="/">NFL</a></li>
-            <li><a href="/">NBA</a></li>
-            <li><a href="/">NHL</a></li>
-          </ul>
-
-          <div className="tm-footer-title" style={{ marginTop: '40px' }}>{t('footer.friendsPartners')}</div>
-          <ul className="tm-footer-list">
-            <li><a href="/">PayPal</a></li>
-            <li><a href="/">Allianz</a></li>
-            <li><a href="/">AWS</a></li>
-            <li><a href="/">Affiliates</a></li>
-          </ul>
-        </div>
-      </div>
-
-      <div className="tm-footer-bottom">
-        <div className="tm-footer-bottom-links">
-          <a href="/">{t('footer.ourPolicies')}</a> | <a href="/">{t('footer.privacyPolicy')}</a> | <a href="/">{t('footer.cookiePolicy')}</a> | <a href="/">{t('footer.manageCookies')}</a>
-        </div>
-        <div className="tm-footer-copyright">
-          {t('footer.copyright')}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 mt-8 text-xs font-medium text-white/50">
+          <div className="flex flex-wrap justify-center md:justify-start gap-4">
+            <a href="/" className="hover:text-white transition-colors">{t('footer.ourPolicies')}</a>
+            <span className="hidden sm:inline">|</span>
+            <a href="/" className="hover:text-white transition-colors">{t('footer.privacyPolicy')}</a>
+            <span className="hidden sm:inline">|</span>
+            <a href="/" className="hover:text-white transition-colors">{t('footer.cookiePolicy')}</a>
+            <span className="hidden sm:inline">|</span>
+            <a href="/" className="hover:text-white transition-colors">{t('footer.manageCookies')}</a>
+          </div>
+          <div className="text-center md:text-right">
+            {t('footer.copyright')}
+          </div>
         </div>
       </div>
     </footer>

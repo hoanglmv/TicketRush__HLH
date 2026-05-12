@@ -4,6 +4,7 @@ import { adminApi } from '../../api';
 import { DashboardStats } from '../../types';
 import { useSettings } from '../../contexts/SettingsContext';
 import { useLanguage } from '../../i18n';
+import { Upload, Image as ImageIcon, Loader2 } from 'lucide-react';
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<DashboardStats | null>(null);
@@ -23,17 +24,7 @@ export default function AdminDashboardPage() {
 
   useEffect(() => {
     if (!settingsLoading && Object.keys(formData).length === 0) {
-      // Ensure specific banner keys exist
-      const defaultSettings = {
-        'tb_banner_1_img': '',
-        'tb_banner_1_title': '',
-        'tb_banner_1_link': '',
-        'tb_banner_2_img': '',
-        'tb_banner_2_title': '',
-        'tb_banner_2_link': '',
-        ...settings
-      };
-      setFormData(defaultSettings);
+      setFormData(settings);
     }
   }, [settings, settingsLoading, formData]);
 
@@ -53,62 +44,143 @@ export default function AdminDashboardPage() {
     setFormData(prev => ({ ...prev, [key]: value }));
   };
 
-  if (loading || settingsLoading) return <div className="page"><div className="container"><div className="loading-container"><div className="spinner" /></div></div></div>;
+  const handleFileUpload = async (key: string, e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files?.[0]) return;
+    
+    const file = e.target.files[0];
+    const formDataUpload = new FormData();
+    formDataUpload.append('file', file);
+    
+    setSaving(true);
+    try {
+      const res = await adminApi.uploadImage(formDataUpload);
+      handleSettingChange(key, res.data.data);
+    } catch (err) {
+      alert('Upload failed: ' + err);
+    } finally {
+      setSaving(false);
+      e.target.value = '';
+    }
+  };
+
+  const isImageField = (key: string) => {
+    return key.startsWith('hero_');
+  };
+
+  const getFriendlyName = (key: string) => {
+    return t(`admin.img_${key.replace('hero_', '')}`);
+  };
+
+  const CATEGORY_HERO_KEYS = [
+    'hero_LIVE_MUSIC',
+    'hero_ARTS',
+    'hero_SPORTS',
+    'hero_WORKSHOPS',
+    'hero_EXPERIENCES',
+    'hero_OTHERS',
+    'hero_fallback'
+  ];
+
+  if (loading || settingsLoading) return <div className="flex-1 pt-20 text-center flex justify-center"><div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div></div>;
 
   return (
-    <div className="page">
-      <div className="container animate-fadeIn">
-        <div className="page-header">
-          <h1>{t('admin.dashboard')}</h1>
-          <p>{t('admin.overview')}</p>
+    <div className="flex-1 py-10 bg-[#0a0a0a] min-h-screen text-white">
+      <div className="container mx-auto px-6 max-w-6xl animate-[fadeIn_0.5s_ease-out]">
+        <div className="mb-8 border-b border-white/10 pb-4">
+          <h1 className="text-3xl font-extrabold text-white">{t('admin.dashboard')}</h1>
+          <p className="text-white/40 mt-2">{t('admin.overview')}</p>
         </div>
 
-        <div className="grid-3" style={{ marginBottom: 30 }}>
-          <div className="stat-card">
-            <div className="stat-value">{stats?.totalEvents || 0}</div>
-            <div className="stat-label">{t('admin.events')}</div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-10">
+          <div className="bg-[#111111] p-8 rounded-2xl border border-white/5 shadow-2xl flex flex-col items-center justify-center hover:-translate-y-1 transition-all group">
+            <div className="text-4xl font-black text-[#00b14f] mb-2 group-hover:scale-110 transition-transform">{stats?.totalEvents || 0}</div>
+            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{t('admin.events')}</div>
           </div>
-          <div className="stat-card">
-            <div className="stat-value">
+          <div className="bg-[#111111] p-8 rounded-2xl border border-white/5 shadow-2xl flex flex-col items-center justify-center hover:-translate-y-1 transition-all group">
+            <div className="text-4xl font-black text-[#00b14f] mb-2 group-hover:scale-110 transition-transform">
               {(stats?.totalRevenue || 0).toLocaleString('vi-VN')}₫
             </div>
-            <div className="stat-label">{t('admin.totalRevenue')}</div>
+            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{t('admin.totalRevenue')}</div>
           </div>
-          <div className="stat-card">
-            <div className="stat-value">{stats?.totalUsers || 0}</div>
-            <div className="stat-label">{t('admin.users')}</div>
+          <div className="bg-[#111111] p-8 rounded-2xl border border-white/5 shadow-2xl flex flex-col items-center justify-center hover:-translate-y-1 transition-all group">
+            <div className="text-4xl font-black text-[#00b14f] mb-2 group-hover:scale-110 transition-transform">{stats?.totalUsers || 0}</div>
+            <div className="text-[10px] font-black text-white/30 uppercase tracking-[0.2em]">{t('admin.users')}</div>
           </div>
         </div>
 
-        <div className="flex gap-md" style={{ marginBottom: 40 }}>
-          <Link to="/admin/events" className="btn btn-primary">{t('admin.manageEvents')}</Link>
-          <Link to="/admin/events/create" className="btn btn-secondary">{t('admin.createEvent')}</Link>
+        <div className="flex flex-wrap gap-4 mb-10">
+          <Link to="/admin/events" className="px-8 py-3 bg-[#00b14f] text-white font-black uppercase tracking-widest text-xs rounded-lg hover:bg-[#008a3d] transition-all shadow-lg shadow-[#00b14f]/20">{t('admin.manageEvents')}</Link>
+          <Link to="/admin/events/create" className="px-8 py-3 bg-white/5 text-white/70 border border-white/10 font-black uppercase tracking-widest text-xs rounded-lg hover:bg-white/10 transition-all">{t('admin.createEvent')}</Link>
         </div>
 
-        <div className="card" style={{ padding: '24px', background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px' }}>
-          <h2 style={{ marginBottom: '20px', borderBottom: '1px solid #ddd', paddingBottom: '10px' }}>{t('admin.visualSettings')}</h2>
-          <p style={{ color: '#666', marginBottom: '20px', fontSize: '0.9rem' }}>
-            {t('admin.visualSettingsDesc')}
-          </p>
-          
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            {Object.keys(formData).map(key => (
-              <div key={key} style={{ display: 'flex', flexDirection: 'column' }}>
-                <label style={{ fontWeight: 600, fontSize: '0.9rem', marginBottom: '4px' }}>{key}</label>
-                <input 
-                  type="text" 
-                  className="form-input" 
-                  value={formData[key] || ''} 
-                  onChange={(e) => handleSettingChange(key, e.target.value)}
-                  placeholder={`Enter URL for ${key}`}
-                />
-              </div>
-            ))}
+        <div className="bg-[#111111] border border-white/5 rounded-3xl p-10 shadow-2xl backdrop-blur-md">
+          <div className="mb-10">
+            <h2 className="text-2xl font-black text-white mb-2">{t('admin.categoryImages')}</h2>
+            <p className="text-white/40 text-sm max-w-2xl">
+              {t('admin.categoryImagesDesc')}
+            </p>
           </div>
           
-          <div style={{ marginTop: '24px' }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {CATEGORY_HERO_KEYS.map(key => {
+              const isImg = true; 
+              return (
+                <div key={key} className="flex flex-col bg-white/5 p-6 rounded-2xl border border-white/5 hover:border-white/10 transition-colors group">
+                  <label className="text-[10px] font-black text-[#00b14f] uppercase mb-4 tracking-[0.2em] flex items-center gap-2">
+                    <ImageIcon size={14} />
+                    {getFriendlyName(key)}
+                  </label>
+                  
+                  {isImg ? (
+                    <div className="space-y-4">
+                      {formData[key] && (
+                        <div className="relative group/img aspect-video rounded-xl overflow-hidden border border-white/10 bg-black">
+                          <img src={formData[key]} alt={key} className="w-full h-full object-cover transition-transform duration-500 group-hover/img:scale-110" />
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover/img:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-sm">
+                            <span className="text-white text-[10px] font-black uppercase tracking-widest border border-white/20 px-3 py-1 rounded-full">{t('admin.details')}</span>
+                          </div>
+                        </div>
+                      )}
+                      
+                      <div className="relative">
+                        <input 
+                          type="file" 
+                          id={`file-${key}`}
+                          className="hidden" 
+                          accept="image/*"
+                          onChange={(e) => handleFileUpload(key, e)}
+                        />
+                        <label 
+                          htmlFor={`file-${key}`}
+                          className="w-full px-4 py-6 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center gap-3 cursor-pointer hover:border-[#00b14f] hover:bg-[#00b14f]/5 transition-all group/upload"
+                        >
+                          {saving ? (
+                            <Loader2 className="animate-spin text-[#00b14f]" size={28} />
+                          ) : (
+                            <Upload className="text-white/20 group-hover/upload:text-[#00b14f] transition-colors" size={28} />
+                          )}
+                          <span className="text-[11px] font-black uppercase tracking-widest text-white/30 group-hover/upload:text-[#00b14f] transition-colors">
+                            {formData[key] ? t('admin.changeImage') : t('admin.uploadFromDevice')}
+                          </span>
+                        </label>
+                      </div>
+                    </div>
+                  ) : (
+                    <input 
+                      type="text" 
+                      className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl focus:outline-none focus:border-[#00b14f] transition-all text-sm font-medium text-white" 
+                      value={formData[key] || ''} 
+                      onChange={(e) => handleSettingChange(key, e.target.value)}
+                    />
+                  )}
+                </div>
+              );
+            })}
+          </div>
+          
+          <div className="mt-12 pt-8 border-t border-white/5 flex justify-end">
             <button 
-              className="btn btn-primary" 
+              className="px-10 py-4 bg-[#00b14f] text-white font-black uppercase tracking-widest text-xs rounded-xl hover:bg-[#008a3d] transition-all shadow-xl shadow-[#00b14f]/30 disabled:opacity-50" 
               onClick={handleSaveSettings}
               disabled={saving}
             >

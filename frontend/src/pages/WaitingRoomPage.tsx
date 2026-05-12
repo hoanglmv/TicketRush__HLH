@@ -45,62 +45,54 @@ export default function WaitingRoomPage() {
   const progressPercent = Math.max(2, status?.position && status?.totalInQueue ? (1 - status.position / status.totalInQueue) * 100 : 2);
 
   return (
-    <div style={{ minHeight: '100vh', background: '#f8f9fa', display: 'flex', flexDirection: 'column', alignItems: 'center', paddingTop: '60px' }}>
+    <div className="min-h-[calc(100vh-64px)] bg-gray-50 flex flex-col items-center pt-16 pb-10 px-4 text-gray-900">
       
-      <div style={{ background: 'white', border: '1px solid #e5e7eb', borderRadius: '8px', maxWidth: '650px', width: '90%', overflow: 'hidden', boxShadow: '0 10px 25px rgba(0,0,0,0.05)' }}>
+      <div className="bg-white border border-gray-200 rounded-xl max-w-[650px] w-full overflow-hidden shadow-xl animate-[fadeIn_0.5s_ease-out]">
         
-        <div style={{ padding: '24px', textAlign: 'center', borderBottom: '1px solid #e5e7eb' }}>
-          <h1 style={{ fontSize: '1.4rem', fontWeight: 800, color: '#111', textTransform: 'uppercase', letterSpacing: '0.5px' }}>{t('queue.title')}</h1>
-          <p style={{ color: '#666', fontSize: '0.9rem', marginTop: '8px' }}>{t('queue.subtitle')}</p>
+        <div className="p-6 text-center border-b border-gray-200 bg-gray-50">
+          <h1 className="text-xl font-extrabold text-gray-900 uppercase tracking-wide">{t('queue.title')}</h1>
+          <p className="text-gray-500 text-sm mt-2">{t('queue.subtitle')}</p>
         </div>
 
-        <div style={{ padding: '40px 30px', textAlign: 'center' }}>
-          {error && <div className="alert alert-error">{error}</div>}
+        <div className="py-10 px-8 text-center">
+          {error && <div className="bg-red-50 text-red-700 p-4 rounded-lg border border-red-200 mb-6 font-medium">{error}</div>}
 
           {status && !status.hasAccess && (
             <>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '24px' }}>{t('queue.inQueue')}</h2>
+              <h2 className="text-2xl font-extrabold mb-8">{t('queue.inQueue')}</h2>
               
-              <div style={{ position: 'relative', height: '40px', marginBottom: '8px' }}>
-                <div style={{ 
-                  position: 'absolute', 
-                  bottom: '10px', 
-                  left: `${progressPercent}%`, 
-                  transform: 'translateX(-50%)',
-                  transition: 'left 1s ease',
-                  fontSize: '2rem'
-                }}>🚶</div>
+              <div className="relative h-10 mb-2">
+                <div className="absolute bottom-2.5 transition-all duration-1000 ease-in-out text-4xl -translate-x-1/2" style={{ left: `${progressPercent}%` }}>
+                  🚶
+                </div>
               </div>
 
-              <div style={{ width: '100%', height: '8px', background: '#e5e7eb', borderRadius: '4px', overflow: 'hidden', margin: '0 auto' }}>
-                <div style={{
-                  height: '100%',
-                  background: '#026cdf',
-                  width: `${progressPercent}%`,
-                  transition: 'width 1s ease'
-                }} />
+              <div className="w-full h-3 bg-gray-200 rounded-full overflow-hidden mx-auto shadow-inner">
+                <div className="h-full bg-blue-600 rounded-full transition-all duration-1000 ease-in-out relative overflow-hidden" style={{ width: `${progressPercent}%` }}>
+                  <div className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.3),transparent)] animate-[shimmer_1.5s_infinite]" />
+                </div>
               </div>
 
-              <div style={{ fontSize: '1.1rem', fontWeight: 700, margin: '30px 0 10px' }}>
-                {t('queue.peopleAhead')} <span style={{ color: '#026cdf', fontSize: '1.4rem' }}>{status.position}</span>
+              <div className="text-lg font-bold mt-8 mb-3 text-gray-700">
+                {t('queue.peopleAhead')} <span className="text-blue-600 text-3xl font-black ml-2">{status.position}</span>
               </div>
-              <p style={{ color: '#666', fontSize: '0.9rem', lineHeight: 1.5, background: '#f0f9ff', padding: '16px', borderRadius: '4px', border: '1px solid #bae6fd' }}>
+              <p className="text-gray-600 text-sm leading-relaxed bg-blue-50 p-4 rounded-lg border border-blue-200 mt-6">
                 {t('queue.doNotRefresh')}
               </p>
             </>
           )}
 
           {status?.hasAccess && (
-            <div style={{ padding: '20px' }}>
-              <div style={{ fontSize: '3rem', marginBottom: '16px' }}>🎉</div>
-              <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#22c55e', marginBottom: '10px' }}>{t('queue.yourTurn')}</h2>
-              <p style={{ color: '#666' }}>{t('queue.redirecting')}</p>
+            <div className="p-6 animate-[bounceIn_0.5s_ease-out]">
+              <div className="text-6xl mb-4">🎉</div>
+              <h2 className="text-2xl font-black text-green-500 mb-3">{t('queue.yourTurn')}</h2>
+              <p className="text-gray-600 font-medium">{t('queue.redirecting')}</p>
             </div>
           )}
 
         </div>
         
-        <div style={{ background: '#f8f9fa', padding: '16px', textAlign: 'center', borderTop: '1px solid #e5e7eb', fontSize: '0.8rem', color: '#999' }}>
+        <div className="bg-gray-50 p-4 text-center border-t border-gray-200 text-xs font-bold text-gray-400 uppercase tracking-wider">
           {t('queue.smartQueue')}
         </div>
       </div>

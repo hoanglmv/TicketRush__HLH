@@ -62,37 +62,4 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success(bookingService.getTicketById(user.getId(), ticketId)));
     }
 
-    @PostMapping("/tickets/{ticketId}/transfer")
-    public ResponseEntity<ApiResponse<TicketResponse>> transferTicket(
-            @PathVariable Long ticketId,
-            @RequestBody TicketTransferRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        User user = authService.getCurrentUser(userDetails.getUsername());
-        TicketResponse ticket = bookingService.transferTicket(user.getId(), ticketId, request.getTargetEmail());
-        return ResponseEntity.ok(ApiResponse.success("Ticket transferred successfully", ticket));
-    }
-
-    @PostMapping("/tickets/{ticketId}/sell")
-    public ResponseEntity<ApiResponse<TicketResponse>> sellTicket(
-            @PathVariable Long ticketId,
-            @RequestBody TicketSellRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        User user = authService.getCurrentUser(userDetails.getUsername());
-        TicketResponse ticket = bookingService.sellTicket(user.getId(), ticketId, request.getPrice());
-        return ResponseEntity.ok(ApiResponse.success("Ticket listed for resale successfully", ticket));
-    }
-
-    @GetMapping("/tickets/resale")
-    public ResponseEntity<ApiResponse<List<TicketResponse>>> getResaleTickets() {
-        return ResponseEntity.ok(ApiResponse.success(bookingService.getResaleTickets()));
-    }
-
-    @PostMapping("/tickets/{ticketId}/buy-resale")
-    public ResponseEntity<ApiResponse<TicketResponse>> buyResaleTicket(
-            @PathVariable Long ticketId,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        User user = authService.getCurrentUser(userDetails.getUsername());
-        TicketResponse ticket = bookingService.buyResaleTicket(user.getId(), ticketId);
-        return ResponseEntity.ok(ApiResponse.success("Resale ticket purchased successfully", ticket));
-    }
 }

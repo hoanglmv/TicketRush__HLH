@@ -47,6 +47,8 @@ export interface EventResponse {
   totalSeats: number;
   availableSeats: number;
   soldSeats: number;
+  hot: boolean;
+  images: string[];
 }
 
 export interface ZoneResponse {
