@@ -116,6 +116,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'eventDetail.zonePricing': 'ZONES & PRICING',
     'eventDetail.buyNow': 'Buy Tickets Now',
     'eventDetail.notOnSale': 'Not on sale yet',
+    'eventDetail.saleStartsIn': 'Sale starts in',
     'eventDetail.securePayment': '* Secure payment via VNPAY or ZaloPay',
     'eventDetail.eventNotFound': 'Event not found',
 
@@ -179,7 +180,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'checkout.yesProtect': 'Yes, protect my ticket purchase for 190,000₫',
     'checkout.noProtect': 'No, I am willing to take the risk of losing my money.',
     'checkout.payment': 'Payment',
-    'checkout.sandboxPayment': 'Sandbox Payment (Mock System) - Amount will be confirmed automatically.',
+    'checkout.sandboxPayment': 'QR Code Payment (VNPAY/Momo) - The system will confirm automatically.',
     'checkout.timeLeft': 'Time Left',
     'checkout.orderSummary': 'Order Summary',
     'checkout.seatRow': 'Row',
@@ -486,6 +487,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'eventDetail.zonePricing': 'KHU VỰC & MỨC GIÁ',
     'eventDetail.buyNow': 'Mua vé ngay',
     'eventDetail.notOnSale': 'Chưa mở bán',
+    'eventDetail.saleStartsIn': 'Mở bán sau',
     'eventDetail.securePayment': '* Thanh toán bảo mật qua VNPAY hoặc ZaloPay',
     'eventDetail.eventNotFound': 'Không tìm thấy sự kiện',
 
@@ -549,7 +551,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'checkout.yesProtect': 'Có, bảo vệ vé của tôi với 190.000₫',
     'checkout.noProtect': 'Không, tôi chấp nhận rủi ro mất tiền.',
     'checkout.payment': 'Thanh toán',
-    'checkout.sandboxPayment': 'Thanh toán Sandbox (Mock System) - Số tiền sẽ được xác nhận tự động.',
+    'checkout.sandboxPayment': 'Thanh toán mã QR (VNPAY/Momo) - Hệ thống sẽ tự động xác nhận.',
     'checkout.timeLeft': 'Thời gian còn lại',
     'checkout.orderSummary': 'Tóm tắt đơn hàng',
     'checkout.seatRow': 'Hàng ghế',

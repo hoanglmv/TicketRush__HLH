@@ -232,7 +232,7 @@ export default function CheckoutPage() {
                 onClick={handleConfirm}
                 disabled={confirming}
               >
-                {confirming ? 'Đang xử lý...' : 'Giả lập: Đã quét & Thanh toán thành công'}
+                {confirming ? 'Đang xử lý...' : 'Tôi đã quét mã & Thanh toán thành công'}
               </button>
               <button 
                 className="w-full py-3 font-bold rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors disabled:opacity-50" 
