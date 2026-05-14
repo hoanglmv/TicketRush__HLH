@@ -30,6 +30,9 @@ public class EventService {
 
     // ========== EVENT CRUD ==========
 
+    /**
+     * Tạo mới một sự kiện (trạng thái mặc định là DRAFT).
+     */
     @Transactional
     public EventResponse createEvent(EventCreateRequest request) {
         validateEventDates(request.getEventDate(), request.getSaleStartTime(), request.getSaleEndTime());
@@ -56,6 +59,9 @@ public class EventService {
         return toEventResponse(event);
     }
 
+    /**
+     * Cập nhật thông tin chi tiết của sự kiện.
+     */
     @Transactional
     public EventResponse updateEvent(Long eventId, EventCreateRequest request) {
         validateEventDates(request.getEventDate(), request.getSaleStartTime(), request.getSaleEndTime());
@@ -87,6 +93,9 @@ public class EventService {
         return toEventResponse(event);
     }
 
+    /**
+     * Đổi trạng thái sự kiện (ví dụ từ DRAFT sang PUBLISHED).
+     */
     @Transactional
     public EventResponse updateEventStatus(Long eventId, EventStatus newStatus) {
         Event event = eventRepository.findById(eventId)
@@ -98,12 +107,18 @@ public class EventService {
         return toEventResponse(event);
     }
 
+    /**
+     * Lấy thông tin chi tiết của một sự kiện bằng ID.
+     */
     public EventResponse getEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event not found: " + eventId));
         return toEventResponse(event);
     }
 
+    /**
+     * Xóa sự kiện và toàn bộ vé/dữ liệu liên quan.
+     */
     @Transactional
     public void deleteEvent(Long eventId) {
         Event event = eventRepository.findById(eventId)
@@ -112,6 +127,9 @@ public class EventService {
         eventRepository.delete(event);
     }
 
+    /**
+     * Lấy danh sách sự kiện đang công khai (để hiển thị lên trang chủ).
+     */
     public List<EventResponse> getPublicEvents() {
         List<EventStatus> publicStatuses = List.of(EventStatus.PUBLISHED, EventStatus.ON_SALE);
         return eventRepository.findByStatusIn(publicStatuses).stream()
@@ -125,6 +143,9 @@ public class EventService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Tìm kiếm sự kiện theo từ khóa, danh mục, địa điểm hoặc thời gian diễn ra.
+     */
     public List<EventResponse> searchEvents(String keyword, String category, String city, java.time.LocalDateTime startDate, java.time.LocalDateTime endDate) {
         List<EventStatus> publicStatuses = List.of(EventStatus.PUBLISHED, EventStatus.ON_SALE);
         return eventRepository.searchWithFilters(keyword, category, city, publicStatuses, startDate, endDate).stream()
@@ -134,6 +155,10 @@ public class EventService {
 
     // ========== ZONE MANAGEMENT ==========
 
+    /**
+     * Thêm một khu vực (Zone) mới vào sự kiện (ví dụ: khu VIP, khu thường).
+     * Sẽ tự động gọi hàm sinh ra ghế (Seat) tương ứng cho khu vực này.
+     */
     @Transactional
     public ZoneResponse createZone(Long eventId, ZoneCreateRequest request) {
         Event event = eventRepository.findById(eventId)
@@ -161,12 +186,18 @@ public class EventService {
         return toZoneResponse(zone);
     }
 
+    /**
+     * Lấy danh sách các khu vực của sự kiện.
+     */
     public List<ZoneResponse> getZonesByEvent(Long eventId) {
         return zoneRepository.findByEventIdOrderBySortOrder(eventId).stream()
                 .map(this::toZoneResponse)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Thay đổi thứ tự hiển thị của các khu vực.
+     */
     @Transactional
     public void updateZoneOrder(Long eventId, List<Long> zoneIds) {
         for (int i = 0; i < zoneIds.size(); i++) {
@@ -182,6 +213,9 @@ public class EventService {
 
     // ========== SEAT LISTING ==========
 
+    /**
+     * Lấy toàn bộ danh sách ghế của một sự kiện.
+     */
     public List<SeatResponse> getSeatsByEvent(Long eventId) {
         return seatRepository.findByEventId(eventId).stream()
                 .map(this::toSeatResponse)

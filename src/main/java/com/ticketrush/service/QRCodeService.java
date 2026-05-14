@@ -18,6 +18,11 @@ public class QRCodeService {
     private static final int QR_WIDTH = 300;
     private static final int QR_HEIGHT = 300;
 
+    /**
+     * Sinh mã QR cho vé.
+     * Thông tin trong mã QR chứa các định danh (ID vé, ID sự kiện, ID ghế, ID người dùng).
+     * Trả về chuỗi Base64 của ảnh QR để hiển thị trực tiếp trên Frontend.
+     */
     public String generate(Ticket ticket) {
         try {
             String content = String.format("TICKETRUSH|TID:%d|EID:%d|SID:%d|USER:%d|%s",

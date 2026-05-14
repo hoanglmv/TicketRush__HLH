@@ -18,6 +18,10 @@ public class FileUploadController {
         this.cloudinaryService = cloudinaryService;
     }
 
+    /**
+     * API upload ảnh lên Cloudinary.
+     * Nhận file ảnh từ client và trả về đường dẫn URL của ảnh đã được lưu trữ trên Cloudinary.
+     */
     @PostMapping
     public ResponseEntity<?> uploadFile(@RequestParam("file") MultipartFile file) {
         try {

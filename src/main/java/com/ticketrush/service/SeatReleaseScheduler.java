@@ -35,8 +35,8 @@ public class SeatReleaseScheduler {
     private int seatLockTimeoutMinutes;
 
     /**
-     * Background job: Release expired seat locks every 30 seconds.
-     * Seats locked for more than 10 minutes (configurable) without payment are released.
+     * Tác vụ chạy ngầm (Background job): Tự động giải phóng ghế đã khóa quá 10 phút mỗi 30 giây.
+     * Chạy tự động không cần người dùng gọi API.
      */
     @Scheduled(fixedRate = 30000) // Every 30 seconds
     @Transactional
@@ -77,7 +77,8 @@ public class SeatReleaseScheduler {
     }
 
     /**
-     * Background job: Process virtual queues for ON_SALE events every 3 seconds.
+     * Tác vụ chạy ngầm: Xử lý hàng đợi ảo (Virtual Queue) mỗi 3 giây.
+     * Kiểm tra các sự kiện đang bán vé, nếu có chỗ trống sẽ cho những người đang xếp hàng vào mua.
      */
     @Scheduled(fixedRate = 3000) // Every 3 seconds
     public void processQueues() {

@@ -17,6 +17,10 @@ public class AuthController {
 
     private final AuthService authService;
 
+    /**
+     * API đăng ký tài khoản mới cho người dùng.
+     * Nhận thông tin đăng ký (username, password, email...) và trả về token nếu thành công.
+     */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@RequestBody RegisterRequest request) {
         AuthResponse response = authService.register(request);
@@ -24,12 +28,20 @@ public class AuthController {
     }
 
 
+    /**
+     * API đăng nhập vào hệ thống.
+     * Xác thực thông tin đăng nhập và trả về chuỗi JWT Token để sử dụng cho các API khác.
+     */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
         AuthResponse response = authService.login(request);
         return ResponseEntity.ok(ApiResponse.success("Login successful", response));
     }
 
+    /**
+     * API lấy thông tin profile của người dùng đang đăng nhập hiện tại.
+     * Xác thực dựa trên JWT Token được gửi kèm trong header Authorization.
+     */
     @GetMapping("/me")
     public ResponseEntity<ApiResponse<AuthResponse>> getCurrentUser(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -46,6 +58,10 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success(response));
     }
 
+    /**
+     * API đổi mật khẩu cho người dùng đang đăng nhập.
+     * Yêu cầu nhập mật khẩu cũ và mật khẩu mới để xác thực.
+     */
     @PostMapping("/change-password")
     public ResponseEntity<ApiResponse<Void>> changePassword(@AuthenticationPrincipal UserDetails userDetails,
                                                             @Valid @RequestBody ChangePasswordRequest request) {

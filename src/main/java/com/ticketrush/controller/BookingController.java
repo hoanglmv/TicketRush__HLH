@@ -20,6 +20,10 @@ public class BookingController {
     private final SeatBookingService bookingService;
     private final AuthService authService;
 
+    /**
+     * API khóa ghế tạm thời (Lock Seat).
+     * Khi người dùng chọn ghế, ghế sẽ bị khóa trong 1 khoảng thời gian (VD: 10 phút) để chờ thanh toán.
+     */
     @PostMapping("/seats/{seatId}/lock")
     public ResponseEntity<ApiResponse<TicketResponse>> lockSeat(
             @PathVariable Long seatId,
@@ -29,6 +33,10 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success("Seat locked successfully. You have 10 minutes to pay.", ticket));
     }
 
+    /**
+     * API xác nhận thanh toán (Confirm Payment).
+     * Sau khi người dùng thanh toán thành công, gọi API này để chuyển trạng thái vé sang BOOKED chính thức.
+     */
     @PostMapping("/tickets/{ticketId}/confirm")
     public ResponseEntity<ApiResponse<TicketResponse>> confirmPayment(
             @PathVariable Long ticketId,
@@ -38,6 +46,10 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success("Payment confirmed! Your ticket is ready.", ticket));
     }
 
+    /**
+     * API hủy vé (Cancel Ticket).
+     * Người dùng tự hủy vé chưa thanh toán, ghế sẽ được giải phóng cho người khác mua.
+     */
     @DeleteMapping("/tickets/{ticketId}")
     public ResponseEntity<ApiResponse<Void>> cancelTicket(
             @PathVariable Long ticketId,
@@ -47,6 +59,10 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success("Ticket cancelled. Seat released.", null));
     }
 
+    /**
+     * API lấy danh sách vé của tôi (My Tickets).
+     * Liệt kê tất cả các vé mà người dùng hiện tại đã đặt (gồm cả vé đang khóa chờ thanh toán và vé đã mua).
+     */
     @GetMapping("/tickets/my")
     public ResponseEntity<ApiResponse<List<TicketResponse>>> getMyTickets(
             @AuthenticationPrincipal UserDetails userDetails) {
@@ -54,6 +70,9 @@ public class BookingController {
         return ResponseEntity.ok(ApiResponse.success(bookingService.getUserTickets(user.getId())));
     }
 
+    /**
+     * API lấy thông tin chi tiết một vé cụ thể.
+     */
     @GetMapping("/tickets/{ticketId}")
     public ResponseEntity<ApiResponse<TicketResponse>> getTicket(
             @PathVariable Long ticketId,

@@ -128,7 +128,7 @@ export default function ProfilePage() {
               <Key size={18} className="mr-3" /> {t('profile.changePassword') || 'Change Password'}
             </button>
             <button className="w-full flex items-center px-4 py-3 rounded-lg font-bold transition-colors bg-transparent text-red-600 hover:bg-red-50 border border-red-200 mt-4" onClick={handleLogout}>
-              <LogOut size={18} className="mr-3" /> {t('navbar.signOut') || 'Sign Out'}
+              <LogOut size={18} className="mr-3" /> {t('nav.signOut') || 'Sign Out'}
             </button>
           </div>
         </div>

@@ -14,12 +14,18 @@ public class UserService {
 
     private final UserRepository userRepository;
 
+    /**
+     * Lấy thông tin cá nhân của người dùng dựa trên username.
+     */
     public UserProfileResponse getUserProfile(String username) {
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return mapToResponse(user);
     }
 
+    /**
+     * Cập nhật thông tin cá nhân (họ tên, số điện thoại, ngày sinh, giới tính).
+     */
     @Transactional
     public UserProfileResponse updateUserProfile(String username, UserProfileUpdateRequest request) {
         User user = userRepository.findByUsername(username)

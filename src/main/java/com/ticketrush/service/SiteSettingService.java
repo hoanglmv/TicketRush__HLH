@@ -18,6 +18,9 @@ public class SiteSettingService {
 
     private final SiteSettingRepository siteSettingRepository;
 
+    /**
+     * Hàm tự động chạy một lần khi khởi động ứng dụng để tạo các cấu hình mặc định (ảnh nền trang chủ) nếu chưa có trong DB.
+     */
     @PostConstruct
     public void initDefaultSettings() {
         Map<String, String> defaults = new HashMap<>();
@@ -42,11 +45,17 @@ public class SiteSettingService {
         }
     }
 
+    /**
+     * Lấy toàn bộ cấu hình hệ thống dưới dạng Map (Key-Value) để dễ dàng trả về JSON.
+     */
     public Map<String, String> getAllSettingsAsMap() {
         return siteSettingRepository.findAll().stream()
                 .collect(Collectors.toMap(SiteSetting::getSettingKey, SiteSetting::getSettingValue));
     }
 
+    /**
+     * Cập nhật danh sách cấu hình. Nếu cấu hình nào chưa có thì sẽ tự động thêm mới vào DB.
+     */
     @Transactional
     public void updateSettings(Map<String, String> newSettings) {
         for (Map.Entry<String, String> entry : newSettings.entrySet()) {

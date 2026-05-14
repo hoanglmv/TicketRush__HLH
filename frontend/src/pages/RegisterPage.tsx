@@ -6,7 +6,7 @@ import { useLanguage } from '../i18n';
 
 export default function RegisterPage() {
   const [form, setForm] = useState({
-    username: '', password: '', email: '', fullName: '', phone: '',
+    username: '', password: '', confirmPassword: '', email: '', fullName: '', phone: '',
     dateOfBirth: '', gender: ''
   });
   const [error, setError] = useState('');
@@ -21,10 +21,44 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    
+    if (!/^[a-zA-Z0-9._]+$/.test(form.username)) {
+      setError('Username can only contain letters, numbers, dots, and underscores');
+      return;
+    }
+
+    if (form.password.length < 8) {
+      setError(t('register.minChars'));
+      return;
+    }
+
+    if (form.password !== form.confirmPassword) {
+      setError(t('register.passwordMismatch') || 'Passwords do not match');
+      return;
+    }
+
+    if (!form.dateOfBirth) {
+      setError(t('register.dobRequired') || 'Vui lòng nhập ngày sinh');
+      return;
+    }
+    
+    const dob = new Date(form.dateOfBirth);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+    
+    if (age < 16) {
+      setError(t('register.minAge') || 'Bạn phải từ 16 tuổi trở lên mới được đăng ký');
+      return;
+    }
+
     setLoading(true);
     try {
       const payload: any = { ...form };
-      if (!payload.dateOfBirth) delete payload.dateOfBirth;
+      delete payload.confirmPassword;
       if (!payload.gender) delete payload.gender;
       
       await authApi.register(payload);
@@ -57,10 +91,17 @@ export default function RegisterPage() {
                     onChange={handleChange} required placeholder="john@email.com" />
                 </div>
               </div>
-              <div className="mb-5">
-                <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.password')}</label>
-                <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" name="password" type="password" value={form.password}
-                  onChange={handleChange} required placeholder={t('register.minChars')} />
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.password')}</label>
+                  <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" name="password" type="password" value={form.password}
+                    onChange={handleChange} required minLength={8} placeholder={t('register.minChars')} />
+                </div>
+                <div className="mb-5">
+                  <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.confirmPassword') || 'Confirm Password *'}</label>
+                  <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" name="confirmPassword" type="password" value={form.confirmPassword}
+                    onChange={handleChange} required minLength={8} placeholder={t('register.confirmPasswordPlaceholder') || 'Re-enter password'} />
+                </div>
               </div>
               <div className="mb-5">
                 <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.fullName')}</label>
@@ -71,7 +112,7 @@ export default function RegisterPage() {
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.dateOfBirth')}</label>
                   <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" name="dateOfBirth" type="date" value={form.dateOfBirth}
-                    onChange={handleChange} />
+                    onChange={handleChange} required />
                 </div>
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.gender')}</label>

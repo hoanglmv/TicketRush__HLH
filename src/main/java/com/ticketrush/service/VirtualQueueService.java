@@ -23,8 +23,8 @@ public class VirtualQueueService {
     private static final Duration ACCESS_TOKEN_TTL = Duration.ofMinutes(5);
 
     /**
-     * Add user to the waiting queue for an event.
-     * Uses Redis ZSET with timestamp as score for FIFO ordering.
+     * Thêm người dùng vào hàng đợi ảo (Virtual Queue) cho một sự kiện.
+     * Sử dụng Redis ZSET với thời điểm tham gia (timestamp) làm điểm số (score) để đảm bảo tính công bằng (FIFO).
      */
     public QueueStatusResponse joinQueue(Long userId, Long eventId) {
         String queueKey = QUEUE_KEY_PREFIX + eventId;
@@ -63,7 +63,7 @@ public class VirtualQueueService {
     }
 
     /**
-     * Check user's position in queue. If they have been granted access, return the token.
+     * Kiểm tra vị trí hiện tại trong hàng đợi. Nếu đến lượt, trả về token truy cập.
      */
     public QueueStatusResponse checkStatus(Long userId, Long eventId) {
         // Check if user already has access token
@@ -103,8 +103,8 @@ public class VirtualQueueService {
     }
 
     /**
-     * Process the queue: pop the next batch and grant them access tokens.
-     * Called by the scheduler every few seconds.
+     * Xử lý hàng đợi: lấy ra N người dùng ở đầu hàng đợi (batch) và cấp quyền truy cập (token) cho họ.
+     * Hàm này được gọi liên tục bởi Scheduler mỗi vài giây.
      */
     public int processQueue(Long eventId, int batchSize) {
         String queueKey = QUEUE_KEY_PREFIX + eventId;
@@ -131,7 +131,7 @@ public class VirtualQueueService {
     }
 
     /**
-     * Grant an access token to a user, stored in Redis with TTL.
+     * Cấp quyền truy cập cho người dùng, lưu token vào Redis với thời gian hết hạn (TTL).
      */
     private void grantAccess(Long userId, Long eventId) {
         String accessKey = ACCESS_KEY_PREFIX + eventId + ":" + userId;
@@ -140,7 +140,7 @@ public class VirtualQueueService {
     }
 
     /**
-     * Validate an access token.
+     * Xác thực xem token truy cập có hợp lệ hay không.
      */
     public boolean validateAccess(Long userId, Long eventId, String token) {
         String accessKey = ACCESS_KEY_PREFIX + eventId + ":" + userId;
@@ -162,7 +162,7 @@ public class VirtualQueueService {
     }
 
     /**
-     * Remove user from the queue (e.g., when they navigate away).
+     * Bỏ xếp hàng (rời khỏi hàng đợi) khi người dùng thoát trang.
      */
     public void leaveQueue(Long userId, Long eventId) {
         String queueKey = QUEUE_KEY_PREFIX + eventId;

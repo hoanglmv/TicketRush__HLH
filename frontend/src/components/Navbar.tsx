@@ -1,6 +1,8 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-
+import { useState, useEffect, useRef } from 'react';
+import { eventApi } from '../api';
+import { EventResponse } from '../types';
 import { useLanguage } from '../i18n';
 import { Search, Plus, Ticket, LogOut, ChevronDown } from 'lucide-react';
 
@@ -10,6 +12,36 @@ export default function Navbar() {
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const currentCategory = searchParams.get('category') || '';
+
+  const [searchQuery, setSearchQuery] = useState('');
+  const [suggestions, setSuggestions] = useState<EventResponse[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const searchRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (searchQuery.trim().length >= 2) {
+      const delayFn = setTimeout(() => {
+        eventApi.search(searchQuery).then(res => {
+          setSuggestions(res.data.data || []);
+          setShowSuggestions(true);
+        }).catch(() => {});
+      }, 300);
+      return () => clearTimeout(delayFn);
+    } else {
+      setSuggestions([]);
+      setShowSuggestions(false);
+    }
+  }, [searchQuery]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (searchRef.current && !searchRef.current.contains(event.target as Node)) {
+        setShowSuggestions(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const { t, locale, toggleLocale } = useLanguage();
 
@@ -31,23 +63,59 @@ export default function Navbar() {
           </Link>
           
           {/* Search Bar */}
-          <div className="hidden md:flex items-center flex-1 max-w-xl relative group">
+          <div className="hidden md:flex items-center flex-1 max-w-xl relative group" ref={searchRef}>
             <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-white/30 group-focus-within:text-[#00b14f] transition-colors">
               <Search size={18} />
             </div>
             <input 
               type="text" 
               placeholder={t('nav.searchPlaceholder')}
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              onFocus={() => { if (suggestions.length > 0) setShowSuggestions(true); }}
               className="w-full bg-white/5 border border-white/10 rounded-full py-2.5 pl-11 pr-24 text-sm text-white focus:outline-none focus:border-[#00b14f] focus:bg-white/10 transition-all placeholder:text-white/20"
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
-                  navigate(`/events?search=${encodeURIComponent(e.currentTarget.value)}`);
+                if (e.key === 'Enter' && searchQuery.trim()) {
+                  setShowSuggestions(false);
+                  navigate(`/events?search=${encodeURIComponent(searchQuery)}`);
                 }
               }}
             />
-            <button className="absolute right-1.5 top-1.5 bottom-1.5 px-6 bg-[#00b14f] text-white text-[11px] font-black uppercase rounded-full hover:bg-[#008a3d] transition-all tracking-wider">
+            <button 
+              className="absolute right-1.5 top-1.5 bottom-1.5 px-6 bg-[#00b14f] text-white text-[11px] font-black uppercase rounded-full hover:bg-[#008a3d] transition-all tracking-wider"
+              onClick={() => {
+                if (searchQuery.trim()) {
+                  setShowSuggestions(false);
+                  navigate(`/events?search=${encodeURIComponent(searchQuery)}`);
+                }
+              }}
+            >
               {t('nav.search')}
             </button>
+
+            {/* Suggestions Dropdown */}
+            {showSuggestions && suggestions.length > 0 && (
+              <div className="absolute top-full left-0 right-0 w-full bg-[#1a1a1a] rounded-2xl shadow-2xl border border-white/5 z-50 max-h-[350px] overflow-y-auto mt-2 overflow-hidden">
+                <div className="px-5 py-3 text-[10px] font-black text-white/40 uppercase tracking-widest border-b border-white/5">{t('search.suggestedEvents')} ({suggestions.length})</div>
+                {suggestions.map(event => (
+                  <div 
+                    key={event.id}
+                    className="flex px-5 py-3 border-b border-white/5 cursor-pointer items-center hover:bg-white/5 transition-colors"
+                    onClick={() => {
+                      setShowSuggestions(false);
+                      setSearchQuery('');
+                      navigate(`/events/${event.id}`);
+                    }}
+                  >
+                    <div className="w-10 h-10 rounded-lg bg-cover bg-center mr-4 flex-shrink-0" style={{ backgroundImage: `url(${event.bannerUrl})` }} />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-bold text-sm text-white truncate">{event.name}</div>
+                      <div className="text-[10px] text-white/50 font-bold uppercase tracking-wider truncate mt-1">{event.city} • {event.venue}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* User Actions */}

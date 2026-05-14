@@ -35,8 +35,8 @@ public class SeatBookingService {
     private final SimpMessagingTemplate messagingTemplate;
 
     /**
-     * Lock a seat for a user. Uses PESSIMISTIC_WRITE to prevent race conditions.
-     * This is the CORE concurrency mechanism of the system.
+     * Khóa ghế (Lock seat) cho một người dùng. Sử dụng PESSIMISTIC_WRITE để tránh lỗi Race Condition (nhiều người cùng mua 1 ghế).
+     * Đây là cơ chế cốt lõi xử lý đồng thời (Concurrency) của hệ thống.
      */
     @Transactional
     public TicketResponse lockSeat(Long userId, Long seatId) {
@@ -85,7 +85,7 @@ public class SeatBookingService {
     }
 
     /**
-     * Confirm payment for a ticket. Generates QR code on success.
+     * Xác nhận thanh toán cho vé. Sinh mã QR nếu thanh toán thành công và chuyển trạng thái vé/ghế sang SOLD.
      */
     @Transactional
     public TicketResponse confirmPayment(Long userId, Long ticketId) {
@@ -125,7 +125,7 @@ public class SeatBookingService {
     }
 
     /**
-     * Cancel a pending ticket and release the seat.
+     * Hủy vé đang chờ thanh toán và giải phóng ghế, cho phép người khác mua.
      */
     @Transactional
     public void cancelTicket(Long userId, Long ticketId) {
@@ -152,12 +152,18 @@ public class SeatBookingService {
         log.info("Ticket {} cancelled by user {}", ticketId, userId);
     }
 
+    /**
+     * Lấy danh sách các vé của một người dùng (sắp xếp mới nhất lên đầu).
+     */
     public List<TicketResponse> getUserTickets(Long userId) {
         return ticketRepository.findByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(this::toTicketResponse)
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Lấy thông tin chi tiết một vé cụ thể của người dùng.
+     */
     public TicketResponse getTicketById(Long userId, Long ticketId) {
         Ticket ticket = ticketRepository.findByIdAndUserId(ticketId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Ticket not found"));
@@ -168,6 +174,9 @@ public class SeatBookingService {
 
     // ========== WebSocket Broadcasting ==========
 
+    /**
+     * Gửi thông báo thay đổi trạng thái ghế qua WebSocket để tất cả Frontend cập nhật theo thời gian thực.
+     */
     private void broadcastSeatUpdate(Long eventId, Seat seat) {
         SeatStatusUpdate update = SeatStatusUpdate.builder()
                 .seatId(seat.getId())

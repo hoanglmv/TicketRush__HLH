@@ -8,11 +8,18 @@ import { useLanguage } from '../i18n';
 export default function EventListPage() {
   const [searchParams] = useSearchParams();
   const categoryParam = searchParams.get('category') || '';
+  const searchParam = searchParams.get('search') || searchParams.get('q') || '';
+  const cityParam = searchParams.get('city') || '';
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
+  const [searchQuery, setSearchQuery] = useState(searchParam);
+  const [cityFilter, setCityFilter] = useState(cityParam || 'AllCities');
   const [dateFilter, setDateFilter] = useState('All Dates');
   const { t } = useLanguage();
+
+  useEffect(() => {
+    setSearchQuery(searchParam);
+  }, [searchParam]);
 
   const { settings } = useSettings();
   const heroCategory = categoryParam ? categoryParam.replace('_', ' ').toUpperCase() : 'EVENTS';
@@ -53,11 +60,12 @@ export default function EventListPage() {
       endDate = nextMonth.toISOString();
     }
 
-    eventApi.search('', categoryParam, startDate, endDate)
+    const currentCity = cityFilter === 'AllCities' ? '' : cityFilter;
+    eventApi.search(searchParam, categoryParam, currentCity, startDate, endDate)
       .then(res => setEvents(res.data.data || []))
       .catch(() => {})
       .finally(() => setLoading(false));
-  }, [categoryParam, dateFilter]);
+  }, [categoryParam, dateFilter, searchParam, cityFilter]);
 
   const extractDateInfo = (dStr: string) => {
     if (!dStr) return { month: '', day: '', time: '' };
@@ -97,6 +105,25 @@ export default function EventListPage() {
           <option value="OTHER">{t('nav.other') || 'Khác'}</option>
         </select>
         
+        <select 
+          className="w-[200px] cursor-pointer px-3 py-2 bg-bg-input border border-border-color rounded-md text-white focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20" 
+          value={cityFilter}
+          onChange={(e) => {
+            setCityFilter(e.target.value);
+            const newUrl = new URL(window.location.href);
+            if (e.target.value === 'AllCities') newUrl.searchParams.delete('city');
+            else newUrl.searchParams.set('city', e.target.value);
+            window.history.pushState({}, '', newUrl);
+          }}
+        >
+          <option value="AllCities">{t('search.allLocations') || 'Tất cả vị trí'}</option>
+          <option value="Hà Nội">Hà Nội</option>
+          <option value="Hồ Chí Minh">Hồ Chí Minh</option>
+          <option value="Đà Nẵng">Đà Nẵng</option>
+          <option value="Hải Phòng">Hải Phòng</option>
+          <option value="Cần Thơ">Cần Thơ</option>
+        </select>
+
         <select 
           className="w-[200px] cursor-pointer px-3 py-2 bg-bg-input border border-border-color rounded-md text-white focus:outline-none focus:border-accent-primary focus:ring-2 focus:ring-accent-primary/20" 
           value={dateFilter}

@@ -26,6 +26,9 @@ public class AdminDashboardService {
     private final EventRepository eventRepository;
     private final UserRepository userRepository;
 
+    /**
+     * Lấy các thống kê tổng quan cho toàn bộ hệ thống (số sự kiện, tổng doanh thu, số người dùng).
+     */
     public Map<String, Object> getDashboardStats() {
         Map<String, Object> stats = new HashMap<>();
 
@@ -39,6 +42,9 @@ public class AdminDashboardService {
         return stats;
     }
 
+    /**
+     * Lấy thống kê chi tiết cho một sự kiện (số ghế trống, số ghế đã bán, tỷ lệ lấp đầy, doanh thu).
+     */
     public Map<String, Object> getEventStats(Long eventId) {
         Map<String, Object> stats = new HashMap<>();
 
@@ -61,6 +67,9 @@ public class AdminDashboardService {
         return stats;
     }
 
+    /**
+     * Phân tích dữ liệu nhân khẩu học (độ tuổi, giới tính) của những người đã mua vé cho sự kiện.
+     */
     public Map<String, Object> getEventDemographics(Long eventId) {
         List<Ticket> paidTickets = ticketRepository.findPaidTicketsByEventId(eventId);
         Map<String, Object> demographics = new HashMap<>();

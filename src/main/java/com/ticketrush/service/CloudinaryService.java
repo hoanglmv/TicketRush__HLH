@@ -17,6 +17,9 @@ public class CloudinaryService {
         this.cloudinary = cloudinary;
     }
 
+    /**
+     * Tải file ảnh lên máy chủ Cloudinary và trả về đường dẫn URL an toàn (https).
+     */
     public String uploadImage(MultipartFile file) throws IOException {
         Map uploadResult = cloudinary.uploader().upload(file.getBytes(), ObjectUtils.emptyMap());
         return uploadResult.get("secure_url").toString();

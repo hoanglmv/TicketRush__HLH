@@ -18,10 +18,14 @@ export default function HomePage() {
   const bannerEvents = events.filter(e => e.hot).slice(0, 5); // Max 5 hot events for the banner
   const eventsToShow = bannerEvents.length > 0 ? bannerEvents : events.slice(0, 2);
 
+  // Auto slide for banner
   useEffect(() => {
-    if (eventsToShow.length === 0 || isPaused) return;
+    if (!eventsToShow || eventsToShow.length === 0 || isPaused) return;
     const timer = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % eventsToShow.length);
+      setCurrentSlide((prev) => {
+        if (Number.isNaN(prev)) return 0;
+        return (prev + 1) % eventsToShow.length;
+      });
     }, 7000);
     return () => clearInterval(timer);
   }, [eventsToShow.length, isPaused]);
@@ -29,7 +33,12 @@ export default function HomePage() {
   useEffect(() => {
     eventApi.list().then(res => {
       const data = res.data.data || [];
-      const sorted = [...data].sort((a, b) => {
+      const activeEvents = data.filter((e: EventResponse) => {
+        if (!e.eventDate) return true;
+        const dateStr = e.eventDate.replace(' ', 'T');
+        return new Date(dateStr).getTime() >= Date.now();
+      });
+      const sorted = [...activeEvents].sort((a, b) => {
         if (a.hot && !b.hot) return -1;
         if (!a.hot && b.hot) return 1;
         return 0;
@@ -136,13 +145,19 @@ export default function HomePage() {
               <div className="flex w-full items-center gap-4 lg:gap-8 bg-black/40 lg:bg-black/20 backdrop-blur-md p-3 lg:p-4 rounded-full lg:rounded-2xl border border-white/10 pointer-events-auto">
                 <div className="flex gap-2 lg:gap-3">
                   <button
-                    onClick={() => setCurrentSlide(prev => (prev - 1 + eventsToShow.length) % eventsToShow.length)}
+                    onClick={() => setCurrentSlide(prev => {
+                      if (eventsToShow.length === 0) return 0;
+                      return (Number.isNaN(prev) ? 0 : prev - 1 + eventsToShow.length) % eventsToShow.length;
+                    })}
                     className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-90"
                   >
                     <ChevronLeft size={20} />
                   </button>
                   <button
-                    onClick={() => setCurrentSlide(prev => (prev + 1) % eventsToShow.length)}
+                    onClick={() => setCurrentSlide(prev => {
+                      if (eventsToShow.length === 0) return 0;
+                      return (Number.isNaN(prev) ? 0 : prev + 1) % eventsToShow.length;
+                    })}
                     className="w-10 h-10 lg:w-12 lg:h-12 rounded-full border border-white/30 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all active:scale-90"
                   >
                     <ChevronRight size={20} />
@@ -150,15 +165,16 @@ export default function HomePage() {
                 </div>
 
                 <div className="flex w-full items-end gap-1.5 lg:gap-2 pr-2">
-                  <span className="text-xl lg:text-3xl font-black text-white leading-none">0{currentSlide + 1}</span>
+                  <span className="text-xl lg:text-3xl font-black text-white leading-none">0{Number.isNaN(currentSlide) || eventsToShow.length === 0 ? 1 : currentSlide + 1}</span>
+                  <span className="text-xs lg:text-sm font-bold text-white/40 leading-none mb-0.5 lg:mb-1">/</span>
+                  <span className="text-xs lg:text-sm font-bold text-white/40 leading-none">0{Math.max(1, eventsToShow.length)}</span>
                   <div className="w-full h-[2px] lg:h-[3px] bg-white/20 mb-1 lg:mb-1.5 mx-1 relative overflow-hidden rounded-full">
                     <motion.div
                       className="absolute inset-0 bg-accent-primary"
                       initial={{ width: 0 }}
-                      animate={{ width: `${((currentSlide + 1) / eventsToShow.length) * 100}%` }}
+                      animate={{ width: `${(eventsToShow.length === 0) ? 0 : ((currentSlide + 1) / eventsToShow.length) * 100}%` }}
                     />
                   </div>
-                  <span className="text-xs lg:text-sm font-bold text-white/40 leading-none">0{eventsToShow.length}</span>
                 </div>
               </div>
 

@@ -43,6 +43,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'login.resetPasswordBtn': 'Reset Password',
     // SearchBar
     'search.location': 'Location',
+    'search.allLocations': 'All Locations',
     'search.locationPlaceholder': 'City or Zip Code',
     'search.dates': 'Dates',
     'search.allDates': 'All Dates',
@@ -119,6 +120,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'eventDetail.saleStartsIn': 'Sale starts in',
     'eventDetail.securePayment': '* Secure payment via VNPAY or ZaloPay',
     'eventDetail.eventNotFound': 'Event not found',
+    'eventDetail.ended': 'Event Ended',
 
     // LoginPage
     'login.welcomeBack': 'Welcome Back',
@@ -136,6 +138,9 @@ export const translations: Record<Locale, Record<string, string>> = {
     'register.username': 'Username *',
     'register.email': 'Email *',
     'register.password': 'Password *',
+    'register.confirmPassword': 'Confirm Password *',
+    'register.confirmPasswordPlaceholder': 'Re-enter password',
+    'register.passwordMismatch': 'Passwords do not match',
     'register.fullName': 'Full Name',
     'register.dateOfBirth': 'Date of Birth',
     'register.gender': 'Gender',
@@ -144,7 +149,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'register.male': 'Male',
     'register.female': 'Female',
     'register.other': 'Other',
-    'register.minChars': 'Min 6 characters',
+    'register.minChars': 'Min 8 characters',
     'register.creating': 'Creating account...',
     'register.create': 'Create Account',
     'register.hasAccount': 'Already have an account?',
@@ -414,6 +419,7 @@ export const translations: Record<Locale, Record<string, string>> = {
 
     // SearchBar
     'search.location': 'Địa điểm',
+    'search.allLocations': 'Tất cả vị trí',
     'search.locationPlaceholder': 'Thành phố hoặc Mã vùng',
     'search.dates': 'Ngày',
     'search.allDates': 'Tất cả ngày',
@@ -490,6 +496,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'eventDetail.saleStartsIn': 'Mở bán sau',
     'eventDetail.securePayment': '* Thanh toán bảo mật qua VNPAY hoặc ZaloPay',
     'eventDetail.eventNotFound': 'Không tìm thấy sự kiện',
+    'eventDetail.ended': 'Đã kết thúc',
 
     // LoginPage
     'login.welcomeBack': 'Chào mừng trở lại',
@@ -507,6 +514,9 @@ export const translations: Record<Locale, Record<string, string>> = {
     'register.username': 'Tên đăng nhập *',
     'register.email': 'Email *',
     'register.password': 'Mật khẩu *',
+    'register.confirmPassword': 'Nhập lại mật khẩu *',
+    'register.confirmPasswordPlaceholder': 'Nhập lại mật khẩu',
+    'register.passwordMismatch': 'Mật khẩu nhập lại không khớp',
     'register.fullName': 'Họ và tên',
     'register.dateOfBirth': 'Ngày sinh',
     'register.gender': 'Giới tính',
@@ -515,7 +525,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'register.male': 'Nam',
     'register.female': 'Nữ',
     'register.other': 'Khác',
-    'register.minChars': 'Tối thiểu 6 ký tự',
+    'register.minChars': 'Tối thiểu 8 ký tự',
     'register.creating': 'Đang tạo tài khoản...',
     'register.create': 'Tạo tài khoản',
     'register.hasAccount': 'Đã có tài khoản?',
