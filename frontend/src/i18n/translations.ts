@@ -532,8 +532,8 @@ export const translations: Record<Locale, Record<string, string>> = {
     'register.signIn': 'Đăng nhập',
 
     // SeatSelectionPage
-    'seats.title': 'Mô hình Chỗ ngồi & Giá',
-    'seats.subtitle': 'Bạn có thể dùng chuột hoặc phím cuộn để phóng to, thu nhỏ.',
+    'seats.title': 'Sơ đồ Chỗ ngồi & Mức giá',
+    'seats.subtitle': 'Bạn có thể dùng chuột hoặc phím cuộn để phóng to, thu nhỏ sơ đồ.',
     'seats.selected': 'Đã chọn',
     'seats.buyNow': 'Mua Ngay',
     'seats.holding': 'Đang giữ...',
@@ -551,7 +551,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'checkout.expired': 'Thời gian giữ chỗ đã hết hoặc vé đã xử lý.',
     'checkout.delivery': 'Giao vé',
     'checkout.mobileTicket': 'Vé điện tử',
-    'checkout.mobileDesc': 'Vé biểu diễn sẽ khả dụng trên thiết bị di động của bạn qua mã vạch an toàn cực điểm SafeTix. Hãy tận hưởng việc check-in nhanh nhất mà không cần in vé.',
+    'checkout.mobileDesc': 'Vé sẽ khả dụng trên thiết bị di động của bạn qua công nghệ mã vạch bảo mật an toàn SafeTix. Tận hưởng việc check-in siêu tốc mà không cần in vé.',
     'checkout.note': 'Ghi chú:',
     'checkout.qrNote': 'Mã vạch QR sẽ chỉ hiển thị ở định dạng chuẩn. Ảnh chụp màn hình sẽ KHÔNG được chấp nhận.',
     'checkout.ticketProtector': 'Bảo hiểm Vé sự kiện',
@@ -570,7 +570,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'checkout.serviceFee': 'Phí dịch vụ (15%)',
     'checkout.ticketProtectorFee': 'Bảo hiểm vé',
     'checkout.total': 'Tổng cộng',
-    'checkout.termsNotice': 'Bằng cách nhấn vào nút bên dưới, bạn đồng ý với Điều khoản Sử dụng và Chính sách Bảo mật của hệ thống TicketRush. Tất cả vé sau khi Place Order đều là Final.',
+    'checkout.termsNotice': 'Bằng cách nhấn vào nút bên dưới, bạn đồng ý với Điều khoản Sử dụng và Chính sách Bảo mật của TicketRush. Tất cả vé sau khi đặt thành công đều không thể hoàn hoặc hủy.',
     'checkout.placeOrder': 'ĐẶT VÉ',
     'checkout.processing': 'ĐANG XỬ LÝ...',
     'checkout.selectInsurance': 'Vui lòng chọn hoặc từ chối Bảo hiểm Vé (Ticket Protection) trước khi thanh toán.',

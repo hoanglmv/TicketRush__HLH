@@ -88,7 +88,8 @@ export default function AdminEventCreatePage() {
         bannerUrl: prev.bannerUrl || newImageUrls[0] || '' // Auto set banner
       }));
     } catch (err: any) {
-      setError(t('admin.val.uploadError'));
+      console.error("Upload error:", err.response?.data || err);
+      setError(err.response?.data?.message || t('admin.val.uploadError'));
     } finally {
       setUploadingImages(false);
       e.target.value = '';
@@ -218,7 +219,7 @@ export default function AdminEventCreatePage() {
                   placeholder={t('admin.descriptionPlaceholder')} />
               </div>
               <div className="mb-5">
-                <label className="block text-xs font-black uppercase tracking-widest text-white/40 mb-2">Category</label>
+                <label className="block text-xs font-black uppercase tracking-widest text-white/40 mb-2">Danh mục</label>
                 <select className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-lg focus:outline-none focus:border-[#00b14f] transition-all text-white cursor-pointer appearance-none" name="category" value={form.category} onChange={handleChange}>
                   <option value="LIVE_MUSIC" className="bg-[#1a1a1a]">{t('nav.concerts') || 'Âm nhạc'}</option>
                   <option value="ARTS" className="bg-[#1a1a1a]">{t('nav.arts') || 'Nghệ thuật'}</option>

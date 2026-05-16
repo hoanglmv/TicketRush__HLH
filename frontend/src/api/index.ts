@@ -73,7 +73,11 @@ export const adminApi = {
   updateZoneOrder: (eventId: number, zoneIds: number[]) => api.put<ApiResponse<void>>(`/admin/events/${eventId}/zones/reorder`, zoneIds),
   eventStats: (eventId: number) => api.get<ApiResponse<Record<string, any>>>(`/admin/events/${eventId}/stats`),
   demographics: (eventId: number) => api.get<ApiResponse<Record<string, any>>>(`/admin/events/${eventId}/demographics`),
-  uploadImage: (formData: FormData) => api.post<ApiResponse<string>>('/upload', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' }
-  }),
+  uploadImage: (formData: FormData) => {
+    return axios.post<ApiResponse<string>>('/api/upload', formData, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    });
+  },
 };
