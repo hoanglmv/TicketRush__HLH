@@ -7,11 +7,16 @@ import { useLanguage } from '../../i18n';
 export default function AdminEventListPage() {
   const [events, setEvents] = useState<EventResponse[]>([]);
   const [loading, setLoading] = useState(true);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [statusFilter, setStatusFilter] = useState('');
   const { t } = useLanguage();
 
   useEffect(() => {
     adminApi.events()
-      .then(res => setEvents(res.data.data || []))
+      .then(res => {
+        const sortedEvents = (res.data.data || []).sort((a, b) => b.id - a.id);
+        setEvents(sortedEvents);
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -25,7 +30,7 @@ export default function AdminEventListPage() {
     try {
       await adminApi.updateStatus(eventId, status);
       const res = await adminApi.events();
-      setEvents(res.data.data || []);
+      setEvents((res.data.data || []).sort((a, b) => b.id - a.id));
     } catch (err: any) {
       alert(err.response?.data?.message || 'Failed to update status');
     }
@@ -41,26 +46,54 @@ export default function AdminEventListPage() {
     }
   };
 
+  const filteredEvents = events.filter(event => {
+    const matchSearch = event.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                        (event.venue || '').toLowerCase().includes(searchTerm.toLowerCase());
+    const matchStatus = statusFilter ? event.status === statusFilter : true;
+    return matchSearch && matchStatus;
+  });
+
   if (loading) return <div className="flex-1 pt-20 text-center flex justify-center"><div className="w-10 h-10 border-4 border-gray-200 border-t-blue-600 rounded-full animate-spin"></div></div>;
 
   return (
     <div className="flex-1 py-10 bg-[#0a0a0a] min-h-screen text-white">
       <div className="container mx-auto px-6 max-w-6xl animate-[fadeIn_0.5s_ease-out]">
-        <div className="flex justify-between items-end mb-8 border-b border-white/10 pb-4">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 border-b border-white/10 pb-4 gap-4">
           <div>
             <h1 className="text-3xl font-extrabold text-white">{t('admin.eventManagement')}</h1>
             <p className="text-white/40 mt-2">{t('admin.createAndManage')}</p>
           </div>
-          <Link to="/admin/events/create" className="px-8 py-3 bg-[#00b14f] text-white font-black uppercase tracking-widest text-xs rounded-lg hover:bg-[#008a3d] transition-all shadow-lg shadow-[#00b14f]/20">{t('admin.createEvent')}</Link>
+          <div className="flex flex-col sm:flex-row items-center gap-3 w-full md:w-auto">
+            <input 
+              type="text" 
+              placeholder="Tìm kiếm sự kiện, địa điểm..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full sm:w-64 bg-[#1a1a1a] border border-white/10 text-white rounded-lg px-4 py-2.5 outline-none focus:border-[#00b14f] transition-colors"
+            />
+            <select 
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full sm:w-40 bg-[#1a1a1a] border border-white/10 text-white rounded-lg px-4 py-2.5 outline-none focus:border-[#00b14f] transition-colors appearance-none"
+            >
+              <option value="">Tất cả trạng thái</option>
+              <option value="DRAFT">DRAFT</option>
+              <option value="PUBLISHED">PUBLISHED</option>
+              <option value="ON_SALE">ON_SALE</option>
+              <option value="COMPLETED">COMPLETED</option>
+              <option value="CANCELLED">CANCELLED</option>
+            </select>
+            <Link to="/admin/events/create" className="w-full sm:w-auto text-center px-8 py-3 bg-[#00b14f] text-white font-black uppercase tracking-widest text-xs rounded-lg hover:bg-[#008a3d] transition-all shadow-lg shadow-[#00b14f]/20 whitespace-nowrap">{t('admin.createEvent')}</Link>
+          </div>
         </div>
 
-        {events.length === 0 ? (
+        {filteredEvents.length === 0 ? (
           <div className="bg-[#111111] p-20 text-center rounded-3xl border border-white/5 shadow-2xl text-white/20 font-medium">
-            <p className="text-lg uppercase tracking-[0.2em]">{t('admin.noEvents')}</p>
+            <p className="text-lg uppercase tracking-[0.2em]">{events.length === 0 ? t('admin.noEvents') : 'Không tìm thấy sự kiện phù hợp'}</p>
           </div>
         ) : (
           <div className="flex flex-col gap-6">
-            {events.map(event => (
+            {filteredEvents.map(event => (
               <div key={event.id} className="bg-[#111111] rounded-2xl border border-white/5 shadow-xl hover:border-white/10 transition-all group overflow-hidden">
                 <div className="p-8 flex flex-col md:flex-row md:items-center justify-between gap-8">
                   <div className="flex-1">

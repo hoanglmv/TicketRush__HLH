@@ -1,4 +1,5 @@
 import api from './axios';
+import axios from 'axios';
 import { ApiResponse, AuthResponse, EventResponse, ZoneResponse, SeatResponse, TicketResponse, QueueStatusResponse } from '../types';
 
 // ========== AUTH ==========
