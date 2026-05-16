@@ -1,10 +1,14 @@
-package com.ticketrush.dto;
+﻿package com.ticketrush.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;
 
 @Data
+/** 
+ * DTO (Data Transfer Object) - Lớp truyền tải dữ liệu.
+ * Dùng để định nghĩa cấu trúc dữ liệu nhận từ Request hoặc trả về Response.
+ */
 public class ZoneCreateRequest {
     @NotBlank(message = "Zone name is required")
     private String name;

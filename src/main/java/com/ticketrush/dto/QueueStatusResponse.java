@@ -1,10 +1,14 @@
-package com.ticketrush.dto;
+﻿package com.ticketrush.dto;
 
 import lombok.Builder;
 import lombok.Data;
 
 @Data
 @Builder
+/** 
+ * DTO (Data Transfer Object) - Lớp truyền tải dữ liệu.
+ * Dùng để định nghĩa cấu trúc dữ liệu nhận từ Request hoặc trả về Response.
+ */
 public class QueueStatusResponse {
     private Long eventId;
     private Long userId;

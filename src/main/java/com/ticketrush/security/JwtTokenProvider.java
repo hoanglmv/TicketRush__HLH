@@ -24,11 +24,17 @@ public class JwtTokenProvider {
         this.jwtExpirationMs = jwtExpirationMs;
     }
 
+    /**
+     * Tạo token từ đối tượng Authentication (dùng sau khi đăng nhập thành công).
+     */
     public String generateToken(Authentication authentication) {
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
         return generateTokenFromUsername(userDetails.getUsername());
     }
 
+    /**
+     * Tạo chuỗi token JWT chứa thông tin username, ngày tạo, ngày hết hạn và được ký bảo mật.
+     */
     public String generateTokenFromUsername(String username) {
         Date now = new Date();
         Date expiryDate = new Date(now.getTime() + jwtExpirationMs);
@@ -41,6 +47,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    /**
+     * Giải mã token JWT để lấy ra tên đăng nhập (username) ẩn bên trong.
+     */
     public String getUsernameFromToken(String token) {
         Claims claims = Jwts.parser()
                 .verifyWith(key)
@@ -50,6 +59,9 @@ public class JwtTokenProvider {
         return claims.getSubject();
     }
 
+    /**
+     * Xác minh tính hợp lệ của token (kiểm tra chữ ký, kiểm tra xem đã hết hạn chưa).
+     */
     public boolean validateToken(String token) {
         try {
             Jwts.parser().verifyWith(key).build().parseSignedClaims(token);

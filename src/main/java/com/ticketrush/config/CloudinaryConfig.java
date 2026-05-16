@@ -9,6 +9,10 @@ import java.util.Map;
 
 @Configuration
 public class CloudinaryConfig {
+    /**
+     * Khởi tạo bean Cloudinary với các thông tin xác thực tĩnh.
+     * Cung cấp đối tượng Cloudinary để upload và quản lý media trên nền tảng Cloudinary.
+     */
     @Bean
     public Cloudinary cloudinary() {
         Map<String, String> config = new HashMap<>();

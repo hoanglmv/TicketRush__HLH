@@ -1,4 +1,4 @@
-package com.ticketrush.repository;
+﻿package com.ticketrush.repository;
 
 import com.ticketrush.entity.Event;
 import com.ticketrush.enums.EventStatus;
@@ -9,6 +9,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
+/** 
+ * Lớp Repository giao tiếp với Database.
+ * Kế thừa Spring Data JPA để cung cấp các hàm thao tác dữ liệu (CRUD) tự động.
+ */
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findByStatus(EventStatus status);
 

@@ -17,6 +17,10 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    /**
+     * Tải thông tin người dùng từ Database dựa vào username.
+     * Spring Security sẽ dùng hàm này trong quá trình đăng nhập để lấy mật khẩu và quyền hạn đối chiếu.
+     */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)

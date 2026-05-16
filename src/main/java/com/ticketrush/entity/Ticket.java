@@ -1,4 +1,4 @@
-package com.ticketrush.entity;
+﻿package com.ticketrush.entity;
 
 import com.ticketrush.enums.TicketStatus;
 import jakarta.persistence.*;
@@ -15,6 +15,10 @@ import java.time.LocalDateTime;
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 @Builder
+/** 
+ * Lớp thực thể (Entity) đại diện cho bảng trong Database.
+ * Sử dụng JPA để ánh xạ các thuộc tính thành các cột trong cơ sở dữ liệu.
+ */
 public class Ticket {
 
     @Id

@@ -1,4 +1,4 @@
-package com.ticketrush.dto;
+﻿package com.ticketrush.dto;
 
 import com.ticketrush.enums.TicketStatus;
 import lombok.Builder;
@@ -8,6 +8,10 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
+/** 
+ * DTO (Data Transfer Object) - Lớp truyền tải dữ liệu.
+ * Dùng để định nghĩa cấu trúc dữ liệu nhận từ Request hoặc trả về Response.
+ */
 public class TicketResponse {
     private Long id;
     private Long userId;

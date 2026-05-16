@@ -1,4 +1,4 @@
-package com.ticketrush.entity;
+﻿package com.ticketrush.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -17,6 +17,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Entity
 @Table(name = "site_settings")
+/** 
+ * Lớp thực thể (Entity) đại diện cho bảng trong Database.
+ * Sử dụng JPA để ánh xạ các thuộc tính thành các cột trong cơ sở dữ liệu.
+ */
 public class SiteSetting {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

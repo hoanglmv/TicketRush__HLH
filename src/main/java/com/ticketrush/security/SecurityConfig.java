@@ -34,6 +34,11 @@ public class SecurityConfig {
     @Value("${app.cors.allowed-origins}")
     private String allowedOrigins;
 
+    /**
+     * Cấu hình chuỗi bảo mật cốt lõi.
+     * Quyết định đường dẫn nào được public (như /auth, /events) và đường dẫn nào yêu cầu đăng nhập.
+     * Cấu hình không sử dụng Session (Stateless) vì đang dùng JWT.
+     */
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -63,16 +68,25 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Trình quản lý xác thực của Spring Security.
+     */
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
         return config.getAuthenticationManager();
     }
 
+    /**
+     * Cấu hình thuật toán băm mật khẩu (BCrypt) để mã hóa password trước khi lưu vào DB.
+     */
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
+    /**
+     * Cấu hình CORS để cho phép Frontend (từ các domain khác) gọi API mà không bị trình duyệt chặn.
+     */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();

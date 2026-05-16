@@ -1,4 +1,4 @@
-package com.ticketrush.dto;
+﻿package com.ticketrush.dto;
 
 import com.ticketrush.enums.EventStatus;
 import lombok.Builder;
@@ -8,6 +8,10 @@ import java.util.List;
 
 @Data
 @Builder
+/** 
+ * DTO (Data Transfer Object) - Lớp truyền tải dữ liệu.
+ * Dùng để định nghĩa cấu trúc dữ liệu nhận từ Request hoặc trả về Response.
+ */
 public class EventResponse {
     private Long id;
     private String name;

@@ -24,6 +24,10 @@ public class DataInitializer {
 
     private final PasswordEncoder passwordEncoder;
 
+    /**
+     * Hàm tự động chạy khi ứng dụng khởi động.
+     * Khởi tạo tài khoản Admin mặc định và tạo sẵn một số sự kiện mẫu (seed data) nếu DB trống.
+     */
     @Bean
     public CommandLineRunner initData(UserRepository userRepository, EventRepository eventRepository, EventService eventService) {
         return args -> {

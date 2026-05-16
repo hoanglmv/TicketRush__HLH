@@ -1,4 +1,4 @@
-package com.ticketrush.exception;
+﻿package com.ticketrush.exception;
 
 import com.ticketrush.dto.ApiResponse;
 import org.springframework.http.HttpStatus;
@@ -13,6 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+/** 
+ * Lớp định nghĩa Exception (lỗi ngoại lệ) tùy chỉnh.
+ * Dùng để ném và xử lý các lỗi nghiệp vụ riêng của ứng dụng.
+ */
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ResourceNotFoundException.class)

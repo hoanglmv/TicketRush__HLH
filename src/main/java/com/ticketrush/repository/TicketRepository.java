@@ -1,4 +1,4 @@
-package com.ticketrush.repository;
+﻿package com.ticketrush.repository;
 
 import com.ticketrush.entity.Seat;
 import com.ticketrush.entity.Ticket;
@@ -12,6 +12,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
+/** 
+ * Lớp Repository giao tiếp với Database.
+ * Kế thừa Spring Data JPA để cung cấp các hàm thao tác dữ liệu (CRUD) tự động.
+ */
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
 
     List<Ticket> findByUserIdOrderByCreatedAtDesc(Long userId);

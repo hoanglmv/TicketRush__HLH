@@ -1,4 +1,4 @@
-package com.ticketrush.dto;
+﻿package com.ticketrush.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -7,6 +7,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
+/** 
+ * DTO (Data Transfer Object) - Lớp truyền tải dữ liệu.
+ * Dùng để định nghĩa cấu trúc dữ liệu nhận từ Request hoặc trả về Response.
+ */
 public class EventCreateRequest {
     @NotBlank(message = "Event name is required")
     private String name;
