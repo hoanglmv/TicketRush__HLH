@@ -27,8 +27,9 @@ public class FileUploadController {
         try {
             String url = cloudinaryService.uploadImage(file);
             return ResponseEntity.ok(Map.of("data", url));
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().body(Map.of("message", "Failed to upload image"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body(Map.of("message", "Failed to upload image: " + e.getMessage()));
         }
     }
 }
