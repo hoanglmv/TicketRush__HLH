@@ -1,181 +1,125 @@
-# TicketRush
-
-Nền tảng đặt vé trực tuyến cho sự kiện âm nhạc/giải trí với real-time seat map, virtual queue, và flash sale support.
-
-## Tech Stack
-
-| Layer | Technology |
-|-------|------------|
-| Backend | Spring Boot 4.0.5, Java 21 |
-| Database | MySQL 8 (Docker) |
-| Cache/Queue | Redis 7 (Docker) |
-| Security | Spring Security + JWT |
-| WebSocket | STOMP + SockJS |
-| Frontend | React 18, Vite, TypeScript |
-| Charts | Recharts |
-| DevOps | Docker Compose |
+<div align="center">
+  <h1>🎟️ TicketRush</h1>
+  <p><strong>Nền Tảng Đặt Vé Sự Kiện Trực Tuyến Tốc Độ Cao</strong></p>
+  
+  [![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.0-brightgreen.svg?logo=springboot)](https://spring.io/projects/spring-boot)
+  [![React](https://img.shields.io/badge/React-18-blue.svg?logo=react)](https://reactjs.org/)
+  [![Redis](https://img.shields.io/badge/Redis-7-red.svg?logo=redis)](https://redis.io/)
+  [![Docker](https://img.shields.io/badge/Docker-Ready-2496ED.svg?logo=docker)](https://www.docker.com/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-5.0-3178C6.svg?logo=typescript)](https://www.typescriptlang.org/)
+</div>
 
 ---
 
-## 🚀 Quick Start (Cho toàn bộ team)
+## 🌟 Giới Thiệu (Overview)
 
-### Yêu cầu duy nhất: cài [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+**TicketRush** là một hệ thống đặt vé sự kiện (hòa nhạc, thể thao, workshop) được thiết kế đặc biệt để chịu tải cao trong các đợt mở bán vé (Flash Sale). Hệ thống giải quyết bài toán chống "Overbooking" (đặt lố vé) và duy trì sự công bằng cho người mua thông qua cơ chế **Virtual Queue (Hàng đợi ảo)** kết hợp cùng bản đồ chọn ghế **Real-time (Thời gian thực)**.
 
-Không cần cài Java, Node, MySQL, Redis — Docker lo hết.
+Đồ án được phát triển theo mô hình Client-Server (RESTful API), ứng dụng các công nghệ hiện đại nhằm mô phỏng sát nhất hệ thống phân phối vé thực tế.
 
-### Bước 1: Clone và chạy
+---
 
-```powershell
-git clone <repo-url>
-cd TicketRush
+## ✨ Tính Năng Nổi Bật (Core Features)
 
-# Khởi động Docker Desktop trước, sau đó:
+- **🚦 Hàng Đợi Ảo (Virtual Queue):** Tích hợp Redis ZSET phân bổ luồng người dùng truy cập lúc cao điểm, đảm bảo nguyên tắc FIFO (First In - First Out) chống nghẽn Server.
+- **🗺️ Bản Đồ Ghế Real-time:** Ứng dụng WebSocket (STOMP) để đồng bộ trạng thái ghế ngồi ngay lập tức đến toàn bộ người dùng đang online.
+- **🔒 Giữ Chỗ & Khóa Ghế (Seat Locking):** Cơ chế "Pessimistic Locking" trên Database và TTL trên Redis ngăn chặn triệt để tình trạng 2 người mua cùng 1 ghế.
+- **🌍 Đa Ngôn Ngữ (i18n):** Hỗ trợ chuyển đổi ngôn ngữ (Tiếng Anh / Tiếng Việt) mượt mà trên toàn hệ thống không cần tải lại trang.
+- **🎫 Vé Điện Tử Thông Minh (Smart Ticket):** Tự động sinh mã QR Base64 mã hóa thông tin bảo mật, hỗ trợ check-in dễ dàng tại cổng sự kiện.
+- **📊 Admin Dashboard:** Thống kê trực quan số liệu kinh doanh, doanh thu, nhân khẩu học người dùng thông qua biểu đồ Recharts.
+
+---
+
+## 🛠️ Công Nghệ Sử Dụng (Tech Stack)
+
+| Hạng mục | Công nghệ |
+| :--- | :--- |
+| **Backend API** | Java 21, Spring Boot 3, Spring Data JPA, Spring Security (JWT) |
+| **Frontend UI** | React 18, Vite, TypeScript, Tailwind CSS, Recharts |
+| **Cơ Sở Dữ Liệu** | MySQL 8 |
+| **In-Memory Cache**| Redis 7 (Quản lý Queue & Token) |
+| **Realtime Comm** | WebSockets (SockJS + STOMP) |
+| **Cloud Storage** | Cloudinary (Lưu trữ hình ảnh/banner) |
+| **DevOps** | Docker, Docker Compose |
+
+---
+
+## 🚀 Hướng Dẫn Cài Đặt (Quick Start)
+
+Dự án được "đóng gói" hoàn toàn bằng Docker. Bạn **KHÔNG CẦN** cài đặt Java, Node.js, MySQL hay Redis trên máy tính. Yêu cầu duy nhất là đã cài đặt [Docker Desktop](https://www.docker.com/products/docker-desktop/).
+
+### 1. Khởi chạy hệ thống
+
+Mở Terminal (hoặc PowerShell) tại thư mục gốc của dự án và chạy lệnh:
+
+```bash
 docker compose up -d --build
 ```
 
-### Bước 2: Truy cập
+### 2. Truy cập ứng dụng
 
-| Service | URL |
-|---------|-----|
-| Frontend | http://localhost:5173 |
-| Backend API | http://localhost:8080/api |
+Sau khi các container chạy thành công (mất khoảng 1-2 phút cho lần build đầu tiên), truy cập qua trình duyệt:
 
-### Bước 3: Login
+- **Trang chủ (Frontend):** `http://localhost:5173`
+- **Backend API (Swagger/Base):** `http://localhost:8080/api`
 
-#### Tài khoản mặc định
+### 3. Tài Khoản Mặc Định
 
-| Username | Password | Role | Ghi chú |
-|----------|----------|------|---------|
-| admin | admin123 | Admin | Tài khoản quản trị, được tạo tự động khi khởi động lần đầu |
-
-> **Lưu ý:** Hệ thống **không có tài khoản user mặc định**. Để đăng nhập với vai trò User, hãy tạo tài khoản mới qua trang **Đăng ký (Register)** trên giao diện web.
+| Phân quyền | Tên đăng nhập | Mật khẩu | Ghi chú |
+| :--- | :--- | :--- | :--- |
+| **Quản trị viên** | `admin` | `admin123` | Quản lý sự kiện, xem thống kê |
+| **Khách hàng** | *(Tự đăng ký)* | *(Tự tạo)* | Truy cập trang Đăng ký để trải nghiệm luồng mua vé |
 
 ---
 
-## 📋 Các lệnh Docker thường dùng
+## 📁 Cấu Trúc Dự Án (Project Structure)
 
-```powershell
-# Khởi động toàn bộ (lần đầu hoặc khi có thay đổi code)
-docker compose up -d --build
+Dự án tuân thủ nghiêm ngặt mô hình 3 lớp (Controller - Service - Repository):
 
-# Khởi động (không build lại, nhanh hơn)
-docker compose up -d
+```text
+TicketRush/
+├── docker-compose.yml          # Cấu hình tự động hóa triển khai
+├── build.gradle                # Quản lý thư viện Backend
+├── src/main/java/com/ticketrush/
+│   ├── controller/             # Tầng giao tiếp REST API (Nhận Request, trả Response)
+│   ├── service/                # Tầng nghiệp vụ cốt lõi (Xử lý Queue, Đặt vé, Cấp Token)
+│   ├── repository/             # Tầng tương tác CSDL (Thực thi JPA, Lock DB)
+│   ├── dto/                    # Data Transfer Objects (Chuẩn hóa gói tin)
+│   ├── security/               # Cấu hình phân quyền & JWT
+│   └── config/                 # Cấu hình hệ thống (WebSocket, Redis)
+└── frontend/                   # Mã nguồn ReactJS
+    ├── src/pages/              # Các trang giao diện (Home, Checkout, Admin)
+    ├── src/api/                # Cấu hình gọi API (Axios)
+    └── src/i18n/               # Cấu hình đa ngôn ngữ
+```
 
-# Xem trạng thái
+---
+
+## 🔧 Các Lệnh Docker Hữu Ích
+
+```bash
+# Xem trạng thái các services đang chạy
 docker compose ps
 
-# Xem logs
-docker compose logs -f              # Tất cả
-docker compose logs -f backend      # Chỉ backend
-docker compose logs -f frontend     # Chỉ frontend
+# Xem log hệ thống (Hữu ích khi debug lỗi API)
+docker compose logs -f backend
 
-# Dừng tất cả
+# Tắt toàn bộ hệ thống
 docker compose down
 
-# Reset database (XÓA HẾT data, tạo lại từ đầu)
+# Xóa SẠCH dữ liệu database và reset lại từ đầu
 docker compose down -v
 docker compose up -d --build
-
-# Rebuild 1 service cụ thể
-docker compose up -d --build backend
-docker compose up -d --build frontend
 ```
+
+## 🚨 Xử Lý Lỗi Thường Gặp (Troubleshooting)
+
+1. **Lỗi `Port 3307/6380 already in use`:**
+   Dự án sử dụng port `3307` cho MySQL và `6380` cho Redis để tránh xung đột với phần mềm local. Nếu vẫn bị trùng, hãy mở CMD quyền Admin:
+   `netstat -ano | findstr :3307` ➜ `taskkill /PID <Mã PID> /F`
+
+2. **Frontend báo "Network Error" hoặc không gọi được API:**
+   Kiểm tra xem Backend đã khởi động xong chưa. Spring Boot cần vài chục giây để khởi tạo toàn bộ Bean và kết nối Database. Chạy `docker compose logs -f backend` để xem tiến trình.
 
 ---
-
-## 🔧 Phát triển hàng ngày
-
-### Khi sửa code Backend (Java):
-```powershell
-docker compose up -d --build backend
-```
-
-### Khi sửa code Frontend (React):
-Frontend sử dụng Vite HMR nên **tự động hot-reload** khi sửa code.
-Nếu cần rebuild (ví dụ thêm dependency mới):
-```powershell
-docker compose up -d --build frontend
-```
-
-### Khi chạy local (không dùng Docker cho backend/frontend):
-```powershell
-# Chỉ khởi động MySQL + Redis
-docker compose up -d mysql redis
-
-# Chạy backend local (cần Java 21)
-.\gradlew.bat bootRun
-
-# Chạy frontend local (cần Node.js 20+)
-cd frontend; npm install; npm run dev
-```
-
----
-
-## 🌐 Port Mapping
-
-| Service | Host Port | Container Port | Ghi chú |
-|---------|-----------|---------------|---------|
-| MySQL | **3307** | 3306 | Tránh xung đột MySQL local (3306) |
-| Redis | **6380** | 6379 | Tránh xung đột Redis local (6379) |
-| Backend | 8080 | 8080 | |
-| Frontend | 5173 | 5173 | |
-
-> **Tại sao port 3307/6380?** Nhiều máy dev có MySQL hoặc Redis cài sẵn trên port mặc định. Dùng port khác đảm bảo không bao giờ bị xung đột.
-
----
-
-## 📁 Project Structure
-
-```
-TicketRush/
-├── docker-compose.yml          # ⭐ Full stack Docker setup
-├── Dockerfile                  # Backend Docker image
-├── .dockerignore
-├── build.gradle                # Backend dependencies
-├── src/main/
-│   ├── java/com/ticketrush/
-│   │   ├── config/             # WebSocket, Redis, Security configs
-│   │   ├── controller/         # REST API controllers
-│   │   ├── dto/                # Request/Response DTOs
-│   │   ├── entity/             # JPA entities
-│   │   ├── enums/              # Status enums
-│   │   ├── exception/          # Global error handling
-│   │   ├── repository/         # Data access (PESSIMISTIC_WRITE lock)
-│   │   ├── security/           # JWT authentication
-│   │   └── service/            # Business logic
-│   └── resources/
-│       ├── application.yml         # Config local dev
-│       └── application-docker.yml  # Config Docker (auto-used)
-└── frontend/
-    ├── Dockerfile              # Frontend Docker image
-    ├── .dockerignore
-    ├── src/
-    │   ├── api/                # Axios HTTP client
-    │   ├── components/         # Shared UI components
-    │   ├── contexts/           # React Auth context
-    │   ├── pages/              # All pages
-    │   │   └── admin/          # Admin pages
-    │   └── types/              # TypeScript interfaces
-    └── vite.config.ts          # Dev server + API proxy
-```
-
----
-
-## ❓ Troubleshooting
-
-### "Port 3307 already in use"
-```powershell
-# Tìm process đang dùng port
-netstat -ano | findstr :3307
-# Kill nó
-taskkill /PID <PID> /F
-```
-
-### "Docker Desktop not running"
-→ Mở Docker Desktop app và đợi nó khởi động xong.
-
-### Backend lỗi "Access denied"
-→ Chạy `docker compose down -v` rồi `docker compose up -d --build` để reset DB.
-
-### Frontend không thấy API
-→ Đợi backend khởi động xong (check logs: `docker compose logs -f backend`)
+*Dự án được xây dựng với mục đích học thuật và nghiên cứu ứng dụng công nghệ Real-time & Caching trong hệ thống thương mại điện tử.*
