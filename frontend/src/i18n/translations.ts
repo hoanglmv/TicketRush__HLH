@@ -232,6 +232,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'myTickets.pendingPayment': '⏳ Pending Payment',
     'myTickets.expired': '⛔ Expired',
     'myTickets.cancelled': '❌ Cancelled',
+    'myTickets.payNow': 'Pay Now',
 
     // Footer
     'footer.letsConnect': "Let's connect",
@@ -608,6 +609,7 @@ export const translations: Record<Locale, Record<string, string>> = {
     'myTickets.pendingPayment': '⏳ Chờ thanh toán',
     'myTickets.expired': '⛔ Hết hạn',
     'myTickets.cancelled': '❌ Đã hủy',
+    'myTickets.payNow': 'Thanh toán ngay',
 
     // Footer
     'footer.letsConnect': 'Kết nối với chúng tôi',

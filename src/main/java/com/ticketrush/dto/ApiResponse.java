@@ -1,4 +1,4 @@
-﻿package com.ticketrush.dto;
+package com.ticketrush.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

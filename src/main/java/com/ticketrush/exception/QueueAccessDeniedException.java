@@ -1,4 +1,4 @@
-﻿package com.ticketrush.exception;
+package com.ticketrush.exception;
 
 /** 
  * Lớp định nghĩa Exception (lỗi ngoại lệ) tùy chỉnh.

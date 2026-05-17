@@ -1,4 +1,4 @@
-﻿package com.ticketrush.dto;
+package com.ticketrush.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.Data;

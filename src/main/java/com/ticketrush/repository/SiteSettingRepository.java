@@ -1,4 +1,4 @@
-﻿package com.ticketrush.repository;
+package com.ticketrush.repository;
 
 import com.ticketrush.entity.SiteSetting;
 import org.springframework.data.jpa.repository.JpaRepository;

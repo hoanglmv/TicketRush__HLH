@@ -1,4 +1,4 @@
-﻿package com.ticketrush.entity;
+package com.ticketrush.entity;
 
 import com.ticketrush.enums.Gender;
 import com.ticketrush.enums.Role;

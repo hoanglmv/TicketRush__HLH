@@ -1,4 +1,4 @@
-﻿package com.ticketrush.entity;
+package com.ticketrush.entity;
 
 import jakarta.persistence.*;
 import lombok.*;

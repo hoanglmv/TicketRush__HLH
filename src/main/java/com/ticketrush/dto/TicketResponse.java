@@ -1,4 +1,4 @@
-﻿package com.ticketrush.dto;
+package com.ticketrush.dto;
 
 import com.ticketrush.enums.TicketStatus;
 import lombok.Builder;
