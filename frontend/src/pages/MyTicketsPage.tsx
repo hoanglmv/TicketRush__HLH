@@ -100,11 +100,8 @@ export default function MyTicketsPage() {
                           }`}>{badge.label}</span>
                         </div>
                         {ticket.status === 'PENDING_PAYMENT' && (
-                          <button
-                            onClick={() => navigate(`/checkout/${ticket.id}`)}
-                            className="mt-3 px-6 py-2.5 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 transition-colors shadow-md text-sm"
-                          >
-                            {t('myTickets.payNow') || 'Thanh toán ngay'}
+                          <button className="w-full mt-3 py-2 border-2 border-blue-600 text-blue-600 font-bold rounded-lg hover:bg-blue-50 transition-colors" onClick={() => navigate(`/checkout/${ticket.id}`)}>
+                            {t('myTickets.payNow')}
                           </button>
                         )}
                       </div>
@@ -150,22 +147,24 @@ export default function MyTicketsPage() {
             
             <div className="p-6">
               <div className="flex justify-between items-center bg-gray-50 p-4 rounded-2xl border border-gray-200 mb-6 shadow-inner">
-                <div className="text-center flex-1 border-r border-gray-200">
-                  <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">Khu vực</p>
-                  <p className="font-black text-xl" style={{ color: selectedTicket.zoneColor }}>{selectedTicket.zoneName}</p>
-                </div>
-                <div className="text-center flex-1 border-r border-gray-200">
-                  <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">Hàng</p>
-                  <p className="font-black text-xl">{selectedTicket.seatLabel.replace(/[0-9]/g, '')}</p>
-                </div>
-                <div className="text-center flex-1">
-                  <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">Ghế</p>
-                  <p className="font-black text-xl">{selectedTicket.seatLabel.replace(/[^0-9]/g, '')}</p>
+                <div className="flex justify-between items-center mb-6 px-2">
+                  <div className="text-center">
+                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">{t('myTickets.zone')}</p>
+                    <p className="font-extrabold text-2xl text-gray-900">{selectedTicket.zoneName}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">{t('myTickets.row')}</p>
+                    <p className="font-extrabold text-2xl text-gray-900">{selectedTicket.seatLabel ? selectedTicket.seatLabel[0] : '-'}</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-wider mb-1">{t('myTickets.seat')}</p>
+                    <p className="font-extrabold text-2xl text-gray-900">{selectedTicket.seatLabel}</p>
+                  </div>
                 </div>
               </div>
 
-              <div className="text-center mb-6">
-                <p className="text-xs text-gray-500 mb-2 font-black uppercase tracking-widest">Mã vạch vé (SafeTix™)</p>
+              <div className="px-6 py-6 text-center border-t border-gray-200">
+                <p className="text-xs text-gray-500 mb-2 font-black uppercase tracking-widest">{t('myTickets.barcode')}</p>
                 <div className="bg-white p-4 rounded-xl flex flex-col justify-center items-center border-2 border-dashed border-gray-300">
                   <div className="w-[200px] h-[60px] bg-[url('https://upload.wikimedia.org/wikipedia/commons/e/e9/UPC-A-036000291452.svg')] bg-center bg-[length:100%_100%] bg-no-repeat relative overflow-hidden opacity-90 mb-2">
                     <div className="w-full h-0.5 bg-red-500 absolute left-0 animate-[scan_2.5s_linear_infinite] shadow-[0_0_8px_2px_rgba(239,68,68,0.8)]" />
@@ -174,28 +173,27 @@ export default function MyTicketsPage() {
                 </div>
               </div>
 
-              <div className="space-y-3">
-                <div className="flex justify-between items-center py-2">
-                  <span className="text-gray-500 font-medium">Giá vé</span>
-                  <span className="font-black text-lg">{selectedTicket.price.toLocaleString('vi-VN')}₫</span>
+              <div className="px-6 py-4 bg-gray-50 flex flex-col gap-3 text-sm rounded-b-2xl">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-medium">{t('myTickets.ticketPrice')}</span>
+                  <span className="font-bold text-gray-900">{selectedTicket.price.toLocaleString('vi-VN')} đ</span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-t border-gray-100">
-                  <span className="text-gray-500 font-medium">Tình trạng</span>
-                  <span className="text-green-600 font-black flex items-center gap-1.5">
-                    <span className="w-2.5 h-2.5 rounded-full bg-green-500 inline-block shadow-[0_0_8px_rgba(34,197,94,0.6)]"></span>
-                    Đã thanh toán
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-medium">{t('myTickets.status')}</span>
+                  <span className="font-bold text-blue-600">
+                    {selectedTicket.status === 'PAID' ? t('myTickets.paid') : selectedTicket.status}
                   </span>
                 </div>
-                <div className="flex justify-between items-center py-2 border-t border-gray-100">
-                  <span className="text-gray-500 font-medium">Ngày mua</span>
-                  <span className="font-bold text-gray-700">{new Date(selectedTicket.paidAt || selectedTicket.createdAt).toLocaleDateString('vi-VN')}</span>
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-500 font-medium">{t('myTickets.purchaseDate')}</span>
+                  <span className="font-medium text-gray-900">{new Date(selectedTicket.createdAt).toLocaleDateString('vi-VN')}</span>
                 </div>
               </div>
-              
-              <button onClick={() => setSelectedTicket(null)} className="w-full mt-6 py-3.5 bg-gray-100 hover:bg-gray-200 text-gray-800 font-black rounded-xl transition-colors text-lg">
-                Đóng
-              </button>
             </div>
+
+            <button className="mt-8 text-white font-bold tracking-widest uppercase hover:text-gray-200 transition-colors" onClick={() => setSelectedTicket(null)}>
+              {t('myTickets.close')}
+            </button>
           </div>
         </div>
       )}

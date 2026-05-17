@@ -40,7 +40,7 @@ public class AuthService {
             throw new InvalidOperationException("Date of birth is required");
         }
         if (java.time.Period.between(request.getDateOfBirth(), java.time.LocalDate.now()).getYears() < 16) {
-            throw new InvalidOperationException("Bạn phải từ 16 tuổi trở lên mới được đăng ký");
+            throw new InvalidOperationException("You must be at least 16 years old to register");
         }
 
         User user = User.builder()
@@ -63,7 +63,13 @@ public class AuthService {
                 .build();
     }
 
+    public boolean checkUsernameExists(String username) {
+        return userRepository.existsByUsername(username);
+    }
 
+    public boolean checkEmailExists(String email) {
+        return userRepository.existsByEmail(email);
+    }
 
     /**
      * Xử lý đăng nhập, gọi AuthenticationManager để xác thực và sinh ra JWT Token.

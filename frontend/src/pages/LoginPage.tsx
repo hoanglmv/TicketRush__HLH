@@ -28,7 +28,7 @@ export default function LoginPage() {
       login(res.data.data);
       navigate(res.data.data.role === 'ROLE_ADMIN' ? '/admin' : '/events');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Login failed');
+      setError(t(err.response?.data?.message || 'Login failed'));
     } finally {
       setLoading(false);
     }

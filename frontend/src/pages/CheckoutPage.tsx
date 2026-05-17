@@ -44,7 +44,7 @@ export default function CheckoutPage() {
 
   const handleShowQR = () => {
     if (insuranceSelected === null) {
-      setError(t('checkout.selectInsurance') || 'Vui lòng chọn hoặc bỏ qua Bảo hiểm vé');
+      setError(t('checkout.selectInsurance'));
       return;
     }
     setShowQR(true);
@@ -144,7 +144,7 @@ export default function CheckoutPage() {
               </div>
               <div className="p-6">
                 <div className="p-4 border border-blue-500 rounded-lg bg-blue-50 text-blue-700 font-bold flex justify-center text-center">
-                  {t('checkout.sandboxPayment') || 'Hệ thống Thanh toán an toàn qua VNPay / ZaloPay'}
+                  {t('checkout.sandboxPayment')}
                 </div>
               </div>
             </div>
@@ -202,7 +202,7 @@ export default function CheckoutPage() {
                   onClick={handleShowQR}
                   disabled={confirming || expired}
                 >
-                  {confirming ? t('checkout.processing') : (t('checkout.placeOrder') || 'Xác nhận thanh toán')}
+                  {confirming ? t('checkout.processing') : t('checkout.placeOrder')}
                 </button>
               </div>
             </div>
@@ -215,9 +215,9 @@ export default function CheckoutPage() {
       {showQR && (
         <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="w-full max-w-[400px] p-10 rounded-3xl text-center bg-white text-black shadow-2xl">
-            <h3 className="text-2xl font-extrabold mb-2 text-blue-600">Quét mã QR để thanh toán</h3>
+            <h3 className="text-2xl font-extrabold mb-2 text-blue-600">{t('checkout.qrTitle')}</h3>
             <p className="text-gray-500 text-sm mb-6">
-              Mở ứng dụng ngân hàng hoặc Momo/ZaloPay để quét mã QR này.
+              {t('checkout.qrDesc')}
             </p>
 
             <div className="w-[250px] h-[250px] mx-auto mb-6 bg-[url('https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=TicketRushPaymentMock')] bg-center bg-cover border border-gray-200 rounded-xl p-2" />
@@ -232,14 +232,14 @@ export default function CheckoutPage() {
                 onClick={handleConfirm}
                 disabled={confirming}
               >
-                {confirming ? 'Đang xử lý...' : 'Tôi đã quét mã & Thanh toán thành công'}
+                {confirming ? t('checkout.processing') : t('checkout.scannedAndPaid')}
               </button>
               <button 
                 className="w-full py-3 font-bold rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors disabled:opacity-50" 
                 onClick={() => setShowQR(false)}
                 disabled={confirming}
               >
-                Hủy thanh toán
+                {t('checkout.cancelPayment')}
               </button>
             </div>
           </div>

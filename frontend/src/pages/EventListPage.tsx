@@ -102,7 +102,7 @@ export default function EventListPage() {
           <option value="WORKSHOP">{t('nav.workshop')}</option>
           <option value="EXPERIENCE">{t('nav.experience')}</option>
           <option value="SPORTS">{t('nav.sports')}</option>
-          <option value="OTHER">{t('nav.other') || 'Khác'}</option>
+          <option value="OTHER">{t('nav.other')}</option>
         </select>
         
         <select 
@@ -116,12 +116,12 @@ export default function EventListPage() {
             window.history.pushState({}, '', newUrl);
           }}
         >
-          <option value="AllCities">{t('search.allLocations') || 'Tất cả vị trí'}</option>
-          <option value="Hà Nội">Hà Nội</option>
-          <option value="Hồ Chí Minh">Hồ Chí Minh</option>
-          <option value="Đà Nẵng">Đà Nẵng</option>
-          <option value="Hải Phòng">Hải Phòng</option>
-          <option value="Cần Thơ">Cần Thơ</option>
+          <option value="AllCities">{t('search.allLocations')}</option>
+          <option value="Hà Nội">{t('cities.hn')}</option>
+          <option value="Hồ Chí Minh">{t('cities.hcm')}</option>
+          <option value="Đà Nẵng">{t('cities.dn')}</option>
+          <option value="Hải Phòng">{t('cities.hp')}</option>
+          <option value="Cần Thơ">{t('cities.ct')}</option>
         </select>
 
         <select 
@@ -184,13 +184,13 @@ export default function EventListPage() {
                   
                   <div className="flex-1 pl-6 text-white">
                     <h3 className="text-xl font-extrabold mb-2">{event.name}</h3>
-                    <div className="text-sm text-gray-300">{event.venue || t('eventList.tbaVenue')} • {isPast ? (t('eventList.ended') || 'Ended') : (event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration'))}</div>
+                    <div className="text-sm text-gray-300">{event.venue || t('eventList.tbaVenue')} • {isPast ? t('eventList.ended') : (event.status === 'ON_SALE' ? t('eventList.ticketsAvailable') : t('eventList.registration'))}</div>
                   </div>
                   
                   <div className="self-center">
                     {isPast ? (
                       <button className="px-4 py-2 bg-gray-700 text-gray-400 rounded cursor-not-allowed font-bold" disabled>
-                        {t('eventList.ended') || 'Ended'}
+                        {t('eventList.ended')}
                       </button>
                     ) : (
                       <Link to={`/events/${event.id}`} className="px-4 py-2 bg-accent-primary text-white rounded font-bold hover:bg-accent-secondary transition-colors inline-block">

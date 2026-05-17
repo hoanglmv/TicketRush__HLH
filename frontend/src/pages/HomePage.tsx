@@ -104,7 +104,7 @@ export default function HomePage() {
                 {eventsToShow[currentSlide]?.name}
               </h2>
               <p className="text-text-secondary text-xl mb-10 line-clamp-3 max-w-2xl leading-relaxed drop-shadow-md">
-                {eventsToShow[currentSlide]?.description || 'Trải nghiệm những khoảnh khắc bùng nổ cùng TicketRush. Đặt vé ngay để nhận ưu đãi hấp dẫn nhất mùa hè này!'}
+                {eventsToShow[currentSlide]?.description || t('home.bannerDesc')}
               </p>
               <div className="flex gap-6">
                 <button
@@ -205,7 +205,7 @@ export default function HomePage() {
                   <h2 className="text-3xl font-black uppercase tracking-tighter text-white">{cat.label}</h2>
                 </div>
                 <Link to={`/events?category=${cat.id}`} className="text-accent-primary text-sm font-bold hover:underline transition-all">
-                  {t('home.seeAll') || 'Xem tất cả'} &gt;
+                  {t('home.seeAll')} &gt;
                 </Link>
               </div>
 
@@ -216,7 +216,7 @@ export default function HomePage() {
                       <img src={item.images?.[0] || item.bannerUrl || 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30'} alt={item.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                       <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                         <span className="px-8 py-3 bg-accent-primary text-white font-black rounded-full shadow-2xl transform translate-y-6 group-hover:translate-y-0 transition-all duration-500">
-                          {t('home.buyTicket') || 'Mua vé ngay'}
+                          {t('home.buyTicket')}
                         </span>
                       </div>
                       {item.hot && (
@@ -250,7 +250,7 @@ export default function HomePage() {
         {events.length === 0 && (
           <div className="mt-20 text-center py-24 bg-bg-card rounded-3xl border border-dashed border-border-color">
             <div className="text-6xl mb-6">🎫</div>
-            <div className="text-text-muted text-xl font-bold">Chưa có sự kiện nào trong hệ thống.</div>
+            <div className="text-text-muted text-xl font-bold">{t('home.noEventsInSystem')}</div>
           </div>
         )}
       </div>

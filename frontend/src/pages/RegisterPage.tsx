@@ -18,12 +18,36 @@ export default function RegisterPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleBlurUsername = async () => {
+    if (!form.username) return;
+    try {
+      const res = await authApi.checkUsername(form.username);
+      if (res.data.data) {
+        setError(t('Username already exists'));
+      } else if (error === t('Username already exists')) {
+        setError('');
+      }
+    } catch (err) {}
+  };
+
+  const handleBlurEmail = async () => {
+    if (!form.email) return;
+    try {
+      const res = await authApi.checkEmail(form.email);
+      if (res.data.data) {
+        setError(t('Email already exists'));
+      } else if (error === t('Email already exists')) {
+        setError('');
+      }
+    } catch (err) {}
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     
     if (!/^[a-zA-Z0-9._]+$/.test(form.username)) {
-      setError('Username can only contain letters, numbers, dots, and underscores');
+      setError(t('register.invalidUsername'));
       return;
     }
 
@@ -62,10 +86,10 @@ export default function RegisterPage() {
       if (!payload.gender) delete payload.gender;
       
       await authApi.register(payload);
-      alert('Đăng ký thành công! Vui lòng đăng nhập.');
+      alert(t('register.successAlert'));
       navigate('/login');
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(t(err.response?.data?.message || 'Registration failed'));
     } finally {
       setLoading(false);
     }
@@ -83,12 +107,12 @@ export default function RegisterPage() {
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.username')}</label>
                   <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" name="username" value={form.username}
-                    onChange={handleChange} required placeholder="johndoe" />
+                    onChange={handleChange} onBlur={handleBlurUsername} required placeholder="johndoe" />
                 </div>
                 <div className="mb-5">
                   <label className="block text-sm font-semibold text-text-secondary mb-2">{t('register.email')}</label>
                   <input className="w-full bg-bg-input border border-border-color rounded-lg px-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-accent-primary focus:ring-1 focus:ring-accent-primary transition-all" name="email" type="email" value={form.email}
-                    onChange={handleChange} required placeholder="john@email.com" />
+                    onChange={handleChange} onBlur={handleBlurEmail} required placeholder="john@email.com" />
                 </div>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

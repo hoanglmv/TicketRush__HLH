@@ -13,6 +13,11 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.discoverMore': 'DISCOVER MORE',
     'nav.search': 'Search',
     'nav.searchPlaceholder': 'Artist, Event or Venue',
+    'cities.hn': 'Hanoi',
+    'cities.hcm': 'Ho Chi Minh City',
+    'cities.dn': 'Da Nang',
+    'cities.hp': 'Hai Phong',
+    'cities.ct': 'Can Tho',
     'nav.myTickets': 'My Tickets',
     'nav.adminDashboard': 'Admin Dashboard',
     'nav.signOut': 'Sign Out',
@@ -72,6 +77,8 @@ export const translations: Record<Locale, Record<string, string>> = {
     'home.loading': 'Loading...',
     'home.notUpdated': 'Not Updated',
     'home.noEvents': 'No events found.',
+    'home.noEventsInSystem': 'There are currently no events in the system.',
+    'home.bannerDesc': 'Experience explosive moments with TicketRush. Book tickets now for the best deals this summer!',
 
     'home.presale': 'Presale',
     'home.ticketTips': 'TICKET TIPS',
@@ -154,6 +161,10 @@ export const translations: Record<Locale, Record<string, string>> = {
     'register.create': 'Create Account',
     'register.hasAccount': 'Already have an account?',
     'register.signIn': 'Sign in',
+    'register.invalidUsername': 'Username can only contain letters, numbers, dots, and underscores',
+    'register.successAlert': 'Registration successful! Please log in.',
+    'register.dobRequired': 'Date of birth is required',
+    'register.minAge': 'You must be at least 16 years old to register',
 
     // SeatSelectionPage
     'seats.title': 'Seat Map & Pricing',
@@ -199,6 +210,10 @@ export const translations: Record<Locale, Record<string, string>> = {
     'checkout.processing': 'PROCESSING...',
     'checkout.selectInsurance': 'Please select or decline Ticket Protection before payment.',
     'checkout.ticketNotFound': 'Ticket not found',
+    'checkout.qrTitle': 'Scan QR Code to Pay',
+    'checkout.qrDesc': 'Open your banking app or Momo/ZaloPay to scan this QR code.',
+    'checkout.scannedAndPaid': 'I have scanned & paid successfully',
+    'checkout.cancelPayment': 'Cancel Payment',
 
     // WaitingRoomPage
     'queue.title': 'The Queue',
@@ -233,6 +248,14 @@ export const translations: Record<Locale, Record<string, string>> = {
     'myTickets.expired': '⛔ Expired',
     'myTickets.cancelled': '❌ Cancelled',
     'myTickets.payNow': 'Pay Now',
+    'myTickets.zone': 'Zone',
+    'myTickets.row': 'Row',
+    'myTickets.seat': 'Seat',
+    'myTickets.barcode': 'Ticket Barcode (SafeTix™)',
+    'myTickets.ticketPrice': 'Ticket Price',
+    'myTickets.status': 'Status',
+    'myTickets.purchaseDate': 'Purchase Date',
+    'myTickets.close': 'Close',
 
     // Footer
     'footer.letsConnect': "Let's connect",
@@ -275,6 +298,21 @@ export const translations: Record<Locale, Record<string, string>> = {
     'chatbot.defaultReply': "Thanks for your interest! For more details, try using the Search bar or browse the featured sections.",
     'chatbot.serverError': "Sorry, unable to connect to the AI server at this time.",
 
+    // Backend Errors
+    'Invalid username or password': 'Invalid username or password',
+    'Username already exists': 'Username already exists',
+    'Email already exists': 'Email already exists',
+    'Date of birth is required': 'Date of birth is required',
+    'User not found': 'User not found',
+    'Old password does not match': 'Old password does not match',
+    'You must be at least 16 years old to register': 'You must be at least 16 years old to register',
+    'Login failed': 'Login failed',
+    'Registration failed': 'Registration failed',
+    'Profile updated successfully': 'Profile updated successfully',
+    'Password changed successfully': 'Password changed successfully',
+    'Failed to update': 'Failed to update',
+    'Failed to change password': 'Failed to change password',
+    
     // Admin Dashboard
     'admin.dashboard': 'Admin Dashboard',
     'admin.overview': 'TicketRush System Overview',
@@ -389,6 +427,11 @@ export const translations: Record<Locale, Record<string, string>> = {
     'nav.discoverMore': 'KHÁM PHÁ THÊM',
     'nav.search': 'Tìm kiếm',
     'nav.searchPlaceholder': 'Nghệ sĩ, sự kiện hoặc địa điểm',
+    'cities.hn': 'Hà Nội',
+    'cities.hcm': 'Hồ Chí Minh',
+    'cities.dn': 'Đà Nẵng',
+    'cities.hp': 'Hải Phòng',
+    'cities.ct': 'Cần Thơ',
     'nav.myTickets': 'Vé của tôi',
     'nav.adminDashboard': 'Bảng điều khiển',
     'nav.signOut': 'Đăng xuất',
@@ -449,6 +492,8 @@ export const translations: Record<Locale, Record<string, string>> = {
     'home.loading': 'Đang tải...',
     'home.notUpdated': 'Chưa cập nhật',
     'home.noEvents': 'Không có sự kiện nào.',
+    'home.noEventsInSystem': 'Chưa có sự kiện nào trong hệ thống.',
+    'home.bannerDesc': 'Trải nghiệm những khoảnh khắc bùng nổ cùng TicketRush. Đặt vé ngay để nhận ưu đãi hấp dẫn nhất mùa hè này!',
 
     'home.presale': 'Mở bán sớm',
     'home.ticketTips': 'MẸO MUA VÉ',
@@ -531,6 +576,10 @@ export const translations: Record<Locale, Record<string, string>> = {
     'register.create': 'Tạo tài khoản',
     'register.hasAccount': 'Đã có tài khoản?',
     'register.signIn': 'Đăng nhập',
+    'register.invalidUsername': 'Tên đăng nhập chỉ được chứa chữ cái, số, dấu chấm và gạch dưới',
+    'register.successAlert': 'Đăng ký thành công! Vui lòng đăng nhập.',
+    'register.dobRequired': 'Vui lòng nhập ngày sinh',
+    'register.minAge': 'Bạn phải từ 16 tuổi trở lên mới được đăng ký',
 
     // SeatSelectionPage
     'seats.title': 'Sơ đồ Chỗ ngồi & Mức giá',
@@ -576,6 +625,10 @@ export const translations: Record<Locale, Record<string, string>> = {
     'checkout.processing': 'ĐANG XỬ LÝ...',
     'checkout.selectInsurance': 'Vui lòng chọn hoặc từ chối Bảo hiểm Vé (Ticket Protection) trước khi thanh toán.',
     'checkout.ticketNotFound': 'Không tìm thấy vé',
+    'checkout.qrTitle': 'Quét mã QR để thanh toán',
+    'checkout.qrDesc': 'Mở ứng dụng ngân hàng hoặc Momo/ZaloPay để quét mã QR này.',
+    'checkout.scannedAndPaid': 'Tôi đã quét mã & Thanh toán thành công',
+    'checkout.cancelPayment': 'Hủy thanh toán',
 
     // WaitingRoomPage
     'queue.title': 'Hàng chờ',
@@ -610,6 +663,14 @@ export const translations: Record<Locale, Record<string, string>> = {
     'myTickets.expired': '⛔ Hết hạn',
     'myTickets.cancelled': '❌ Đã hủy',
     'myTickets.payNow': 'Thanh toán ngay',
+    'myTickets.zone': 'Khu vực',
+    'myTickets.row': 'Hàng',
+    'myTickets.seat': 'Ghế',
+    'myTickets.barcode': 'Mã vạch vé (SafeTix™)',
+    'myTickets.ticketPrice': 'Giá vé',
+    'myTickets.status': 'Tình trạng',
+    'myTickets.purchaseDate': 'Ngày mua',
+    'myTickets.close': 'Đóng',
 
     // Footer
     'footer.letsConnect': 'Kết nối với chúng tôi',
@@ -651,6 +712,21 @@ export const translations: Record<Locale, Record<string, string>> = {
     'chatbot.helloReply': 'Xin chào! Rất vui được hỗ trợ bạn. Bạn cần tìm vé sự kiện gì?',
     'chatbot.defaultReply': 'Cảm ơn bạn đã quan tâm! Để biết thêm chi tiết, bạn có thể thử tìm kiếm bằng thanh Search hoặc xem các mục nổi bật nha.',
     'chatbot.serverError': 'Xin lỗi, hiện tại không thể kết nối tới server AI.',
+
+    // Backend Errors
+    'Invalid username or password': 'Tên đăng nhập hoặc mật khẩu không hợp lệ',
+    'Username already exists': 'Tên đăng nhập đã tồn tại',
+    'Email already exists': 'Email đã tồn tại',
+    'Date of birth is required': 'Vui lòng nhập ngày sinh',
+    'User not found': 'Không tìm thấy người dùng',
+    'Old password does not match': 'Mật khẩu cũ không chính xác',
+    'You must be at least 16 years old to register': 'Bạn phải từ 16 tuổi trở lên mới được đăng ký',
+    'Login failed': 'Đăng nhập thất bại',
+    'Registration failed': 'Đăng ký thất bại',
+    'Profile updated successfully': 'Cập nhật thông tin thành công',
+    'Password changed successfully': 'Đổi mật khẩu thành công',
+    'Failed to update': 'Cập nhật thất bại',
+    'Failed to change password': 'Đổi mật khẩu thất bại',
 
     // Admin Dashboard
     'admin.dashboard': 'Bảng điều khiển Admin',

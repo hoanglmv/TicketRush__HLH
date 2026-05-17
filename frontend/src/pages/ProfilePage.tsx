@@ -72,11 +72,11 @@ export default function ProfilePage() {
     setProfileMsg({ text: '', type: '' });
     try {
       await userApi.updateProfile({ fullName, phone, dateOfBirth, gender });
-      setProfileMsg({ text: 'Profile updated successfully', type: 'success' });
+      setProfileMsg({ text: t('Profile updated successfully'), type: 'success' });
       setEditingProfile(false);
       fetchProfile();
     } catch (err: any) {
-      setProfileMsg({ text: err.response?.data?.message || 'Failed to update', type: 'error' });
+      setProfileMsg({ text: t(err.response?.data?.message || 'Failed to update'), type: 'error' });
     }
   };
 
@@ -85,11 +85,11 @@ export default function ProfilePage() {
     setPwdMsg({ text: '', type: '' });
     try {
       await authApi.changePassword({ oldPassword, newPassword });
-      setPwdMsg({ text: 'Password changed successfully', type: 'success' });
+      setPwdMsg({ text: t('Password changed successfully'), type: 'success' });
       setOldPassword('');
       setNewPassword('');
     } catch (err: any) {
-      setPwdMsg({ text: err.response?.data?.message || 'Failed to change password', type: 'error' });
+      setPwdMsg({ text: t(err.response?.data?.message || 'Failed to change password'), type: 'error' });
     }
   };
 

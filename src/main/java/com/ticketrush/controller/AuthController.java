@@ -26,7 +26,15 @@ public class AuthController {
         AuthResponse response = authService.register(request);
         return ResponseEntity.ok(ApiResponse.success("Đăng ký thành công", response));
     }
+    @GetMapping("/check-username")
+    public ResponseEntity<ApiResponse<Boolean>> checkUsername(@RequestParam String username) {
+        return ResponseEntity.ok(ApiResponse.success(authService.checkUsernameExists(username)));
+    }
 
+    @GetMapping("/check-email")
+    public ResponseEntity<ApiResponse<Boolean>> checkEmail(@RequestParam String email) {
+        return ResponseEntity.ok(ApiResponse.success(authService.checkEmailExists(email)));
+    }
 
     /**
      * API đăng nhập vào hệ thống.

@@ -11,6 +11,8 @@ export const authApi = {
   me: () => api.get<ApiResponse<AuthResponse>>('/auth/me'),
   changePassword: (data: { oldPassword: string; newPassword: string }) => 
     api.post<ApiResponse<void>>('/auth/change-password', data),
+  checkUsername: (username: string) => api.get<ApiResponse<boolean>>(`/auth/check-username?username=${encodeURIComponent(username)}`),
+  checkEmail: (email: string) => api.get<ApiResponse<boolean>>(`/auth/check-email?email=${encodeURIComponent(email)}`),
 };
 
 // ========== USERS ==========
